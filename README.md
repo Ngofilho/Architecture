@@ -1134,4 +1134,5 @@ Done between: 01/15/2024 - 01/18/2024
 
 [25 Best Software Architecture Blogs and websites](https://developer.feedspot.com/software_architecture_blogs/)  
 [High Scalability Web Site](http://highscalability.com/)  
+[A Pattern Language for Microservices](https://microservices.io/patterns/index.html)  
 </details>
