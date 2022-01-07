@@ -1132,4 +1132,6 @@ Done between: 01/15/2024 - 01/18/2024
 [Evolutionary Architecture By Example, repo from Linkedin Article "Want to Become a Software Engineer" ](https://github.com/evolutionary-architecture/evolutionary-architecture-by-example?tab=readme-ov-file#problem)  
 [Modular Monolith with DDD, another repo from Linkedin Article "Want to Become a Software Engineeer"](https://github.com/kgrzybek/modular-monolith-with-ddd)  
 
+[25 Best Software Architecture Blogs and websites](https://developer.feedspot.com/software_architecture_blogs/)  
+
 </details>
