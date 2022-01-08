@@ -1124,7 +1124,7 @@ Done between: 01/15/2024 - 01/18/2024
 
 <details><summary>
 
-## Annotations/Others/Studies</summary>
+## Annotations/Others/References/Studies</summary>
 
 
 [Documentação de Como Montar Ambientes e Suas Configurações CNJ 253 - Podcast Hipsters.Net #342](https://docs.pje.jus.br/)  
