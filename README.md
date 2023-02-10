@@ -885,22 +885,35 @@ Another good practice is to return the sort parameter in the response pagination
 
 <details><summary>
 
-### </summary>
+### Learning and Implementing **HATEOAS** </summary>
 
 </details>
 
 <details><summary>
 
-### </summary>
+### Improving Reliability with Advanced **Content Negotiation** </summary>
 
 </details>
 
 <details><summary>
 
-### </summary>
+### Getting Started with **Caching Resources**</summary>
 
 </details>
 
+
+<details><summary>
+
+### Supporting HTTP Cache for ASP.NET Core APIs </summary>
+
+</details>
+
+
+<details><summary>
+
+### Concurrency </summary>
+
+</details>
 
 <details><summary>
 
