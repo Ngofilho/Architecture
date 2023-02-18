@@ -647,6 +647,15 @@ GetCouponByIdResponse getCouponByIdResponse =
 #### Accessing a Microservices Infrastructure</summary>
 
 </details>
+
+<details><summary>
+
+###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
+
+[Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
+
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
