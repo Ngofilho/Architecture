@@ -897,7 +897,11 @@ Another good practice is to return the sort parameter in the response pagination
 
 <details><summary>
 
-### Getting Started with **Caching Resources**</summary>
+### Getting Started with Caching Resources</summary>
+
+HTTP Caching  
+http://bit.ly/2hJTTxD (RFC 2616)  
+http://bit.ly/2in4uzh (RFC 7234)  
 
 </details>
 
