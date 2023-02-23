@@ -702,6 +702,14 @@ Module 5 - Improving the API Gateway Pattern - Using scoped-based microservices 
 
 Module 6 - Enabling long-lived access and token stores, how to use cached tokens
 
+<details><summary>
+
+###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
+
+[Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
+
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
