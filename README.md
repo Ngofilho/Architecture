@@ -903,12 +903,18 @@ HTTP Caching
 http://bit.ly/2hJTTxD (RFC 2616)  
 http://bit.ly/2in4uzh (RFC 7234)  
 
+
+**`Cache-Control` header**  
+[Directives](http://bit.ly/1Ups120)  
+
 </details>
 
 
 <details><summary>
 
 ### Supporting HTTP Cache for ASP.NET Core APIs </summary>
+
+
 
 </details>
 
