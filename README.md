@@ -723,6 +723,15 @@ Nuget package Microsoft.AspNet.Core.Versioning (supports versioning in >path, qu
 Version Interliving
 
 It's possible to combine different strategies to use specific versions
+
+<details><summary>
+
+###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
+
+[Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
+
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
