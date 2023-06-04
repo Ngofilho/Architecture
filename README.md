@@ -737,7 +737,18 @@ It's possible to combine different strategies to use specific versions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary>
 
-## [Deploying ASP.Net Core 3 Microservices Using Kubernetes and AKS](https://app.pluralsight.com/library/courses/deploying-asp-dot-net-core-microservices-kubernetes-aks)</summary></details>
+## [Deploying ASP.Net Core 3 Microservices Using Kubernetes and AKS](https://app.pluralsight.com/library/courses/deploying-asp-dot-net-core-microservices-kubernetes-aks)</summary>
+
+
+<details><summary>
+
+###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
+
+[Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
+
+</details>
+
+</details>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary>
 
