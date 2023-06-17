@@ -888,6 +888,15 @@ Teaches how to config `ELK`
 Teachs how to implement Health Check
 
 </details>
+
+<details><summary>
+
+###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
+
+[Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
+
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
