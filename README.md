@@ -6,11 +6,14 @@
 4. Versioning - Tolerance to changes onto the system.  
 
 ##### Fallacies of Distributed Computing  
-1. __The network is reliable__  
+1. _The network is reliable_  
 2. Latency is zero  
 3. Bandwidth id infinite  
 4. The network is secure  
-5. __Topology doesn't change__  
+5. _Topology doesn't change_  
 6. There is one administrator  
 7. Transport cost is zero  
-8. __The network is homogeneous__  
+8. _The network is homogeneous_  
+
+
+Idempotence operation is one that has no effect when it's received twice or more.  
