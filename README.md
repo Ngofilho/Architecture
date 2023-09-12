@@ -16,4 +16,5 @@
 8. _The network is homogeneous_  
 
 
-Idempotence operation is one that has no effect when it's received twice or more.  
+Idempotence operation is one that has no effect when it's received twice or more. To implement idempotence one approach could be using *Clinet-Side ID*. For example, if the user know the ID of the object before it's created, then the server can tell the difference between the creation of a new object and a duplicate message. Duplicate messages will carry the same IDs as the original.  
+Another approuch can be implementing *Client-side ID in database*, either using a different ID than auto-increment key, *GUID* is a good choice as an alternate key, or before inserting the record, searching for it using the same parameters as being used on the insert, if it returns a record, then just returns it to the client otherwise, insert and then returns the outcome to the client.  
