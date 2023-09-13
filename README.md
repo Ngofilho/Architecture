@@ -15,7 +15,11 @@ Another approach can be implementing *Client-side ID in database*, either using 
 <summary>
   
 ##### 2. Immutability</summary>  
-Keeps a record of everything that happens within the system, the data won't be overridden or deleted.  
+From [Pat Helland paper](http://highscalability.com/blog/2015/1/26/paper-immutability-changes-everything-by-pat-helland.html), keeps a record of everything that happens within the system, the data won't be overridden or deleted.  
+Gives reliable audit log, do not destroy data, preserves metadata. 
+Two well known design patterns for immutability are:
+1. **Snapshots** - Usually used for updates  
+2. **Tombstones** - Used for delete records.  
 </details>
 
 <details>
