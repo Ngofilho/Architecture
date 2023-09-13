@@ -26,8 +26,24 @@ Two well known design patterns for immutability are:
 <summary>
   
 ##### 3. **Location Independence**</summary>   
-Deployed at different locations.  
-</details>
+Deployed at different locations. Implies that an application's behavior does not depend upon its location. Each instance produces the same behavior.  
+Location Independent Identifiers:
+1. Alternate Key  
+2. Natural Key
+3. Public Key
+4. Hash - Known patterns as Content-address Storage
+Uses the content itself to help to identify itself  
+Implementations of ***Content-address Storage***
+- docker image stack hash  
+- git - sha1 hash system  
+- IPFS(Inter planetary file system)  
+
+Advantages of Content-address Storage: 
+Naturally immutable  
+Naturally Verifiable  
+Naturally Idempotent  
+Solves Cache Invalidation  
+</details> 
 
 <details>
 <summary>
