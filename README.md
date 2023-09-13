@@ -1,5 +1,13 @@
-# [Distributed Systems](https://app.pluralsight.com/library/courses/distributed-systems-fundamentals)  
-#### Properties of a Reliable Application  
+<details>  
+<summary>
+  
+## [Distributed Systems](https://app.pluralsight.com/library/courses/distributed-systems-fundamentals)  </summary>
+
+
+<details>
+<summary>
+  
+#### Properties of a Reliable Application  </summary>  
 
 <details>  
 <summary>
@@ -62,4 +70,6 @@ Solves Cache Invalidation
 7. Transport cost is zero  
 8. _The network is homogeneous_  
 
+</details>
 
+</details>
