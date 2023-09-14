@@ -72,4 +72,11 @@ Solves Cache Invalidation
 
 </details>
 
+<details><summary>
+  
+### Connectiong Services</summary>
+Eventual consistency. When we have data in different places, when we ask the same for both, we want the anwser be consistent with between them.  
+
+</details>
+
 </details>
