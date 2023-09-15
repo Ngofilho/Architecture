@@ -84,9 +84,13 @@ Commands and queries are sent to the system of record.
 **Publish-subscribe**
 Publish doesn't know subscribers hence who's interested in those events ahead of time.  
 
-<details><summary>
+<details>
+ 
+<summary>  
 
-##### Competing Consumer</summary>
+##### Competing Consumer  
+
+</summary>
  
   The way that MassTransit implements publish‑subscribe is to set up an exchange. When a consumer subscribes for events, MassTransit adds a queue to the exchange. Each different kind of subscriber gets a new queue. When subscribing, the consumer specifies a receive endpoint. Different receive endpoints imply different kinds of consumers. It therefore creates a new queue for each receive endpoint. When the system of record publishes a message to the exchange, MassTransit will add that message to each of those queues. In that way, the same message is handled by each different kind of subscriber. On the other hand, when two instances of the same kind of subscribers start up, they will both specify the same receive endpoint. MassTransit will therefore connect them both to the same queue. The consumers reading from the same queue will compete for those messages. Only one of them will receive it. This is a pattern within publish‑subscribe known as the competing consumer pattern. And because MassTransit implements competing consumers, it's able to ensure that only one instance will receive the message.   
 </details>
