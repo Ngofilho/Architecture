@@ -76,7 +76,7 @@ Solves Cache Invalidation
 <details><summary>
   
 #### Connectiong Services</summary>
-Eventual consistency. When we have data in different places, when we ask the same for both, we want the anwser be consistent with between them. The *Event* comes from the falacy of the latency is zero.  
+Eventual consistency. When we have data in different places, when we ask the same for both, we want the anwser be consistent with between them. The *Eventual* comes from the falacy of the latency is zero.  
 **Commands** are messages that have side effects and return no data. Usually named with imperative verb.  
 **Queries** are messages that have no side effects and return data. Usually have a name of especification.     
 Commands and queries are sent to the system of record.  
