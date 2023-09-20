@@ -1004,7 +1004,7 @@ http://bit.ly/2in4uzh (RFC 7234)
 
 [Course part of the API Development in ASP.NET Core](https://app.pluralsight.com/paths/skills/api-development-in-aspnet-core)
 
-Done between 01/15/2024 - 01/18/2024
+Done between: 01/15/2024 - 01/18/2024
 
 </details>
 
