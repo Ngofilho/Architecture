@@ -102,3 +102,14 @@ Publish doesn't know subscribers hence who's interested in those events ahead of
 </details>
 
 </details>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## [Designing RESTful Web APIs](https://app.pluralsight.com/courses/64ee3a82-fc9c-4bcf-b94b-5f01b6e64536/table-of-contents)
+
+<details>
+<summary>
+  
+### What is REST?</summary>
+1970       1980       1990         2000       2010       2020
+  |          |          |            |          |          |
+</details>
