@@ -199,7 +199,40 @@ other example
 ```
 
 - **Caching** -
+Basic tenet of REST APIs. Server-side chaching is good. But isn't what they mean. Use HTTP for caching mechanism.  
 
+Request 
+```http
+GET / HTTP/1.1
+Version:last_xyz
+...Content...
+```
+Response
+```http
+304 Not modified  
+```
+
+Another way of technique is using the header option `If-Match=last_xyz` with an arbitrary identification to request to server to put these fields in my request in the right place if the identifications is the same of the server. If there is no match, if it has been updted on the server since I retrieved it, it will send back the http status 412 (Precondition failed).    
+Request 
+```http
+GET / HTTP/1.1
+If-Match:last_xyz
+...Content...
+```
+A great way to handle this caching is something called entity tags (ETag). It support weak and strong caching support.  
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/xml;
+Date: Thu, 23 May 2013 21:52:14 GMT
+ETag W/"4893023942098"
+Content-Length: 639
+
+
+HTTP/1.1 304 Not Modified
+
+HTTP/1.1 412 Precondition Failed
+```
 - **Functional** -  
 </details>
 
