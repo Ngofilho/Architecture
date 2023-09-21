@@ -117,8 +117,8 @@ Publish doesn't know subscribers hence who's interested in those events ahead of
 <summary>
   
 ##### History of Distributed System</summary>
-  
-![](https://github.com/Ngofilho/Architecture/blob/images/images/DC_History.png)
+   
+![](https://github.com/Ngofilho/Architecture/blob/images/images/DC_History.png)   
 
 </details>
 </details>
