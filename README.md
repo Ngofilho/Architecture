@@ -287,13 +287,13 @@ Accept: application/json;version=2.0
 - Versioning with Content Type  
     Pros: Can version the payload as well as the API call itself  
     Cons: Requires a lot more development maturity to create and maintain
-  ie
-  ```http
+  ie  
+```http
 GET /api/camps HTTP/1.1
 Host: localhost:44388
 Content-Type: application/vnd.yourapp.camp.v1+json
 Accept: application/vnd.yourapp.camp.v1+json
-  ```
+```
 </details>
 
 </details>
