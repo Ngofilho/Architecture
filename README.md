@@ -154,6 +154,22 @@ Use **query strings** for optional parameters or innofensive data. Use for non-r
 **Tip(s)**   
 `X-Total-Count` shows the total result  
 Another useful trick is use as **query parameter** the page size and send back in header content the previous and next page. ie. `X-NextPage:/api/Sites?page=5` and `X-NextPage:/api/Sites?page=5`  
+
+- **Associations** - Can have multiple associations
+      ie. `/api/customers/123/invoices`  Retrieve all `invoices` (resource) from the `customer` (resource) `123`
+      `/api/customers/123/payments` Retrieve all `payments` (resource) from `customer` (resource) `123`
+  Search should use queries
+ie.
+```
+/api/Customers?st=GA
+/api/Customers?st=GA&salesid=144
+/api/Customers?hasOpenOrders=true
+```
+
+- **Paging** -
+- **Error Handling** -  
+- **Caching** -
+- **Functional** -  
 </details>
 
 </details>
