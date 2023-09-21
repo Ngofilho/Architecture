@@ -178,7 +178,12 @@ Use wrappers to imply paging:
   "results":[...]
 }
 ```
-- **Error Handling** -  
+- **Error Handling** -
+  Not just status code, it could be also used to communicate errors, and to help the user to recover.
+ie.
+```json
+{"error":"Failed to supply id"}
+```
 - **Caching** -
 - **Functional** -  
 </details>
