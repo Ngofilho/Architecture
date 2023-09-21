@@ -233,7 +233,16 @@ HTTP/1.1 304 Not Modified
 
 HTTP/1.1 412 Precondition Failed
 ```
-- **Functional** -  
+- **Functional** -
+Generally used for some operation that might be used to do certain kinds of routines that might cause side-efects, like reset a database, calculate values, etc.  
+
+- **Async API Solutions to Consider**
+  1. Comet
+  2. gRPC
+  3. SignalR
+  4. Firebase
+  5. Socket.IO
+  6. etc.
 </details>
 
 </details>
