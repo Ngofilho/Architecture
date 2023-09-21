@@ -133,4 +133,11 @@ curl arest.me -i //show all of the headers and the body in the response.
 ```
 </details>
 
+<details>
+<summary>
+  
+#### Designing a RESTful API</summary>
+
+</details>
+
 </details>
