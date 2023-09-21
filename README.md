@@ -112,5 +112,13 @@ Publish doesn't know subscribers hence who's interested in those events ahead of
   
 ### What is REST?</summary>
 
-[![]]()
+<details>
+  
+<summary>
+  
+##### History of Distributed System</summary>
+  
+![](https://github.com/Ngofilho/Architecture/blob/images/images/DC_History.png)
+
+</details>
 </details>
