@@ -245,4 +245,55 @@ Generally used for some operation that might be used to do certain kinds of rout
   6. etc.
 </details>
 
+<details>
+<summary>
+
+#### Versioning Your API</summary>  
+Strategies to version APIs
+- Uri Path  
+    Pros: Very clear to clients where the version is handled  
+    Cons: Every version needs to change URIs, can be brittle
+  ie
+  `https://foo.org/api/v2/Customers`
+
+- Query String  
+    Pros: Versioning is optionally included (can use default version)  
+    Cons: Too easy for clients to miss needing the version
+  ie
+  `https://foo.org/api/Customers?v=2.0`
+
+-  Versioning with Headers  
+    Pros: Separates versioning from the rest of the API  
+    Cons: Requires more sophisticated developer to manipulate headers
+   ie
+  ```http
+GET /api/camps HTTP/1.1
+Host: localhost:44388
+Content-Type: application/json
+X-Version:2.0
+  ```
+
+- Versioning with Accept Header  
+    Pros: No need to create your own custom header  
+    Cons: Even less discoverable than query strings  
+ie
+  ```http
+GET /api/camps HTTP/1.1
+Host: localhost:44388
+Content-Type: application/json
+Accept: application/json;version=2.0
+  ```
+
+- Versioning with Content Type  
+    Pros: Can version the payload as well as the API call itself  
+    Cons: Requires a lot more development maturity to create and maintain
+  ie
+  ```http
+GET /api/camps HTTP/1.1
+Host: localhost:44388
+Content-Type: application/vnd.yourapp.camp.v1+json
+Accept: application/vnd.yourapp.camp.v1+json
+  ```
+</details>
+
 </details>
