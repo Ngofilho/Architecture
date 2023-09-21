@@ -167,6 +167,17 @@ ie.
 ```
 
 - **Paging** -
+  Lists should support paging. Commonly used with query strings  
+ie.  `/api/sites?page=1&page_size=25`
+Use wrappers to imply paging:  
+```json
+{
+  "totalResults": 255,
+  "nextPage": "/api/sites?page=5",
+  "prevPage": "/api/sites?page=3",
+  "results":[...]
+}
+```
 - **Error Handling** -  
 - **Caching** -
 - **Functional** -  
