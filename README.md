@@ -124,6 +124,13 @@ Publish doesn't know subscribers hence who's interested in those events ahead of
 ![](https://github.com/Ngofilho/Architecture/blob/images/images/DC_History.png)   
 
 </details>
+
+**Useful commands**   
+```cmd
+curl arest.me -I //show all of the headers in the response except for the body.
+
+curl arest.me -i //show all of the headers and the body in the response.
+```
 </details>
 
 </details>
