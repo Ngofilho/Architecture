@@ -184,7 +184,22 @@ ie.
 ```json
 {"error":"Failed to supply id"}
 ```
+other example
+```json
+{
+  "errors" : {
+              "Name" : [
+                          "The name field is required."
+                        ]
+            },
+          "title": "One or more validation errors occurred",
+          "status":400,
+          "traceId":"2434hkjkjh1234"
+}
+```
+
 - **Caching** -
+
 - **Functional** -  
 </details>
 
