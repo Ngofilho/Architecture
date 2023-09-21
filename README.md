@@ -276,13 +276,13 @@ X-Version:2.0
 - Versioning with Accept Header  
     Pros: No need to create your own custom header  
     Cons: Even less discoverable than query strings  
-ie
-  ```http
+ie  
+```http
 GET /api/camps HTTP/1.1
 Host: localhost:44388
 Content-Type: application/json
 Accept: application/json;version=2.0
-  ```
+```
 
 - Versioning with Content Type  
     Pros: Can version the payload as well as the API call itself  
