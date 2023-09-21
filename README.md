@@ -137,7 +137,23 @@ curl arest.me -i //show all of the headers and the body in the response.
 <summary>
   
 #### Designing a RESTful API</summary>
+Use **query strings** for optional parameters or innofensive data. Use for non-resource properties.  
+**Nouns are good, verbs are bad**
 
+|Avoid|Prefer|
+|-|-|
+|/getCustomers|/Customers with verb get|
+|/getCustomersByName|/Customers with verb get|
+|/getCustomersByPhone|/Customers with verb get|
+|/verifyCredit|/Credit with verb get|
+|/saveCustomer|/Customer with verb post|
+|/updateCustomer|/Customer with verb patch or put|
+|/deleteCustmer|/Customer with verb delete|
+
+
+**Tip(s)**   
+`X-Total-Count` shows the total result  
+Another useful trick is use as **query parameter** the page size and send back in header content the previous and next page. ie. `X-NextPage:/api/Sites?page=5` and `X-NextPage:/api/Sites?page=5`  
 </details>
 
 </details>
