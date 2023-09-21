@@ -105,12 +105,15 @@ Publish doesn't know subscribers hence who's interested in those events ahead of
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## [Designing RESTful Web APIs](https://app.pluralsight.com/courses/64ee3a82-fc9c-4bcf-b94b-5f01b6e64536/table-of-contents)
+<details>
+<summary>
+  
+## [Designing RESTful Web APIs](https://app.pluralsight.com/courses/64ee3a82-fc9c-4bcf-b94b-5f01b6e64536/table-of-contents)</summary>
 
 <details>
 <summary>
   
-### What is REST?</summary>
+#### What is REST?</summary>
 
 <details>
   
@@ -121,4 +124,6 @@ Publish doesn't know subscribers hence who's interested in those events ahead of
 ![](https://github.com/Ngofilho/Architecture/blob/images/images/DC_History.png)   
 
 </details>
+</details>
+
 </details>
