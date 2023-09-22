@@ -296,4 +296,20 @@ Accept: application/vnd.yourapp.camp.v1+json
 ```
 </details>
 
+<details>
+<summary>
+    
+#### Locking Downs Your API</summary>
+
+Do You really need to secure your API ?
+|Are you... | Secure?|
+|-|-|
+|...using private or personalized data?|Yes.|
+|...sending sensitive data across the 'wire'|Yes.|
+|...using credentials of any kind?|Yes.|
+|...trying to protect against overuse of your servers|Yes.|
+
 </details>
+</details>
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
