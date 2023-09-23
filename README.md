@@ -125,6 +125,21 @@ Melvin E. Conway
 <details><summary>
   
 #### Invoking Business Processes</summary>
+**Temporal Coupling** The client timeout must encompass not only the Delivery Time but also the Processing Time.   
+
+|Protocol|Caracteristics|Examples|
+|-|-|-|
+|Synchronous|Response occurs after request is processed<br>Response conveys information about processing<br>Report on delivery and processing failures|HTTP - Standard Based<br>SOAP - Standard Based<br>gRPC - Standard Based<br>REST - Standard Based|
+|Asynchronous|Reponse occurs after delivery<br>Reponse cannot convey information about processing<br>Response cannot report sucess<br>Report only on delivery failures|AMQP<br>Apache Kafka - Implementation Based<br>IBM MQ - Implementation Based<br>Amazon SQS - Implementation Based<br>HTTP (used judiciously e.g. 202 Accepted)|
+
+The impact of protocols on types of messages  
+|Message Type|Asynchronous Protocol|Synchronous Protocol|
+|-|-|-|
+|Events|Tipically used as asynchronous, because there is no need to couple the emitter with the receiver, even for temporal coupling|-|
+|Commands|If the client doesn't need to know any information about how the command was processed|If the client needs to know any information, then use synchronous protocol message|
+|Queries|Usually synchronous processing|Use asynchronous when the query needs time to be processed, but you must inform the query's result drop off location|
+
+
 </details>
 
 <details><summary>
