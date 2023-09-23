@@ -360,11 +360,36 @@ Organization Readiness:
   
 ## [Microservices communication in ASP.Net Core 3](https://app.pluralsight.com/library/courses/microservices-communication-asp-dot-net-core) </summary>
 
+
 <details><summary>
 
-#### </summary>
+#### Introducing Microservice Communication in ASP.NET Core</summary>	
+
 </details>
 
+<details><summary>
+
+#### Creating Synchronous Communication between ASP.NET Core Microservices</summary>
+
+</details>
+
+<details><summary>
+
+#### Setting up Asynchronous Communication between ASP.NET Core Microservices</summary>
+
+</details>
+
+<details><summary>
+
+#### Making Microservices More Resilient</summary>
+
+</details>
+
+<details><summary>
+
+#### Accessing a Microservices Infrastructure</summary>
+
+</details>
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
