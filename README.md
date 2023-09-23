@@ -320,7 +320,7 @@ Do You really need to secure your API ?
 ## [ASP.NET Core 3 Microservices: Getting Started](https://app.pluralsight.com/courses/ea5ff9d5-c3d5-4d09-be4d-cc91d95b6c32/table-of-contents)</summary>
 <details><summary>
 
-#### Hot to Create a Microservice</summary>
+#### How to Create a Microservice</summary>
 
 **The microservice architectural style** applications consisting of small services. Each service can be considered as component, they are independent, each service can be can be maintained by multiple teams, their size make them manageable because they are small. Finally, each service must be responsible for exactly one task. The **UI** could be one big application communicating with the micro services.  
 
@@ -332,6 +332,32 @@ Use NSwag can be used separately if you're not using Visual Studio, to create cl
 ***gRPC*** pros: It's faster and has better performance than REST services. cons: The client must know upfront the behavior of the service consumed.  
 </details>
 
+<details><summary>
+
+#### Connecting Microservices Synchronously and Asynchronously </summary>
+
+
+</details>
+
+<details><summary>
+
+#### Microservices Considerations and Design </summary>
+|Architectural Style|Benefits|Downsides|
+|-|-|-|
+|Monolith|- Easier to deploy<br>- Easier to test<br>- Well known<br>- No calls over the wire<br>|- Hard to maintain modularity<br>- Bigger == more complex<br>- Bigger == Scaling out is expensive<br>- Fault tolerance is lower when you have problem on side of it<br>- Updates is hard to new techonologies<br>- Multiple teams get involved is hard to manage|
+|Microservice|- Very large and/or complex applications are easier to develop<br>- Highly available<br>- Individual microservices are scalable<br>- Development experience better when many people collaborate<br>- Teams can use various technologies<br>- Fault isolation<br>  |- The solution as a whole is more complex<br>- How do all parts stick together?<br>- Deployment and monitoring<br>- Requires team skills beyond coding<br>- Properly sizing microservices<br>- Eventual consistency<br>|
+
+Organization Readiness:
+- Project-based approach doesn't work
+- Devops
+- Ownership
+- Ground rules across teams  
+
+-
+
+ 
+
+</details>
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
