@@ -113,6 +113,12 @@ Melvin E. Conway
 - Identity: What's is it identity.  
 - Events: What events leds to its existence.  
 
+<details><summary>
+  
+##### Historical Model</summary>
+
+</details>
+
 </details>
 
 <details><summary>
