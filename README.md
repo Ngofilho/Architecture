@@ -322,7 +322,14 @@ Do You really need to secure your API ?
 
 #### Hot to Create a Microservice</summary>
 
+**The microservice architectural style** applications consisting of small services. Each service can be considered as component, they are independent, each service can be can be maintained by multiple teams, their size make them manageable because they are small. Finally, each service must be responsible for exactly one task. The **UI** could be one big application communicating with the micro services.  
 
+**Evolving a Microservice** you must always ask if it still independent ? Does it still perform one task ? If not, it's time to add a microservice or refactor the architecture.  
+Microservices should not have dependencies on others micro services neither database, because it can break the process.  
+
+**Tip(s)**  
+Use NSwag can be used separately if you're not using Visual Studio, to create classes from openApi specification.  
+***gRPC*** pros: It's faster and has better performance than REST services. cons: The client must know upfront the behavior of the service consumed.  
 </details>
 
 </details>
