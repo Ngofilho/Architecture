@@ -115,7 +115,8 @@ Melvin E. Conway
 
 <details><summary>
   
-##### Historical Model</summary>
+##### Historical Model</summary>  
+![](https://github.com/Ngofilho/Architecture/blob/images/images/HistoricalModel.jpg)  
 
 </details>
 
