@@ -352,12 +352,18 @@ Organization Readiness:
 - Devops
 - Ownership
 - Ground rules across teams  
-
--
-
- 
-
 </details>
 </details>
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details><summary>
+  
+## [Microservices communication in ASP.Net Core 3](https://app.pluralsight.com/library/courses/microservices-communication-asp-dot-net-core) </summary>
+
+<details><summary>
+
+#### </summary>
+</details>
+
+</details>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
