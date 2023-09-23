@@ -101,7 +101,36 @@ Publish doesn't know subscribers hence who's interested in those events ahead of
  
 </details>
 
+<details><summary>
+  
+#### Identifying Service Boundaries</summary>
+*Any organization that designs a system will produce a design whose structure is a copy of the organization's communication structure*  
+Melvin E. Conway  
+
+**Distinghishing Aggregates**:
+- Definition: What's the definition of an aggregate (which part/class can be an aggregate).  
+- Differentiation: What distinguishes one aggregate from another.  
+- Identity: What's is it identity.  
+- Events: What events leds to its existence.  
+
 </details>
+
+<details><summary>
+  
+#### Invoking Business Processes</summary>
+</details>
+
+<details><summary>
+  
+#### Keeping Things Running</summary>
+</details>
+
+<details><summary>
+  
+#### Managing Complex Scenarios</summary>
+</details>
+</details>
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
