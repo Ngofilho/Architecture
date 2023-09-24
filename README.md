@@ -145,6 +145,42 @@ The impact of protocols on types of messages
 <details><summary>
   
 #### Keeping Things Running</summary>
+**Runbook** consists of documentation about the components, dependencies, communication channels, behaviors, mitigations plans. It's a living document. e.g. (Wikipedia about the project).  
+
+<details><summary>
+  
+##### Database Runbook Diagrams</summary>
+It's recommended keep the diagrams small.  
+![](https://github.com/Ngofilho/Architecture/blob/images/images/ERD.jpg) ![](https://github.com/Ngofilho/Architecture/blob/images/images/DbRelationDiagram.jpg)  ![](https://github.com/Ngofilho/Architecture/blob/images/images/ERDHierarchy.jpg)  
+The ERD should contain the keys only, not the columns.  
+It's recomended that the father table be on top and the children tables beneath it, with the arrows pointing up. This makes the hierarchy clear.    
+</details>
+
+**Application Dependency Map** responsible to describe every dependency the application has, like:
+- API's  
+- Messages  
+- Machine Names  
+- Configurations Settings  
+
+**Problems and Mitigations**
+|Problem|Mitigation|
+|-|-|
+|Endpoint /*acts* response time exceeds 250ms|In dtabase *promotion.sql*, exec sp_updates|
+|Queue show.rabbotmq Indexer exceeds 20 messages|Ensure that elasticsearch.shows is responding|
+|Failed messages in show.rabbitmq Emailer_Error|Ensure that smtp.customer_service is responding|
+|...|...|  
+
+Log technical debt.  
+***No plan survices first contact with the enemy, and no runbook survives the first deployment to production.***  
+
+<details><summary>
+  
+##### Logging Standards</summary>
+![](https://github.com/Ngofilho/Architecture/blob/images/images/LogsStandards.jpg)  
+First, log every entry point into the system. These are the API calls, controller actions, and incoming messages. Include all of the inputs before they are parsed. Log these as informational messages. If the input data contains a lot of unnecessary detail, then log this as a separate debug message at the same time. Log a debug message upon return so that you can capture rudimentary timing measurements. Second, log every point that leaves the system. This includes every outgoing API call or message sent. And here the same rules apply. These are informational messages with optional debug details. And log a debug message when the dependency returns. This allows the ops team to watch the system under normal operation and then crank it up to debug in order to see those extra details. Speaking of those extra details, that brings us to number three, log every database or file system access. If possible, include the SQL and the parameters in the log message. These should be debug messages because they're very detailed. Most ORMs include interceptors that will do this for you. Just make sure that you enable them. And now the fourth standard logging practice is to log any important decisions within any sufficiently complicated business logic. Be sure to include the parameters that went into making that decision. You won't have any of these with your standard CRUD operations, but when you have more complex business logic you'll definitely want to capture this information. And they should be captured at the information level. And then, finally, of course, log exceptions as errors. Make sure to catch and wrap those exceptions in order to add context. Your development organization may want to put more practices in place, but this is a great starting point that will give your operations team enough information to figure out what's going on.
+
+</details>
+
 </details>
 
 <details><summary>
