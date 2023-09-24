@@ -171,6 +171,7 @@ It's recomended that the father table be on top and the children tables beneath 
 |...|...|  
 
 Log technical debt.  
+Runbook should contain the log queries examples, so do the sql queries too.  
 ***No plan survices first contact with the enemy, and no runbook survives the first deployment to production.***  
 
 <details><summary>
