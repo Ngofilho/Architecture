@@ -397,6 +397,34 @@ Do You really need to secure your API ?
 |...using credentials of any kind?|Yes.|
 |...trying to protect against overuse of your servers|Yes.|
 
+- Server Infrastructure Security  
+    Outside scope of API security  
+- Secure In-Transit  
+    SSL is almost always appropriate  
+    Cost of SSL is worth the expense  
+-  Secure the API itself  
+    Cross Origin Security  
+    Authorization/Authentication
+
+**Cross Domain Security**   
+- By default not allowed  
+- Only applies for browsers  
+- Public API should allow cross domain  
+- Private API Consider for Partners  
+
+<details><summary>
+  
+##### How Does CORS Work?</summary>
+![](https://github.com/Ngofilho/Architecture/blob/images/images/cors.jpg)  
+
+</details>
+
+**Authentication Types for APIs**  
+- Cookies -Easiest and common. Subject to request forgery.   
+- Basic Auth - Easy to implement. But not secure, unless enforcing SSL, but still risky. Increase surface area of attacks, because sends credentials on every request.  
+- Token Auth - Most common, because it's a mixture of secure and simplicity. Should expire must faster than cookies, typically 5-20 minutes.  
+- OAuth - Use trusted third-party to identify. User authenticates with third party, use token to confirm identity. Safer for you and user.          
+
 </details>
 </details>
 
