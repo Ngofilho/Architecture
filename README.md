@@ -220,6 +220,21 @@ The whole process starts with the *PurchaseTicket* command.
 ![](https://github.com/Ngofilho/Architecture/blob/images/images/CompensatingTransactionsSagas.jpg)
 </details>
 
+
+<details><summary>
+
+##### Tips for Building Value</summary>
+Distributed systems are hard. They're hard to build, they're hard to run, and they don't always behave in nice, predictable ways.  
+If you don't need to build a distributed system, then don't. Focus on good, reliable architecture to make the best possible application for your customers.   
+Design an immutable database so that you capture all of the data and metadata required to understand what has happened.   
+Don't expose internal database IDs so that the application can be location independent and operations can be idempotent.  
+Use additive structure in order to version the application without breaking API consumers or invalidating existing data.  
+But if you really need to build a distributed system, then build on that reliable architecture to make the pieces work well together.  
+Use the metadata that you captured in the immutable database in order to make your operations communicative.  
+Rely on that location independent identity and idempotence and commutativity in order to make your systems reach eventual consistency. Lean on those additive structures in order to account for the fact that the network is not homogeneous and that applications will be upgraded at different times. If you find yourself building and managing a distributed system, it'll probably be because there's a business benefit to doing so. Tap into those business units.  
+Align your IT strategy with your business strategy, bringing people together across disciplines at workshops, over code reviews, and in war rooms.  
+Encourage a culture and a set of deliberate practices that provide each specialist with the information that they need to support the whole platform. I think that you'll find that the rewards of running a distributed system extend far beyond good architecture. You will build measurable value for your organization and have a seat at the table for innovative strategic conversations.
+</details>
 </details>
 
 </details> 
