@@ -201,7 +201,27 @@ Database Transactions breaks invariants on its start and restore it on its end, 
 
 **Saga** Proposed by Hector Garcia-Mollina and Kenneth Salem published the pattern in a paper at Princeton University Department of Computer Science on 1987. It breaks down a long live transaction into several small transactions. Each transaction is limited in time and scope and takes advantage of the ACID guaranteed that DB offers. It's not guaranteed that external observers to see that the invariants have been violted and state of the system is not consistent. Instead, it guaranteed that the state will become consistent once the saga completes. The paper propose that DBMS manages the sagas, but this rarelly occurs, because generally modern distributed systems implement sagas as states machines.  
 Each message moves the machine from one state to the next, messages related to the same business process all share a common correlation ID.
+
+E.g. Saga. 
+**Sales Service**
+The paying for a ticket transaction could be broken into different steps bellow.  
+- Reserve funds - Easily reversible  
+- Lock inventory - Easily reversible  
+- Capture funds - Means transfer the value in to a merchant account.  
+- Allocate inventory - This step and the capture funds terminates the saga.  
+The whole process starts with the *PurchaseTicket* command.
+<details><summary>
+ 
+##### Saga State Machine and Compesating Transactions </summary>
+**Saga State Machine**
+![](https://github.com/Ngofilho/Architecture/blob/images/images/SagaStateMachine.png)
+
+**Compesating Transactions**
+![](https://github.com/Ngofilho/Architecture/blob/images/images/CompensatingTransactionsSagas.png)
 </details>
+
+</details>
+
 </details> 
 
 
