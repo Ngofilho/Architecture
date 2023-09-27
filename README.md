@@ -214,10 +214,10 @@ The whole process starts with the *PurchaseTicket* command.
  
 ##### Saga State Machine and Compesating Transactions </summary>
 **Saga State Machine**
-![](https://github.com/Ngofilho/Architecture/blob/images/images/SagaStateMachine.png)
+![](https://github.com/Ngofilho/Architecture/blob/images/images/SagaStateMachine.jpg)
 
 **Compesating Transactions**
-![](https://github.com/Ngofilho/Architecture/blob/images/images/CompensatingTransactionsSagas.png)
+![](https://github.com/Ngofilho/Architecture/blob/images/images/CompensatingTransactionsSagas.jpg)
 </details>
 
 </details>
