@@ -187,8 +187,22 @@ First, log every entry point into the system. These are the API calls, controlle
 <details><summary>
   
 #### Managing Complex Scenarios</summary>
+**Invariants**  are statements about application state that most of the time are true, like money is never created nor destroyed, it only moves from account to another. The inventory of a product can never be negative. Specific seats at a concert event, cannot be sold twice. There are invariantes that link 2 or more properties together, like if a customer is paid for a product, then they own that product, if they no, then they don't.    
+When an invariant is broken, it's said that the invariant lacks consistency. For example, when we transfer money from account to another, until the end of the transaction of the transfer to be considered as completed, the initial state of the invariant has broke the invariant that states that money is never created nor destroyed. When the later step of the process of transfer money is completed, it'll restore the earlier step that has broke the invariant.     
+
+Database Transactions breaks invariants on its start and restore it on its end, these steps, break and restore, are guaranted by **ACID**  
+- A: Atomicity- Guaranteed that no one outside the transaction will see the invariant broken after the transaction is completed.  
+- C: Consistency - Guaranteed that the invariantes has been restored after the transaction has been executed.    
+- I: Isolation - Guarantees that others outside of the transaction can't see the invariants are broken in real time.  
+- D: Durability - Guaranteed that changes persist after the transaction has been executed.  
+
+- **Tip(s)**
+- The first step to understand the complexity of the system is to understand the system's invariants.  
+
+**Saga** Proposed by Hector Garcia-Mollina and Kenneth Salem published the pattern in a paper at Princeton University Department of Computer Science on 1987. It breaks down a long live transaction into several small transactions. Each transaction is limited in time and scope and takes advantage of the ACID guaranteed that DB offers. It's not guaranteed that external observers to see that the invariants have been violted and state of the system is not consistent. Instead, it guaranteed that the state will become consistent once the saga completes. The paper propose that DBMS manages the sagas, but this rarelly occurs, because generally modern distributed systems implement sagas as states machines.  
+Each message moves the machine from one state to the next, messages related to the same business process all share a common correlation ID.
 </details>
-</details>
+</details> 
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
