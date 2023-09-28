@@ -547,7 +547,7 @@ public async Task<Coupon> GetCoupon(Guid couponId)
 
 <details><summary>
   
-##### Inter-microservice communication</summary>
+#### Inter-microservice communication</summary>
 **Microservices inter-communication**  
 ![](https://github.com/Ngofilho/Architecture/blob/images/images/MicroServicesLivingTogether.jpg)
 
