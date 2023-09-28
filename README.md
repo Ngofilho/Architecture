@@ -533,8 +533,27 @@ Organization Readiness:
 </details>
 
 <details><summary>
-
+  
 #### Creating Synchronous Communication between ASP.NET Core Microservices</summary>
+This code, although uses async and await, it will wait for the response from the callee. This is an example of a synchronous communication.  
+```c#
+public async Task<Coupon> GetCoupon(Guid couponId)
+{
+  var response = await
+          client.GetAsync($"/api/discount/{couponId}");
+  return await response.ReadContentAs<Coupon>();
+}
+```
+
+<details><summary>
+  
+##### Inter-microservice communication</summary>
+**Microservices inter-communication**  
+![](https://github.com/Ngofilho/Architecture/blob/images/images/MicroServicesLivingTogether.jpg)
+
+**Synchronous communication**  
+![](https://github.com/Ngofilho/Architecture/blob/images/images/SynchronousCommunication.jpg)
+</details>
 
 </details>
 
