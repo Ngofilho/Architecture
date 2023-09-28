@@ -555,6 +555,13 @@ public async Task<Coupon> GetCoupon(Guid couponId)
 ![](https://github.com/Ngofilho/Architecture/blob/images/images/SynchronousCommunication.jpg)
 </details>
 
+<details><summary>
+  
+#### Working with gRPC</summary>
+
+
+</details>
+
 </details>
 
 <details><summary>
