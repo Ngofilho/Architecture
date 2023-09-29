@@ -558,8 +558,40 @@ public async Task<Coupon> GetCoupon(Guid couponId)
 <details><summary>
   
 #### Working with gRPC</summary>
+**gRPC** is contract base. 
+Proto file, which contains the protobuff or the protocol buffer, it's the contract that will be available from the service, base on this file the class will be generated. There are two main things, messages (are the definition of the data that will go over the gRPC service) and services (Are the definitions of the service capabilities so they contain the functionalities exposed over the service).   
+```javascript
+service Discounts{
+  rpc GetCoupon (GetCouponByIdRequest) returns (GetCouponByIdResponse) {}
+}
 
+message Coupon {
+  string CouponId = 1,
+  string Code = 2;
+  int32 Amount = 3;
+  bool AlreadyUsed = 4;
+}
+```
+First we define the message, each message contains the *name* and *type*, and the field contains an unique number which is used to identify each field. Next the proto file contains one or more services.  
 
+Based on the proto file above, the class is created like this bellow.  
+```c#
+public class DiscountsService: Discounts.DiscountsBase
+{
+  public override async Task<GetCouponByIdResponse> GetCoupon(GetCouponByIdRequest request, ServerCallContext context)
+  {
+    ...
+  }
+}
+```
+
+And this is the calling gRPC service
+```c#
+private readonly Discounts.DiscountsClient discountService;
+
+GetCouponByIdResponse getCouponByIdResponse =
+  await discountsService.GetCouponAsync(getCouponByIdRequest);
+```
 </details>
 
 </details>
