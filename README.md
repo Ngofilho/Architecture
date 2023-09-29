@@ -569,15 +569,30 @@ public async Task<Coupon> GetCoupon(Guid couponId)
 **gRPC** is contract base. 
 Proto file, which contains the protobuff or the protocol buffer, it's the contract that will be available from the service, base on this file the class will be generated. There are two main things, messages (are the definition of the data that will go over the gRPC service) and services (Are the definitions of the service capabilities so they contain the functionalities exposed over the service).   
 ```javascript
-service Discounts{
-  rpc GetCoupon (GetCouponByIdRequest) returns (GetCouponByIdResponse) {}
+syntax = "proto3";
+
+option csharp_namespace = "GloboTicket.Grpc";
+
+package API;
+
+service Discounts {
+	rpc GetCoupon (GetCouponByIdRequest) returns (GetCouponByIdResponse) {}
 }
 
+message GetCouponByIdRequest {
+	string CouponId = 1;
+}
+
+message GetCouponByIdResponse {
+	Coupon coupon = 1;
+}
+
+
 message Coupon {
-  string CouponId = 1,
-  string Code = 2;
-  int32 Amount = 3;
-  bool AlreadyUsed = 4;
+	string CouponId = 1;
+	string Code = 2;
+	int32 Amount = 3;
+	bool AlreadyUsed = 4;
 }
 ```
 First we define the message, each message contains the *name* and *type*, and the field contains an unique number which is used to identify each field. Next the proto file contains one or more services.  
