@@ -151,7 +151,15 @@ The impact of protocols on types of messages
   
 ##### Database Runbook Diagrams</summary>
 It's recommended keep the diagrams small.  
-![](https://github.com/Ngofilho/Architecture/blob/images/images/ERD.jpg) ![](https://github.com/Ngofilho/Architecture/blob/images/images/DbRelationDiagram.jpg)  ![](https://github.com/Ngofilho/Architecture/blob/images/images/ERDHierarchy.jpg)  
+![](https://github.com/Ngofilho/Architecture/blob/images/images/ERD.jpg) 
+
+***
+
+![](https://github.com/Ngofilho/Architecture/blob/images/images/DbRelationDiagram.jpg)  
+
+***
+
+![](https://github.com/Ngofilho/Architecture/blob/images/images/ERDHierarchy.jpg)  
 The ERD should contain the keys only, not the columns.  
 It's recomended that the father table be on top and the children tables beneath it, with the arrows pointing up. This makes the hierarchy clear.    
 </details>
