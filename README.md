@@ -708,6 +708,8 @@ Module 6 - Enabling long-lived access and token stores, how to use cached tokens
 
 [Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
 
+Done between: 10/2023
+
 </details>
 
 </details>
