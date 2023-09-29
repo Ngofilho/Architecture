@@ -730,6 +730,8 @@ It's possible to combine different strategies to use specific versions
 
 [Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
 
+Done between: 10/2023
+
 </details>
 
 </details>
@@ -745,6 +747,8 @@ It's possible to combine different strategies to use specific versions
 ###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
 
 [Course part of ASP.NET Microservices Path](https://app.pluralsight.com/paths/skills/net-microservices)
+
+Done between: 10/2023
 
 </details>
 
