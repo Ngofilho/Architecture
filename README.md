@@ -622,7 +622,9 @@ GetCouponByIdResponse getCouponByIdResponse =
 <details><summary>
 
 #### Setting up Asynchronous Communication between ASP.NET Core Microservices</summary>
-
+**Communications Options**: 
+- Point-to-Point - We have a single receive that's going to the pipe, and that message will be processed only once  
+- Publish-Subscribe - One-to-many, where all the receivers can process the message.  
 </details>
 
 <details><summary>
