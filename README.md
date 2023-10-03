@@ -2,7 +2,7 @@
 <details>  
 <summary>
   
-## [Distributed Systems](https://app.pluralsight.com/library/courses/distributed-systems-fundamentals)  </summary>
+## [Fundamentals of Distributed Systems](https://app.pluralsight.com/library/courses/distributed-systems-fundamentals)  </summary>
 
 
 <details>
