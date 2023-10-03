@@ -641,3 +641,25 @@ GetCouponByIdResponse getCouponByIdResponse =
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details><summary>
+	
+## []()</summary></details>
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+<details><summary>
+	
+## [Securing Microservices in ASP.NET Core](https://app.pluralsight.com/library/courses/securing-microservices-asp-dot-net-core)</summary>
+
+<details><summary> 
+
+### Securing Your First Microservice</summary>
+**The easiest way to get started using identity service template is using the command `dotnet new --install identityserver4.templates`**. This command will install identity server 4 templates on to machine.  
+**SubjectId is UserId**
+
+On Identity Server web page there is a document called **openid-configuration**, this document is used by clients and APIs services to learn how to interact with the identity server, for example to learn what key to use for validating token signatures.   
+</details>
+
+</details>
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
