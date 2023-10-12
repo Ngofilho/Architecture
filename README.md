@@ -643,7 +643,7 @@ GetCouponByIdResponse getCouponByIdResponse =
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary>
 	
-## [Implementing a Data Management Strategy for an ASP.Net Core Microservices Architecture](https://app.pluralsight.com/library/courses/implementing-data-management-strategy-asp-dot-net-core-microservices-architecture)</summary>
+## [Data Management Strategy](https://app.pluralsight.com/library/courses/implementing-data-management-strategy-asp-dot-net-core-microservices-architecture)</summary>
 
 </details>
 
