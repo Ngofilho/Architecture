@@ -746,6 +746,67 @@ Always log erros and exceptions and sometimes log conditional application flow.
   }
 }
 ```
+
+**Sharing Common Logging Code**
+1. Create a `common` project.  
+2. Create a Extension class with an extension method to handle the log.  
+3. Create another class that inherits the `DelegatingHandler` class.  
+4. Overrides the `SendAsync` method.
+```c#
+namespace GloboTicket.Common
+{
+//step 1 and step 2
+public static class LoggerExtensions
+{
+    public static void LogHttpResponse(this ILogger logger, HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            logger.LogDebug("Received a success response from {Url}", response.RequestMessage.RequestUri);
+        }
+        else
+        {
+            logger.LogWarning("Received a non-success status code {StatusCode} from {Url}", (int)response.StatusCode, response.RequestMessage.RequestUri);
+        }
+    }
+}
+
+//step 3 and step 4
+    public class LoggingDelegatingHandler : DelegatingHandler
+    {
+        private readonly ILogger<LoggingDelegatingHandler> logger;
+
+        public LoggingDelegatingHandler(ILogger<LoggingDelegatingHandler> logger)
+        {
+            this.logger = logger;
+        }
+
+        
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancelationToken)
+        {
+            try
+            {
+                var response = await base.SendAsync(request, cancelationToken);
+                logger.LogHttpResponse(response);
+                return response;
+            }
+            catch (HttpRequestException ex) when (ex.InnerException is SocketException se && se.SocketErrorCode == SocketError.ConnectionRefused)
+            {
+                var hostWithPort = request.RequestUri.IsDefaultPort ?
+                       request.RequestUri.DnsSafeHost
+                       : $"{request.RequestUri.DnsSafeHost}:{request.RequestUri.Port}";
+                logger.LogCritical(ex, "Unable to connect to {Host}. Please check the " +
+                    "configuration to ensure the correct URL for the service " +
+                    "has been configured.", hostWithPort);                
+            }
+            return new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway)
+            {
+                RequestMessage = request
+            };
+        }
+    }
+}
+```
 </details>
 
 <details><summary>
