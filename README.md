@@ -665,3 +665,39 @@ On Identity Server web page there is a document called **openid-configuration**,
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details><summary> 
+
+## [Versioning and Evolving Microservices in ASP.Net Core 3](https://app.pluralsight.com/library/courses/versioning-evolving-microservices-asp-dot-net-core)</summary></details>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details><summary>
+	
+## [Deploying ASP.Net Core 3 Microservices Using Kubernetes and AKS](https://app.pluralsight.com/library/courses/deploying-asp-dot-net-core-microservices-kubernetes-aks)</summary></details>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details><summary>
+
+## [Implementing Cross-Cutting Concerns for ASP.Net Core 3 Microservices](https://app.pluralsight.com/library/courses/implementing-cross-cutting-concerns-asp-dot-net-core-microservices)</summary>
+
+<details><summary>
+
+### 02 - Implementing Logging</summary>
+Used to:
+- Understand behaviour of a service  
+- Identify errors for investigation  
+- Diagnose bugs and failures  
+It's important to log information you may later depende on.
+The first decision to taken about the log is **what** to log and after this decision is **when**  
+</details>
+
+<details><summary>
+
+### 03 - Implementing Centralized Logging for Microservices</summary></details>
+
+<details><summary>
+
+### 04 - Implementing Health Checks in Microservices</summary></details>
+</details>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details><summary> 
+
+## [Strategies for Microservice Scalability and Availability in ASP.Net Core](https://app.pluralsight.com/library/courses/strategies-microservice-scalability-availability-asp-dot-net-core)</summary></details>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
