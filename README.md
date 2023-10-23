@@ -686,6 +686,44 @@ Used to:
 - Diagnose bugs and failures  
 It's important to log information you may later depende on.
 The first decision to taken about the log is **what** to log and after this decision is **when**  
+**Logging Requirements**  
+  What Information will be needed to diagnose a bug or runtime error ?  
+  Balance between logging too much or too little:  
+  - Log enough to be useful   
+  - Avoid introducing redundant noise  
+  
+  Messages should contain enough detail and data to support proper analysis  
+  - For example, record request and/or resource IDs.  
+
+**Log Levels**
+Tag messages with metadata about the importance of the event    
+Each message includes a log level  
+Log messages can be filtered based on their log level  
+**Filtering by Log Level**  
+Always log erros and exceptions and sometimes log conditional application flow.  
+**Microsoft Log Levels**  
+|Level|Usage|Use in Production ?|
+|-|-|-|
+|Trace|Log detailed messages during developement|never|
+|Debug|Log verbose messages (occasionally in production|Yes, for a short period o time|
+|Information|Log general flow of requests/operations|Sometimes, just to ensure behaviours|
+|Warning|Log non-critical but abnormal events|Yes|
+|Error|Log exceptions which cannot/are not gracefully handled|Yes|
+|Critical|Log major failures which require immediate attention|Yes|
+
+**Log filtering settings**
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",  //Sets the default logging level accross the entire application. Means that Information and higher will be recorded by default
+      "Microsoft": "Warning",    			//Overrides for other categories, for example this will log messages categories which start with Microsoft
+      "Microsoft.Hosting.Lifetime": "Information",	//This override will log messages that starts with Microsoft.Hosting.Lifetime, starting as Information, this filter is more specific and appears aftewards the previous one, so it taks precedence.
+      "System.Net.Http.HttpClient": "Warning"		//Will log messages with this category starting only with the log level of Warning.
+    }
+  }
+}
+```
 </details>
 
 <details><summary>
@@ -696,6 +734,7 @@ The first decision to taken about the log is **what** to log and after this deci
 
 ### 04 - Implementing Health Checks in Microservices</summary></details>
 </details>
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary> 
 
