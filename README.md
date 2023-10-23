@@ -662,12 +662,33 @@ GetCouponByIdResponse getCouponByIdResponse =
 On Identity Server web page there is a document called **openid-configuration**, this document is used by clients and APIs services to learn how to interact with the identity server, for example to learn what key to use for validating token signatures.   
 </details>
 
+Diminuir escopos das audiências
+Token exchange
+
+Audiência > Scope > Sub
+
+Module 3 - Token Exchange Patterns
+
+Module 4 - Implmenting Security with API Gateway and BFF Patterns (Example using Ocelot) and routes configurations
+
+Module 5 - Improving the API Gateway Pattern - Using scoped-based microservices access authorization
+
+Module 6 - Enabling long-lived access and token stores, how to use cached tokens
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary> 
 
-## [Versioning and Evolving Microservices in ASP.Net Core 3](https://app.pluralsight.com/library/courses/versioning-evolving-microservices-asp-dot-net-core)</summary></details>
+## [Versioning and Evolving Microservices in ASP.Net Core 3](https://app.pluralsight.com/library/courses/versioning-evolving-microservices-asp-dot-net-core)</summary>
+
+Always increment or implement another feature creating new route, optional query string parameters and so instead of breaking change
+Nuget package Microsoft.AspNet.Core.Versioning (supports versioning in >path, query string or header)
+
+Version Interliving
+
+It's possible to combine different strategies to use especific versions
+</details>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary>
 	
