@@ -811,7 +811,14 @@ public static class LoggerExtensions
 
 <details><summary>
 
-### 03 - Implementing Centralized Logging for Microservices</summary></details>
+### 03 - Implementing Centralized Logging for Microservices</summary>
+
+In this module, the teacher shows the following processes: 
+- How to configure applications to use Serilog.  
+- How to configure Kibana indexes.  
+- How to enrich log messages with environment, application name.  
+- How to format exception data.  
+</details>
 
 <details><summary>
 
