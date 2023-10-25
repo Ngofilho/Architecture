@@ -822,7 +822,11 @@ In this module, the teacher shows the following processes:
 
 <details><summary>
 
-### 04 - Implementing Health Checks in Microservices</summary></details>
+### 04 - Implementing Health Checks in Microservices</summary>
+
+[Source code containing the implementation with Azure Service Bus, it's missing the implementation of Healt check for RabbitMq](https://github.com/Ngofilho/ArchitectureCrossCutting)  
+
+</details>
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
