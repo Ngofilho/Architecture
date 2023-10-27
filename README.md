@@ -699,6 +699,8 @@ It's possible to combine different strategies to use especific versions
 
 ## [Implementing Cross-Cutting Concerns for ASP.Net Core 3 Microservices](https://app.pluralsight.com/library/courses/implementing-cross-cutting-concerns-asp-dot-net-core-microservices)</summary>
 
+[Repository with the course's code](https://github.com/Ngofilho/ArchitectureCrossCutting)    
+
 <details><summary>
 
 ### 02 - Implementing Logging</summary>
@@ -845,5 +847,8 @@ Re-watch this course and make the examples
 - **L**oad**B**alancer Rules (LB-Rules)
 - Health Probe
 
+[Repository with the course's code](https://github.com/Ngofilho/ArchitectureAvailabilityScalability)  
+
 </details>
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
