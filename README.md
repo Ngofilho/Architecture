@@ -818,6 +818,8 @@ In this module, the teacher shows the following processes:
 - How to configure Kibana indexes.  
 - How to enrich log messages with environment, application name.  
 - How to format exception data.  
+
+Teaches how to config `ELK`
 </details>
 
 <details><summary>
@@ -826,11 +828,22 @@ In this module, the teacher shows the following processes:
 
 [Source code containing the implementation with Azure Service Bus, it's missing the implementation of Healt check for RabbitMq](https://github.com/Ngofilho/ArchitectureCrossCutting)  
 
+Teachs how to implement Health Check  
+
 </details>
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary> 
 
-## [Strategies for Microservice Scalability and Availability in ASP.Net Core](https://app.pluralsight.com/library/courses/strategies-microservice-scalability-availability-asp-dot-net-core)</summary></details>
+## [Strategies for Microservice Scalability and Availability in ASP.Net Core](https://app.pluralsight.com/library/courses/strategies-microservice-scalability-availability-asp-dot-net-core)</summary>
+
+Re-watch this course and make the examples  
+**Load Balancer**
+- **F**ront**E**nd IP (FE-IP)  
+- **B**ack**E**nd Pool (BE-Pool)  
+- **L**oad**B**alancer Rules (LB-Rules)
+- Health Probe
+
+</details>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
