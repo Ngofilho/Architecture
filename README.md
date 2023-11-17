@@ -852,6 +852,17 @@ Re-watch this course and make the examples
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+<details><summary>
+
+## [Implementing Advanced RESTful Concerns with ASP.NET Core 3](https://app.pluralsight.com/library/courses/asp-dot-net-core-3-advanced-restful-concerns)</summary>
+
+<details><summary></summary></details>
+
+</details>
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 <details><summary>
 
 ## Annotations/Others/Studies</summary>
