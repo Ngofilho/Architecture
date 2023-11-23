@@ -864,6 +864,15 @@ Re-watch this course and make the examples
 It's considered best practice to always implement paging on each resource collection, or at least on those resources that can also be created. This is to avoid unintended negative effects on performance when resource collections grow. Not having paging on a list of 10 authors might be okay, but if your API allows creating authors, this list can grow, and we don't want to end up with accidentally returning thousands of authors in one response. Pagination parameters are typically passed through via the query string. As far as paging is concerned, the consumers should be able to choose the page number and page size, but that page size can cause problems as well. A consumer can pass through 100,000 as the page size. So the page size itself should be checked against a specific value to see if it isn't too large. If no paging parameters are provided, we should only return the first page by default. So, we are manipulating a collection resource. For things like paging to work correctly and have a positive impact on performance, we need to ensure that this goes all the way through to our data store. For example, **if we have thousands of orders in our database and we first return all those authors from a repository to the controller and then page them, we still fetch way too much data from the database**.
 </details>
 
+
+<details><summary>
+
+### Sorting Resource Collections </summary>
+
+Sorting requires to handle the parameters sent by the request to specify how to sort the response. A good practice is to have a default value of sort. Sorting also requires that if there is a fail with the sorting parameters like an unespecified sort parameter, the response must be 400 class (Client request error) not 500 class (Server Error).
+
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
