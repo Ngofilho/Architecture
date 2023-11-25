@@ -869,7 +869,17 @@ It's considered best practice to always implement paging on each resource collec
 
 ### Sorting Resource Collections </summary>
 
-Sorting requires to handle the parameters sent by the request to specify how to sort the response. A good practice is to have a default value of sort. Sorting also requires that if there is a fail with the sorting parameters like an unespecified sort parameter, the response must be 400 class (Client request error) not 500 class (Server Error).
+Sorting requires to handle the parameters sent by the request to specify how to sort the response. A good practice is to have a default value of sort. Sorting also requires that if there is a fail with the sorting parameters like an unespecified sort parameter, the response must be 400 class (Client request error) not 500 class (Server Error).  
+Another good practice is to return the sort parameter in the response pagination header.  
+
+</details>
+
+
+<details><summary>
+
+### Shaping Data</summary>
+
+
 
 </details>
 
