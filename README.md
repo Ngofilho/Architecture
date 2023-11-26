@@ -78,7 +78,7 @@ Solves Cache Invalidation
 #### Connectiong Services</summary>
 Eventual consistency. When we have data in different places, when we ask the same for both, we want the anwser be consistent with between them. The *Eventual* comes from the falacy of the latency is zero.  
 **Commands** are messages that have side effects and return no data. Usually named with imperative verb.  
-**Queries** are messages that have no side effects and return data. Usually have a name of especification.     
+**Queries** are messages that have no side effects and return data. Usually have a name of specification.     
 Commands and queries are sent to the system of record.  
 **Events**, otherwise, are published from the system the record. They are published after a event had occurred and they expose data from the system of record. Tend to be named using past-tense verbs.    
 
@@ -687,7 +687,7 @@ Nuget package Microsoft.AspNet.Core.Versioning (supports versioning in >path, qu
 
 Version Interliving
 
-It's possible to combine different strategies to use especific versions
+It's possible to combine different strategies to use specific versions
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -869,7 +869,7 @@ It's considered best practice to always implement paging on each resource collec
 
 ### Sorting Resource Collections </summary>
 
-Sorting requires to handle the parameters sent by the request to specify how to sort the response. A good practice is to have a default value of sort. Sorting also requires that if there is a fail with the sorting parameters like an unespecified sort parameter, the response must be 400 class (Client request error) not 500 class (Server Error).  
+Sorting requires to handle the parameters sent by the request to specify how to sort the response. A good practice is to have a default value of sort. Sorting also requires that if there is a fail with the sorting parameters like an unspecified sort parameter, the response must be 400 class (Client request error) not 500 class (Server Error).  
 Another good practice is to return the sort parameter in the response pagination header.  
 
 </details>
