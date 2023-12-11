@@ -483,6 +483,15 @@ Do You really need to secure your API ?
 - OAuth - Use trusted third-party to identify. User authenticates with third party, use token to confirm identity. Safer for you and user.
 
 </details>
+
+<details><summary>
+
+###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
+
+Done between: 09/2023
+
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
