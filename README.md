@@ -742,7 +742,7 @@ Always log erros and exceptions and sometimes log conditional application flow.
     "LogLevel": {
       "Default": "Information",  //Sets the default logging level accross the entire application. Means that Information and higher will be recorded by default
       "Microsoft": "Warning",    			//Overrides for other categories, for example this will log messages categories which start with Microsoft
-      "Microsoft.Hosting.Lifetime": "Information",	//This override will log messages that starts with Microsoft.Hosting.Lifetime, starting as Information, this filter is more specific and appears aftewards the previous one, so it taks precedence.
+      "Microsoft.Hosting.Lifetime": "Information",	//This override will log messages that starts with Microsoft.Hosting.Lifetime, starting as Information, this filter is more specific and appears aftewards the previous one, so it takes precedence.
       "System.Net.Http.HttpClient": "Warning"		//Will log messages with this category starting only with the log level of Warning.
     }
   }
