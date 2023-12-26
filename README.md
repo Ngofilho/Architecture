@@ -883,6 +883,33 @@ Another good practice is to return the sort parameter in the response pagination
 
 </details>
 
+<details><summary>
+
+### </summary>
+
+</details>
+
+<details><summary>
+
+### </summary>
+
+</details>
+
+<details><summary>
+
+### </summary>
+
+</details>
+
+
+<details><summary>
+
+###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
+
+[Course part of the API Development in ASP.NET Core](https://app.pluralsight.com/paths/skills/api-development-in-aspnet-core)
+
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
