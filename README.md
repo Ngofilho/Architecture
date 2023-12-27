@@ -488,7 +488,7 @@ Do You really need to secure your API ?
 
 ###### Credit(s)/Other(s)/Reference(s)/Source(s) </summary>
 
-*Done between:* 09/2023  
+Done between: 09/2023  
 
 </details>
 
