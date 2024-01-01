@@ -852,3 +852,10 @@ Re-watch this course and make the examples
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details><summary>
+
+## Annotations/Others</summary>
+
+
+[Documentação de Como Montar Ambientes e Suas Configurações CNJ 253 - Podcast Hipsters.Net #342](https://docs.pje.jus.br/)  
+</details>
