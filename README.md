@@ -854,8 +854,11 @@ Re-watch this course and make the examples
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <details><summary>
 
-## Annotations/Others</summary>
+## Annotations/Others/Studies</summary>
 
 
 [Documentação de Como Montar Ambientes e Suas Configurações CNJ 253 - Podcast Hipsters.Net #342](https://docs.pje.jus.br/)  
+[Linkedin Article "Want to Become a Software Engineer"](https://www.linkedin.com/feed/update/urn:li:activity:7146810352159113216/)  
+[Evolutionary Architecture By Example, repo from Linkedin Article "Want to Become a Software Engineer" ](https://github.com/evolutionary-architecture/evolutionary-architecture-by-example?tab=readme-ov-file#problem)  
+[Modular Monolith with DDD, another repo from Linkedin Article "Want to Become a Software Engineeer"](https://github.com/kgrzybek/modular-monolith-with-ddd)  
 </details>
