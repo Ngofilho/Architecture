@@ -908,9 +908,6 @@ Another good practice is to return the sort parameter in the response pagination
 
 [Course part of the API Development in ASP.NET Core](https://app.pluralsight.com/paths/skills/api-development-in-aspnet-core)
 
-
-###### Credit(s)/Other(s)/Reference(s)/Source(s)</summary>
-
 </details>
 
 </details>
