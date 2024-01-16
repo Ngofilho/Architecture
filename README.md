@@ -883,6 +883,13 @@ Another good practice is to return the sort parameter in the response pagination
 
 </details>
 
+<details><summary>
+	
+###### Credit(s)/Other(s)/Reference(s)/Source(s)</summary>
+
+[Code font](https://github.com/Ngofilho/AdvancedRESTfulTopics)
+</details>
+
 </details>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
