@@ -1122,6 +1122,17 @@ Done between: 01/15/2024 - 01/18/2024
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+<details>
+	
+<summary>
+
+###### Tool(s)</summary>
+
+[Excalidraw](https://excalidraw.com/)  
+[Diagrams](https://app.diagrams.net/)
+
+</details>
+
 <details><summary>
 
 ## Annotations/Others/References/Studies</summary>
@@ -1135,4 +1146,8 @@ Done between: 01/15/2024 - 01/18/2024
 [25 Best Software Architecture Blogs and websites](https://developer.feedspot.com/software_architecture_blogs/)  
 [High Scalability Web Site](http://highscalability.com/)  
 [A Pattern Language for Microservices](https://microservices.io/patterns/index.html)  
+
+[Post Exemplo de Ganhador de Hackton de Arquitetura de Software](https://www.linkedin.com/posts/dannevesdantas_vencemos-o-hackathon-de-software-architecture-ugcPost-7240451617194426368-6v1e?utm_source=share&utm_medium=member_desktop)   
+[Git repository for this example](https://github.com/Grupo-G03-4SOAT-FIAP/Health-Med-api)   
+
 </details>
