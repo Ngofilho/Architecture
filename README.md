@@ -1135,7 +1135,7 @@ Done between: 01/15/2024 - 01/18/2024
 
 <details><summary>
 
-## Annotations/Others/References/Studies</summary>
+## Annotation(s)/Credit(s)/Example(s)/Other(s)/Reference(s)/Sample(s)/Studie(s)</summary>
 
 
 [Documentação de Como Montar Ambientes e Suas Configurações CNJ 253 - Podcast Hipsters.Net #342](https://docs.pje.jus.br/)  
@@ -1166,5 +1166,33 @@ Done between: 01/15/2024 - 01/18/2024
 
 </details>
 
+</details>
+
+
+<hr>
+
+# System Design  
+
+<details><summary>
+
+ ###### Annotation(s)/Credit(s)/Example(s)/Other(s)/Reference(s)/Sample/Studie(s)(s)    
+</summary>
+
+[15 articles to help you get better at System Design](https://www.linkedin.com/posts/saurabh-dashora_15-articles-to-help-you-get-better-at-system-activity-7242781540236099584-5vGS?utm_source=share&utm_medium=member_desktop)  
+[3 Interview Questions on Event-Driven Patterns](https://newsletter.systemdesigncodex.com/p/3-interview-questions-on-event-driven)   
+[Message Queues and Message Brokers](https://newsletter.systemdesigncodex.com/p/message-queues-and-message-brokers)   
+[Database Sharding](https://newsletter.systemdesigncodex.com/p/database-sharding)   
+[Polling vs Webhooks](https://newsletter.systemdesigncodex.com/p/polling-vs-webhooks)   
+[Normalization vs Denormalization](https://newsletter.systemdesigncodex.com/p/normalization-vs-denormalization)   
+[Airbnb’s Migration from Monolith to Microservices](https://newsletter.systemdesigncodex.com/p/airbnb-migration-from-monolith-to)   
+[7 Techniques for Database Performance and Scaling](https://newsletter.systemdesigncodex.com/p/7-techniques-for-database-performance)   
+[Must-Know Service Communication Patterns](https://newsletter.systemdesigncodex.com/p/service-communication-patterns)   
+[8 Strategies for Reducing Latency](https://newsletter.systemdesigncodex.com/p/8-strategies-for-reducing-latency)   
+[Microservices Patterns](https://newsletter.systemdesigncodex.com/p/microservices-patterns)   
+[Change Data Capture & Microservices](https://newsletter.systemdesigncodex.com/p/change-data-capture-and-microservices)   
+[3 Types of Event Patterns in EDA](https://newsletter.systemdesigncodex.com/p/3-types-of-event-patterns-in-eda)   
+[Load Balancers vs API Gateways vs BFFs](https://newsletter.systemdesigncodex.com/p/load-balancers-vs-api-gateways-vs)   
+[An Intro to LSM Trees](https://newsletter.systemdesigncodex.com/p/an-intro-to-lsm-trees)   
+[SDC#1 - CAP Theorem with Tom the Prankster](https://newsletter.systemdesigncodex.com/p/cap-theorem)    
 
 </details>
