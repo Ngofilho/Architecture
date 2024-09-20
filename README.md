@@ -1155,14 +1155,14 @@ Done between: 01/15/2024 - 01/18/2024
 ###### 7 popular GitHub repos on software architecture 
 </summary>
 
-[Post Link](https://www.linkedin.com/posts/kristijankralj_confession-i-cant-stop-collecting-github-activity-7242776149120978944-t9Cb?utm_source=share&utm_medium=member_desktop)
-[Evolutionary Architecture By Example, repo from Linkedin Article "Want to Become a Software Engineer" ](https://github.com/evolutionary-architecture/evolutionary-architecture-by-example?tab=readme-ov-file#problem)   
+[Post Link](https://www.linkedin.com/posts/kristijankralj_confession-i-cant-stop-collecting-github-activity-7242776149120978944-t9Cb?utm_source=share&utm_medium=member_desktop)   
+[Evolutionary Architecture By Example, repo from Linkedin Article "Want to Become a Software Engineer" ](https://github.com/evolutionary-architecture/evolutionary-architecture-by-example?tab=readme-ov-file#problem)    
 [Modular Monolith with DDD, another repo from Linkedin Article "Want to Become a Software Engineeer"](https://github.com/kgrzybek/modular-monolith-with-ddd)     
 [.NET 8 starter kit with multitenancy support](https://github.com/fullstackhero/dotnet-starter-kit/)   
-[eCommerce microservice .NET application](https://github.com/dotnet/eShop)     
-[Vertical slice architecture example](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)    
-[Clean architecture template for .NET apps](https://github.com/jasontaylordev/CleanArchitecture)   
-[Hexagonal application example](https://github.com/ivanpaulovich/clean-architecture-manga)    
+[eCommerce microservice .NET application](https://github.com/dotnet/eShop)      
+[Vertical slice architecture example](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)     
+[Clean architecture template for .NET apps](https://github.com/jasontaylordev/CleanArchitecture)    
+[Hexagonal application example](https://github.com/ivanpaulovich/clean-architecture-manga)     
 
 </details>
 
