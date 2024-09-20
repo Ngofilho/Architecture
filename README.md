@@ -1126,7 +1126,7 @@ Done between: 01/15/2024 - 01/18/2024
 	
 <summary>
 
-###### Tool(s)</summary>
+## Tool(s)</summary>
 
 [Excalidraw](https://excalidraw.com/)  
 [Diagrams](https://app.diagrams.net/)
@@ -1140,8 +1140,8 @@ Done between: 01/15/2024 - 01/18/2024
 
 [Documentação de Como Montar Ambientes e Suas Configurações CNJ 253 - Podcast Hipsters.Net #342](https://docs.pje.jus.br/)  
 [Linkedin Article "Want to Become a Software Engineer"](https://www.linkedin.com/feed/update/urn:li:activity:7146810352159113216/)  
-[Evolutionary Architecture By Example, repo from Linkedin Article "Want to Become a Software Engineer" ](https://github.com/evolutionary-architecture/evolutionary-architecture-by-example?tab=readme-ov-file#problem)  
-[Modular Monolith with DDD, another repo from Linkedin Article "Want to Become a Software Engineeer"](https://github.com/kgrzybek/modular-monolith-with-ddd)  
+
+
 
 [25 Best Software Architecture Blogs and websites](https://developer.feedspot.com/software_architecture_blogs/)  
 [High Scalability Web Site](http://highscalability.com/)  
@@ -1149,5 +1149,22 @@ Done between: 01/15/2024 - 01/18/2024
 
 [Post Exemplo de Ganhador de Hackton de Arquitetura de Software](https://www.linkedin.com/posts/dannevesdantas_vencemos-o-hackathon-de-software-architecture-ugcPost-7240451617194426368-6v1e?utm_source=share&utm_medium=member_desktop)   
 [Git repository for this example](https://github.com/Grupo-G03-4SOAT-FIAP/Health-Med-api)   
+
+<details><summary>
+
+###### 7 popular GitHub repos on software architecture 
+</summary>
+
+[Post Link](https://www.linkedin.com/posts/kristijankralj_confession-i-cant-stop-collecting-github-activity-7242776149120978944-t9Cb?utm_source=share&utm_medium=member_desktop)
+[Evolutionary Architecture By Example, repo from Linkedin Article "Want to Become a Software Engineer" ](https://github.com/evolutionary-architecture/evolutionary-architecture-by-example?tab=readme-ov-file#problem)   
+[Modular Monolith with DDD, another repo from Linkedin Article "Want to Become a Software Engineeer"](https://github.com/kgrzybek/modular-monolith-with-ddd)     
+[.NET 8 starter kit with multitenancy support](https://github.com/fullstackhero/dotnet-starter-kit/)   
+[eCommerce microservice .NET application](https://github.com/dotnet/eShop)     
+[Vertical slice architecture example](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)    
+[Clean architecture template for .NET apps](https://github.com/jasontaylordev/CleanArchitecture)   
+[Hexagonal application example](https://github.com/ivanpaulovich/clean-architecture-manga)    
+
+</details>
+
 
 </details>
