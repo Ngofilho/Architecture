@@ -1126,7 +1126,7 @@ Done between: 01/15/2024 - 01/18/2024
 	
 <summary>
 
-## Tool(s)</summary>
+###### Tool(s)</summary>
 
 [Excalidraw](https://excalidraw.com/)  
 [Diagrams](https://app.diagrams.net/)
@@ -1135,12 +1135,13 @@ Done between: 01/15/2024 - 01/18/2024
 
 <details><summary>
 
-## Annotation(s)/Credit(s)/Example(s)/Other(s)/Reference(s)/Sample(s)/Studie(s)</summary>
+###### Annotation(s)/Credit(s)/Example(s)/Other(s)/Reference(s)/Sample(s)/Studie(s)</summary>
 
 
 [Documentação de Como Montar Ambientes e Suas Configurações CNJ 253 - Podcast Hipsters.Net #342](https://docs.pje.jus.br/)  
 [Linkedin Article "Want to Become a Software Engineer"](https://www.linkedin.com/feed/update/urn:li:activity:7146810352159113216/)  
 
+[High Scalibity](https://highscalability.com/)   
 
 
 [25 Best Software Architecture Blogs and websites](https://developer.feedspot.com/software_architecture_blogs/)  
