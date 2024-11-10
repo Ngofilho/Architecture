@@ -1131,6 +1131,25 @@ Done between: 01/15/2024 - 01/18/2024
 [Excalidraw](https://excalidraw.com/)  
 [Diagrams](https://app.diagrams.net/)
 
+
+<details><summary>
+
+###### Event Storming
+</summary>
+
+[Event Storming Ziobrand's Lair](https://ziobrando.blogspot.com/)  
+
+</details>
+
+
+<details><summary>
+
+###### Impact Mapping
+</summary>
+
+[Impact Mapping WebSite](https://www.impactmapping.org/)    
+</details>
+
 </details>
 
 <details><summary>
@@ -1176,7 +1195,7 @@ Done between: 01/15/2024 - 01/18/2024
 
 <details><summary>
 
- ###### Annotation(s)/Credit(s)/Example(s)/Other(s)/Reference(s)/Sample/Studie(s)(s)    
+ ###### Annotation(s)/Credit(s)/Demo(s)/Example(s)/Other(s)/Reference(s)/Sample(s)/Source(s)/Stud(y)(ies)/Thank(s)       
 </summary>
 
 [15 articles to help you get better at System Design](https://www.linkedin.com/posts/saurabh-dashora_15-articles-to-help-you-get-better-at-system-activity-7242781540236099584-5vGS?utm_source=share&utm_medium=member_desktop)  
