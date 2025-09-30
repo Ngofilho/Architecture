@@ -1,0 +1,48 @@
+@schema=https
+@hostname=localhost
+@port=7169
+
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities
+
+###
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities
+Accept:application/xml
+
+
+###
+POST {{schema}}://{{hostname}}:{{port}}/api/v2/cities/1/pointsofinterest
+Accept: application/json
+Content-Type: application/json
+{
+    "name": "New Point of Interest",
+    "description": "Description of the new point of interest"
+}
+
+###
+# @name createpoi
+POST {{schema}}://{{hostname}}:{{port}}/api/v2/cities/1/pointsofinterest
+Accept: application/json
+Content-Type: application/json
+{
+    "name": "New Point of Interest",
+    "description": "Description of the new point of interest"
+}
+
+###
+
+@poiid = {{createpoi.response.body.id}}
+
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities/1/pointsofinterest/{{poiid}}
+Accept: application/json
+
+###
+POST {{schema}}://{{hostname}}:{{port}}/api/authentication/authenticate
+content-type: application/json
+{
+    "username": "KevinDockx",
+    "password": "This is a relatively long sentence that acts as my password"
+}
+
+###
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZ2l2ZW5fbmFtZSI6IktldmluIiwiZmFtaWx5X25hbWUiOiJEb2NreCIsImNpdHkiOiJBbnR3ZXJwIiwibmJmIjoxNzU4ODU2ODAxLCJleHAiOjE3NTg4NjA0MDEsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjcxNjkiLCJhdWQiOiJjaXR5aW5mb2FwaSJ9.UA0yG8Bp0SfagObvd_rZjzINGF9NxyDefaItlhDNBKk

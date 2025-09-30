@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "95136276-f4cf-4f69-b922-84ed554087d7",
+		"name": "Authenticator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "02-Post",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"kevin\",\r\n    \"password\":\"verdao\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7172/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7172",
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "01-GET",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7172/auth?user=Kevin&password=verdao",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7172",
+					"path": [
+						"auth"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": "Kevin"
+						},
+						{
+							"key": "password",
+							"value": "verdao"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

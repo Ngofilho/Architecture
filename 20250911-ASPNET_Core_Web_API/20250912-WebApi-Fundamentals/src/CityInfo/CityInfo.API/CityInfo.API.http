@@ -1,0 +1,11 @@
+﻿@CityInfo.API_HostAddress = https://localhost:7169
+
+POST {{CityInfo.API_HostAddress}}/api/authentication/authenticate
+Authorization: Bearer {{$bearerToken}}
+Content-Type: application/json
+
+{
+  //AuthenticationRequestBody
+}
+
+###
