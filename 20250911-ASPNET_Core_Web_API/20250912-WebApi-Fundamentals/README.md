@@ -9,7 +9,10 @@
 - Microsoft.NET.Sdk.Web implicitly includes the Microsoft.AspNetCore.App framework reference, which includes all supported packages by ASP.NET Core and Entity Framework Core.
 - `dotnet run --launch-profile <name of the profile to run during the startup of the project>`
 
-- Sample of basic web api project using the minimal hosting model
+
+<details><summary>
+Sample of basic web api project using the minimal hosting model</summary>
+
 ```csharp
 var builder = WebApplication.CreateBuilder(args); // The webhost to build the web application
 
@@ -31,9 +34,11 @@ app.MapControllers();
 
 app.Run();
 ```
+</details>
 
+<details><summary>Example of terminal middleware that will short-circuit the request pipeline:
 
--  Example of terminal middleware that will short-circuit the request pipeline:
+</summary>
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args); // The webhost to build the web application
@@ -54,7 +59,9 @@ app.Run();
 
 ```
 
-- **Middleware** are software components that are assembled into an application pipeline to handle requests and responses.
+</details>
+
+- - **Middleware** are software components that are assembled into an application pipeline to handle requests and responses.
 
 
 - AddControllersWithView internally calls into AddControllers and then register some additional services for view support, which means support for HTML Razor views
@@ -68,11 +75,11 @@ app.Run();
 
 |Level 200|Level 400|Level 500|
 |-|-|-|
-|200 - Ok|400 - Bad Request | 500 - Internal Server Error|
-|201 - Created| 401 - Unauthorized||
-|204 - No Content| 403 - Forbidden||
+|200 - Ok `Ok()`|400 - Bad Request | 500 - Internal Server Error|
+|201 - Created `Created(uri, object)`| 401 - Unauthorized||
+|204 - No Content `NoContent()`| 403 - Forbidden||
 ||404 - Not Found||
-||409 - Conflict||
+||409 - Conflict `Conflict("...")` or `ConflictObjectResult()` ||
 
 
 [**The Problem Details for HTTP APIs RFC**](https://datatracker.ietf.org/doc/html/rfc7807)
@@ -82,7 +89,10 @@ app.Run();
 "status": 404,
 "traceId": ""
 ```
+
+<details><summary>
 To manipulate the default ProblemDetails response, one way is passing an action to manipulate the ProblemDetails object using the `AddProblemDetails` extension method on the Service collection.
+</summary>
 
 ```csharp
 builder.Services.AddProblemDetails(options =>
@@ -103,6 +113,7 @@ builder.Services.AddProblemDetails(options =>
 
 }
 ```
+</details>
 
 - [**Content Negotiation**](https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-8.0) The process of selecting the best representation for a given response when there are multiple representations available.   
 Output formatter Deals with output. Media type: Accepct header   
@@ -113,6 +124,8 @@ The rule is that the first Input formatter in the list inside the customization 
 Http Header
 ```
 Accept: application/xml
+Accept: application/json
+Accept: text/plain
 ```
 
 In example bellow is a sample of code to handle the unacceptted format and the response provided by it
@@ -137,6 +150,10 @@ app.Services.AddControllers().AddXmlDataContractSerializerFormatters();
 **PhysicalFileResult** and **VirtualFileResult**. These, too, allow you to pass through a file name and a content type.  
 All of these also derive from the same **FileResult** class.   
 It's more convenient to call into return **File**. This method is defined on the ControllerBase and it acts as a wrapper around the aforementioned **FileResult** subclasses  
+
+<details><summary>
+File Download Sample
+</summary>
 
 ```csharp
 // Adds the instruction bellow to accept the transfer the of any type of file based on the file's extension
@@ -193,6 +210,9 @@ namespace CityInfo.API.Controllers
 
 ```
 
+</details>
+
+
 -
 
 ---
@@ -237,13 +257,12 @@ Allowed operations:
 5. copy  
 6. test  
 
+---
 <details>
 
-<summary>
+<summary>  
 
-## Other(s)
-
-</summary>
+## Other(s)</summary>
 
 <details><summary>
 
