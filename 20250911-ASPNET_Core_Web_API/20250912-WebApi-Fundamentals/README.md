@@ -3,7 +3,6 @@
 
 ## Annotations
 
----
 ### Chapter 3 : Creating the API and Returning Resources
 
 - Microsoft.NET.Sdk.Web implicitly includes the Microsoft.AspNetCore.App framework reference, which includes all supported packages by ASP.NET Core and Entity Framework Core.
@@ -33,7 +32,11 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
 ```
+
+---
+
 </details>
 
 <details><summary>Example of terminal middleware that will short-circuit the request pipeline:
@@ -59,9 +62,11 @@ app.Run();
 
 ```
 
+---
+
 </details>
 
-- - **Middleware** are software components that are assembled into an application pipeline to handle requests and responses.
+- **Middleware** are software components that are assembled into an application pipeline to handle requests and responses.
 
 
 - AddControllersWithView internally calls into AddControllers and then register some additional services for view support, which means support for HTML Razor views
@@ -75,7 +80,7 @@ app.Run();
 
 |Level 200|Level 400|Level 500|
 |-|-|-|
-|200 - Ok `Ok()`|400 - Bad Request | 500 - Internal Server Error|
+|200 - Ok `Ok()`|400 - Bad Request | 500 - Internal Server Error `StatusCode(500,"A error message");` - ***Careful with the use***|
 |201 - Created `Created(uri, object)`| 401 - Unauthorized||
 |204 - No Content `NoContent()`| 403 - Forbidden||
 ||404 - Not Found||
@@ -90,7 +95,8 @@ app.Run();
 "traceId": ""
 ```
 
-<details><summary>
+<details><summary> #### **Middleware Customization**
+
 To manipulate the default ProblemDetails response, one way is passing an action to manipulate the ProblemDetails object using the `AddProblemDetails` extension method on the Service collection.
 </summary>
 
@@ -100,6 +106,9 @@ builder.Services.AddProblemDetails(options =>
 	options.CustomizeProblemDetails = ctx =>
 	{
 		ctx.ProblemDetails.Extensions.Add("additionalInfo", "Additional info example");
+        
+        ctx.ProblemDetails.Extensions.Add("server", 
+            Environment.MachineName);
 	}
 });
 
@@ -113,6 +122,9 @@ builder.Services.AddProblemDetails(options =>
 
 }
 ```
+
+---
+
 </details>
 
 - [**Content Negotiation**](https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-8.0) The process of selecting the best representation for a given response when there are multiple representations available.   
@@ -128,7 +140,9 @@ Accept: application/json
 Accept: text/plain
 ```
 
-In example bellow is a sample of code to handle the unacceptted format and the response provided by it
+- **Middleware Customization**    
+In example bellow is a sample of code to handle the unacceptted format and the response provided by it    
+
 ```csharp
 builder.Services.AddController (option => {
 	option.ReturnHttpNotAcceptable = true;
@@ -137,8 +151,8 @@ builder.Services.AddController (option => {
 //Status code 406 - Not Acceptable
 ```
 
-
-In the example bellow there is a sample of the customization of the service to response xml
+- **Middleware Customization**    
+In the example bellow there is a sample of the customization of the service to response xml    
 ```csharp
 app.Services.AddControllers().AddXmlDataContractSerializerFormatters();
 
@@ -210,10 +224,9 @@ namespace CityInfo.API.Controllers
 
 ```
 
+---
+
 </details>
-
-
--
 
 ---
 
@@ -232,7 +245,10 @@ Return of the type `CreatedAtRoute` will response with the route of the newly cr
 
 - **Model State (Validation Input)** It represents a collection of name‑value pairs that were submitted to our API, one for each property. It also contains a collection of error messages for each value submitted. Whenever a request comes in, the rules we just apply to our model are checked automatically. If one of them doesn't check out, the ModelStates.IsValid property will be false. This property will also be false if an invalid value for a property type is passed in. But this is not necessary. The API Controller   
 
-- **Patch - Partially Updating a Resource** [Json Patch (RFC6902)](https://tools.ietf.org/html/rfc6902)  is the standard of ***Patch Update***. The support from Microsoft comes from the library [Microsoft.AspNetCore.JsonPatch](https://www.nuget.org/packages/Microsoft.AspNetCore.JsonPatch/#readme-body-tab) - It requires the *NewtonSoft.Json*  
+- **Patch - Partially Updating a Resource** [Json Patch (RFC6902)](https://tools.ietf.org/html/rfc6902)  is the standard of ***Patch Update***. The support from Microsoft comes from the library [Microsoft.AspNetCore.JsonPatch](https://www.nuget.org/packages/Microsoft.AspNetCore.JsonPatch/#readme-body-tab) - It requires the *NewtonSoft.Json* and the *Microsoft.AspNetCore.Mvc.NewtonsoftJson*  
+
+- **Middleware Customization**   
+`builder.Services.AddControllers().AddNewtonsoftJson();`  
 
 Array of Operations with the set of instruction to patch the resource
 ```json
@@ -256,6 +272,285 @@ Allowed operations:
 4. move  
 5. copy  
 6. test  
+
+- **Middleware Customization**
+
+---
+
+### Chapter 5 : Working with Services and Dependency Injection
+
+- **Middleware Customization**    
+`builder.Logging` allows customization of the out of the box logging. `builder.Logging.ClearProviders()` clear all the previously configured providers.   
+`builder.Logging.AddConsole()` will add the console for the output of the logs.   
+
+- DeveloperException: ASP.NET Core apps enable the `DeveloperException` page, by default, when two things are true, one, you must be running in the Development environment, and two, the app must have been created using WebApplication.CreateBuilder
+
+- **Middleware Customization**   
+It's important to place the `ExceptionHandler` in the begining of the request pipeline code to globally catches all the exceptions.    
+
+```csharp
+if(!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler();
+}
+
+builder.Services.AddProblemDetails();
+
+```
+
+There are lots of logging [providers](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging?view=aspnetcore-8.0#third-party-logging-providers) like:  
+elmah.io   
+Gelf  
+JSNLog  
+KissLog.net
+Log4Net  
+NLog  
+PLogger  
+Sentry  
+Serilog   
+Stackdriver    
+
+A sink is a location to save the logs.  
+
+Configuring the Serilog   
+
+```csharp
+
+//Serilog configuration in the Program.cs
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .WriteTo.File("logs/logfile.txt",rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+// This instruction tells AspNet to use the log configurated above
+buider.Host.UseSerilog();
+```
+
+---
+
+### Chapter 6 : Getting Acquainted with Entity Framework Core  
+
+|Safe approaches|Potentially unsafe approaches|
+|-|-|
+|Linq queries|`.FromSqlRaw()`|
+|`.FromSql()` (when passing user input as parameter data)|Manually sanitizing the inputted values is required|
+|`.FromSqlInterpolated()` (when passing user input as parameter data)||
+
+---
+
+### Chapter 09 : Securing Your API  
+
+<details><summary> 
+Sample Class Used Generate Authentication Tokens</summary>
+
+
+The `SymmetricSecurityKey` requires the `System.IdentityModel.Tokens` library.  
+`Claim` class is defined in `System.Security.Claims`   
+`JwtSecurityToken` is defined in `System.IdentityModel.Tokens.Jwt`   
+
+```csharp
+
+namespace CityInfo.API.Controllers
+{
+    [Route("api/authentication")]
+    [ApiController]
+    public class AuthenticationController : ControllerBase
+    {
+        private readonly IConfiguration _configuration;
+
+        // we won't use this outside of this class, so we can scope it to this namespace
+        // This class has the only purpose to carry the basic user identification to validate he is whoever he says
+        public class AuthenticationRequestBody
+        {
+            public string? UserName { get; set; }
+            public string? Password { get; set; }
+        }
+
+        // This class could be classified as claim class, because it's been used by the validation to load the claims
+        // This could be replaced by the "Identity Claims Class".
+        private class CityInfoUser
+        {
+            public int UserId { get; set; }
+            public string UserName { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string City { get; set; }
+
+            public CityInfoUser(
+                int userId, 
+                string userName, 
+                string firstName, 
+                string lastName, 
+                string city)
+            {
+                UserId = userId;
+                UserName = userName;
+                FirstName = firstName;
+                LastName = lastName;
+                City = city;
+            }
+
+        }
+
+        //Constructor to require the IConfiguration to load informations from the appsettings.json
+        public AuthenticationController(IConfiguration configuration)
+        {
+            _configuration = configuration ?? 
+                throw new ArgumentNullException(nameof(configuration));
+        }
+
+        //The Action to be called passing the basic user's validation. 
+        // This Action returns the token if the user is valid. 
+        // The whole authentication process happens here.
+        [HttpPost("authenticate")]
+        public ActionResult<string> Authenticate(
+            AuthenticationRequestBody authenticationRequestBody)
+        {  
+            // Step 1: validate the username/password
+            var user = ValidateUserCredentials(
+                authenticationRequestBody.UserName,
+                authenticationRequestBody.Password);
+
+                //If the user and password is not valid, it returns an Unauthorized response.
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            // Step 2: create a token
+            // First retrieve a key from the appsettings then it decrypt the key to generate another SymmetricSecurityKey
+            var securityKey = new SymmetricSecurityKey(
+                Convert.FromBase64String(_configuration["Authentication:SecretForKey"]));
+            
+            // This signingCretentials will be used to sign the Jwt Token using the above security key and informing te Hash mechanism. In this case SHA256
+            var signingCredentials = new SigningCredentials(
+                securityKey, SecurityAlgorithms.HmacSha256);
+
+            // Fill in the other claims             
+            var claimsForToken = new List<Claim>();
+            claimsForToken.Add(new Claim("sub", user.UserId.ToString()));
+            claimsForToken.Add(new Claim("given_name", user.FirstName));
+            claimsForToken.Add(new Claim("family_name", user.LastName));
+            claimsForToken.Add(new Claim("city", user.City));
+             
+             // Generate the Jwt Token
+            var jwtSecurityToken = new JwtSecurityToken(
+                _configuration["Authentication:Issuer"],
+                _configuration["Authentication:Audience"],
+                claimsForToken,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddHours(1),
+                signingCredentials);
+
+            var tokenToReturn = new JwtSecurityTokenHandler()
+               .WriteToken(jwtSecurityToken);
+
+               //Returns the newly Generated Token
+            return Ok(tokenToReturn);
+        }
+
+        // This method could be substituted by any other validation of the ISP to retrieve the user's claim.
+        private CityInfoUser ValidateUserCredentials(string? userName, string? password)
+        {
+            // we don't have a user DB or table.  If you have, check the passed-through
+            // username/password against what's stored in the database.
+            //
+            // For demo purposes, we assume the credentials are valid
+
+            // return a new CityInfoUser (values would normally come from your user DB/table)
+            return new CityInfoUser(
+                1,
+                userName ?? "",
+                "Kevin",
+                "Dockx",
+                "Antwerp");
+
+        }
+    }
+}
+
+
+```
+
+</details>
+
+`Microsoft.AspNetCore.Authentication.jwtbearer` contains the middleware to validate the token in the consumed API.  
+
+```csharp
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new()
+        {
+            ValidateIssuer = true, // validates the token issued 
+            ValidateAudience = true, // validates the token audience
+            ValidateIssuerSigningKey = true, 
+            ValidIssuer = builder.Configuration["Authentication:Issuer"], // Fills the issuer to validate the token's issuer.
+            ValidAudience = builder.Configuration["Authentication:Audience"], // Fills the audience to validate the token's audience.  
+            IssuerSigningKey = new SymmetricSecurityKey(
+               Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"])) // To validate the token's signature
+        };
+    }
+    );
+
+
+// This instruction below adds the middleware to the request pipeline. Pay attention to the middleware order.
+app.UseAuthentication();
+```
+
+And in every controller that requires authentication and authorization it must be write down in the class name the `[Authorize]`.  
+
+
+- **Authorization Policy** A policy is made up of a set of requirements. When all requirements evaluate to true, the policy is met.   
+
+```csharp
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MustBeFromAntwerp", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("city", "Antwerp");
+    }
+});
+
+
+// Place the instruction below in the controller to use the Authorization Policy
+[Authorize(Policy = "MustBeFromAntwerp")]
+```
+
+
+- [**User-Jwt Tool**](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-8.0&tabs=windows) The dotnet `user-jwts` command line tool can create and manage app specific local JSON Web Tokens (JWTs).  
+
+---
+
+### Chapter 10 : Versioning and Documenting Your API  
+
+Version via custom request header    
+- X-version: "v1"  
+
+Version via Accept header     
+- Accept:   
+   "application/json;version=v1"   
+
+Version the media types
+- Accept:  
+   "application/vnd.marvin.book.v1+json"   
+
+`Asp.Versioning.Mvc` is a package part of the Asp.Net to version API's  
+
+To use and configure it, register it in the builder.   
+```csharp
+builder.Services.AddApiVersioning(setupAction =>
+{
+    setupAction.ReportApiVersions = true;
+    setupAction.AssumeDefaultVersionWhenUnspecified = true; //To use the default version when no version is specified.
+    setupAction.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+}).AddMvc();
+//The AddMvc() method enable support for ASP.Net Core MVC APIs.
+```  
+To use the specified version, pass the api version through the query string `https://.....?api-version=2`
 
 ---
 <details>
