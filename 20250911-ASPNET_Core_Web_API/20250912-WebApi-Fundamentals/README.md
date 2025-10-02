@@ -292,6 +292,7 @@ It's important to place the `ExceptionHandler` in the begining of the request pi
 if(!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler();
+    //app.UseDeveloperExceptionPage(); // This option allow to view a detailed error page. This is security treat option because it shows the stack trace.
 }
 
 builder.Services.AddProblemDetails();
@@ -321,6 +322,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.Console()
     .WriteTo.File("logs/logfile.txt",rollingInterval: RollingInterval.Day)
+    //.WriteTo.ApplicationInsights(new TelemetryConfiguration(){ InstrumentationKey = "Azure Application Insights Instrumentation Key"}, TelemetryConverter.Traces) // To use Azure Application Insights.
     .CreateLogger();
 
 // This instruction tells AspNet to use the log configurated above
@@ -526,6 +528,7 @@ builder.Services.AddAuthorization(options =>
 ---
 
 ### Chapter 10 : Versioning and Documenting Your API  
+- **Versioning**  
 
 Version via custom request header    
 - X-version: "v1"  
@@ -552,12 +555,176 @@ builder.Services.AddApiVersioning(setupAction =>
 ```  
 To use the specified version, pass the api version through the query string `https://.....?api-version=2`
 
+- **Documentation**  
+[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) Generates an OpenAPI specification from API and Wraps swagger-ui and provides an embedded version of it.    
+
+```csharp
+builder.Services.AddEndpointsApiExplorer(); // It's a built‑in ASP.NET Core service that exposes information on your API, like the available endpoints and how to interact with them. It's used internally by Swashbuckle to generate the OpenAPI specification.
+builder.Services.AddSwaggerGen(); //It's executed. This registers services that are used for effectively generating the spec.
+
+app.UseSwagger(); //Ensures that the middleware for generating the OpenAPI specification is added. 
+app.UseSwaggerUI(); //Ensures that the middleware that uses that specification to generate the default Swagger UI documentation URI gets added.
+```
+For the documentaiton using the `ActionResult` is better than using `IActionResult` because the first gives more resources for the documentation.    
+It wouldn't be suffice to place the document the Actions and models classes to reflect in the Swagger documentation. It also requires go to the project properties and under the `Builde>Output` check the option `Generate a file containing API documentation` and set the file name for the xml generated.
+
+This middleware code bellow informs the swagger about the xml generated with the documentation of the classes.
+```csharp
+builder.Services.AddSwaggerGen(setupAction => 
+{
+    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+    setupAction.IncludeXmlComments(xmlCommentsFullPath);
+});
+```
+
+`Asp.Versioning.Mvc.ApiExplorer` allows automatically fills the version in the swagger documentation.  
+```csharp
+
+
+
+builder.Services.AddApiVersioning(setupAction =>
+{
+    setupAction.ReportApiVersions = true;
+    setupAction.AssumeDefaultVersionWhenUnspecified = true; //To use the default version when no version is specified.
+    setupAction.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+}).AddMvc()
+.AddApiExplorer(setupAction =>
+{
+    setupAction.SubstituteApiVersionInUrl = true;
+});
+
+// This code must be executed after the that service (the code above) has been registered on the container.  
+var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>(); 
+builder.Services.AddSwaggerGen(setupAction => 
+{
+
+    foreach(var description in
+        apiVersionDescriptionProvider.ApiVersionDescriptions)
+    {
+        setupAction.SwaggerDoc
+        (
+            $"{description.GroupName}",
+            new()
+            {
+                Title = "City Info API",
+                Version = description.ApiVersion.ToString(),
+                Description = "Through this API you can access cities and their points of interest"
+            }
+        );
+    }
+    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+    setupAction.IncludeXmlComments(xmlCommentsFullPath);
+    
+    
+    // The instruction bellow is intended to adds security to the requests to the actions through swagger.
+    setupAction.AddSecurityDefinition("CityInfoApiBearerAuth",new(){
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        Description = "Input a valid token to access this API"
+    });
+
+
+    // The token isn't automatically sent as a Bearer Token in the authorization header in a request by the documenation.
+    // The instruction bellow marks the operation in the OpenAPI spec as one that requires authentication. To that avail, we call in to AddSecurityRequirement on our setupAction. This expects an OpenApiSecurityRequirement object. That's, in fact, the dictionary with an OpenAPI security scheme as key
+    setupAction.AddSecurityRequirement(new()
+    {
+        {
+            new()
+            {
+                Reference = new OpenApiReference{
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "CityInfoApiBearerAuth"}
+            },
+            new List<string>()
+        }
+    }
+    });
+});
+
+
+// and finally pass through a setupAction to get those versions,
+app.AddSwaggerUI(setupAction =>
+{
+    var descriptions = app.DescribeApiVersions(); //This is an extension method coming from that Asp.Versioning.Mvc.ApiExplorer package
+    //then create endpoints for each of them, passing through the GroupName. This should result in version‑aware specifications and Swagger UI responding to it. 
+    foreach (var description in descriptions)
+    {
+        setupAction.SwaggerEndpoint
+        (
+            $"/swagger/{description.GroupName}/swagger.json",
+            description.GroupName.ToUpperInvariante()
+        );
+    }
+});
+```
+
 ---
+
+### Chapter 11 : Testing and Deploying Your API 
+
+- [Http REPL](https://learn.microsoft.com/en-us/aspnet/core/web-api/http-repl/?view=aspnetcore-8.0&tabs=windows) is tool used to enhace the http testing   
+`dotnet install -g --prerelease microsoft.dotnet-httprel` is the command to install it globally.  
+The Http REPL uses the OpenAPI description
+`connect https://localhost:7169 --openapi https://localhost:7169/swagger/2.0/swagger.json` is the command to find the OpenAPI description  
+`pref set editor.command.default C:/Windows/system32/notepad.exe`  
+`set header Authorizations "Bearer .........` is the command to set a token in HttpREPL.
+
+- [Endpoints Explorer](#) is a Visual Studio window that allows the creation of `.http` files.  
+
+- Dealing with Proxies and Load Balancers  
+[X-Forward Header](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-8.0) used by middlewares to securely process the requests behind the proxies.   
+
+```csharp
+builder.Services.Configure<ForwardedHeadersOptions>(options => 
+{
+    options.ForwardedHeaders = ForwardedHeaders.XFowardedFor 
+    | ForwardedHeaders.XForwardedProto;
+});
+```
+The middleware should and could run after is the diagnostics and error handling
+```csharp
+app.UseForwardedHeaders();
+```
+
+- **Using Azure Key Vault**  
+It requires the Azure Entra package and Azure Key Vault Package. It's necessary to create a rule in the Azure Key Vault to allow the Azure Web Service to access it.  
+```csharp
+var secretClient = new SecretClient(
+ new Uri("Uri address of the Azure Key Vault"),
+ new DefaultAzureCredential());
+  builder.Configuration.AddAzureKeyVault(secretClient,
+    new KeyVaultSecretManager());
+);
+```
+---
+
 <details>
 
 <summary>  
 
 ## Other(s)</summary>
+
+<details><summary>
+
+### Tool(s)   
+
+</summary>
+
+- HttpREPL   
+- Postman   
+- .http files    
+- Swagger   
+- Entity Framework   
+- Azure Key Vault   
+- Azure WebServices   
+- API Testing Explorer   
+- Azure Application Insights   
+- Serilog  
+</details>
 
 <details><summary>
 
