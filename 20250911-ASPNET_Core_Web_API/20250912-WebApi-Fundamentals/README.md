@@ -95,7 +95,9 @@ app.Run();
 "traceId": ""
 ```
 
-<details><summary> #### **Middleware Customization**
+<details><summary> 
+
+#### **Middleware Customization**
 
 To manipulate the default ProblemDetails response, one way is passing an action to manipulate the ProblemDetails object using the `AddProblemDetails` extension method on the Service collection.
 </summary>
@@ -544,6 +546,7 @@ Version the media types
 `Asp.Versioning.Mvc` is a package part of the Asp.Net to version API's  
 
 To use and configure it, register it in the builder.   
+
 ```csharp
 builder.Services.AddApiVersioning(setupAction =>
 {
@@ -553,6 +556,7 @@ builder.Services.AddApiVersioning(setupAction =>
 }).AddMvc();
 //The AddMvc() method enable support for ASP.Net Core MVC APIs.
 ```  
+
 To use the specified version, pass the api version through the query string `https://.....?api-version=2`
 
 - **Documentation**  
@@ -565,10 +569,13 @@ builder.Services.AddSwaggerGen(); //It's executed. This registers services that 
 app.UseSwagger(); //Ensures that the middleware for generating the OpenAPI specification is added. 
 app.UseSwaggerUI(); //Ensures that the middleware that uses that specification to generate the default Swagger UI documentation URI gets added.
 ```
+
 For the documentaiton using the `ActionResult` is better than using `IActionResult` because the first gives more resources for the documentation.    
 It wouldn't be suffice to place the document the Actions and models classes to reflect in the Swagger documentation. It also requires go to the project properties and under the `Builde>Output` check the option `Generate a file containing API documentation` and set the file name for the xml generated.
 
-This middleware code bellow informs the swagger about the xml generated with the documentation of the classes.
+<details><summary>	
+This middleware code bellow informs the swagger about the xml generated with the documentation of the classes.</summary>
+
 ```csharp
 builder.Services.AddSwaggerGen(setupAction => 
 {
@@ -578,11 +585,13 @@ builder.Services.AddSwaggerGen(setupAction =>
     setupAction.IncludeXmlComments(xmlCommentsFullPath);
 });
 ```
+</details>
 
-`Asp.Versioning.Mvc.ApiExplorer` allows automatically fills the version in the swagger documentation.  
+<details><summary> 
+
+###### `Asp.Versioning.Mvc.ApiExplorer` allows automatically fills the version in the swagger documentation.  </summary>
+
 ```csharp
-
-
 
 builder.Services.AddApiVersioning(setupAction =>
 {
@@ -661,6 +670,7 @@ app.AddSwaggerUI(setupAction =>
     }
 });
 ```
+</details>   
 
 ---
 
