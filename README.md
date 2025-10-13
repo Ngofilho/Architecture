@@ -22,12 +22,9 @@ A system is only considered RESTful when it adheres to all the required constrai
 The Ricardson Maturity Model
 |Level|Topic|Description|Considerations|Example|
 |-|-|-|-|-|
-|0|The Swamp of POX - *P*lain *O*ld *X*ML|HTTP protocol is used for remote interaction, the rest of the protocol isn't used as it should be. |RPC-style implementations (SOAP, often seen when using WCF).|POST (info on data) `http://host/api`
-POST (author to create) `http://host/api`|
-|1|Resources|Each resource is mapped to a URI, HTTP methods aren't used as they should be.| Results in reduced complexity.|POST (info on data) `http://host/api/authors`
-POST (author to create) `http://host/api/authors/{id}`|
-|2|Verbs|Correct HTTP verbs are used, correct status codes are used|Removes unnecessary variation|GET `http://host/api/authors` 200 Ok (authors)
-POST (author representation) `http://host/api/authors` 201 Created (author)|
+|0|The Swamp of POX - *P*lain *O*ld *X*ML|HTTP protocol is used for remote interaction, the rest of the protocol isn't used as it should be. |RPC-style implementations (SOAP, often seen when using WCF).|POST (info on data) `http://host/api` POST (author to create) `http://host/api`|
+|1|Resources|Each resource is mapped to a URI, HTTP methods aren't used as they should be.| Results in reduced complexity.|POST (info on data) `http://host/api/authors` POST (author to create) `http://host/api/authors/{id}`|
+|2|Verbs|Correct HTTP verbs are used, correct status codes are used|Removes unnecessary variation|GET `http://host/api/authors` 200 Ok (authors) POST (author representation) `http://host/api/authors` 201 Created (author)|
 |3|Hypermedia|The API supports Hypermedia as the Engine of Application State (HATEOAS). Introduces discoverability.|It's a precondition for a RESTful API|GET `http://host/api/authors` 200 Ok (authors + links that drive application state)|
 
 - Level 0 (The Swamp of POX - *P*lain *O*ld *X*ML) - HTTP protocol is used for remote interaction, the rest of the protocol isn't used as it should be. RPC-style implementations (SOAP, often seen when using WCF).  
