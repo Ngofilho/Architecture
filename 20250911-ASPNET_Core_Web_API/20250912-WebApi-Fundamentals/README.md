@@ -55,7 +55,7 @@ var app = builder.Build();
 
 app.Run(async context => {
 	await context.Response.WriteAsync("Palmeiras Campeão");// Will write, no matter what, Palmeiras Campeão and it will no process anything else.
-	
+
 });
 
 app.Run();
@@ -71,10 +71,10 @@ app.Run();
 
 - AddControllersWithView internally calls into AddControllers and then register some additional services for view support, which means support for HTML Razor views
 
-- `Controller` and `ControllerBase` could be used to create controllers. The difference is that `Controller` inherits from `ControllerBase` and adds support for views, which is not needed in web APIs.  
-- [`Routing`](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-8.0) matches a request URI to an action on a controller.  To set up endpoint routing, two pieces of middleware must be injected in the request pipeline. `UseRouting` and `UseEndpoints`  
-- UseRouting marks the position in the middlweare pipeline where the routing decision is made.  
-- UseEndpoints marks the position in the middleware pipeline where the selected endpoint is executed.  
+- `Controller` and `ControllerBase` could be used to create controllers. The difference is that `Controller` inherits from `ControllerBase` and adds support for views, which is not needed in web APIs.
+- [`Routing`](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-8.0) matches a request URI to an action on a controller.  To set up endpoint routing, two pieces of middleware must be injected in the request pipeline. `UseRouting` and `UseEndpoints`
+- UseRouting marks the position in the middlweare pipeline where the routing decision is made.
+- UseEndpoints marks the position in the middleware pipeline where the selected endpoint is executed.
 
 **Most Used Status Code on WebApis**
 
@@ -84,7 +84,11 @@ app.Run();
 |201 - Created `Created(uri, object)`| 401 - Unauthorized||
 |204 - No Content `NoContent()`| 403 - Forbidden||
 ||404 - Not Found||
+||405 - Method not allowed||
+||406 - Not acceptable||
 ||409 - Conflict `Conflict("...")` or `ConflictObjectResult()` ||
+||415 - Unsupported media type||
+||422 - Unprocessable entity||
 
 
 [**The Problem Details for HTTP APIs RFC**](https://datatracker.ietf.org/doc/html/rfc7807)
@@ -95,7 +99,7 @@ app.Run();
 "traceId": ""
 ```
 
-<details><summary> 
+<details><summary>
 
 #### **Middleware Customization**
 
@@ -108,8 +112,8 @@ builder.Services.AddProblemDetails(options =>
 	options.CustomizeProblemDetails = ctx =>
 	{
 		ctx.ProblemDetails.Extensions.Add("additionalInfo", "Additional info example");
-        
-        ctx.ProblemDetails.Extensions.Add("server", 
+
+        ctx.ProblemDetails.Extensions.Add("server",
             Environment.MachineName);
 	}
 });
@@ -129,11 +133,11 @@ builder.Services.AddProblemDetails(options =>
 
 </details>
 
-- [**Content Negotiation**](https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-8.0) The process of selecting the best representation for a given response when there are multiple representations available.   
-Output formatter Deals with output. Media type: Accepct header   
-Input formatter deals with input Media type: Content-type header   
-Support is implemented by `ObjectResult`   
-The rule is that the first Input formatter in the list inside the customization is the default.  
+- [**Content Negotiation**](https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-8.0) The process of selecting the best representation for a given response when there are multiple representations available.
+Output formatter Deals with output. Media type: Accepct header
+Input formatter deals with input Media type: Content-type header
+Support is implemented by `ObjectResult`
+The rule is that the first Input formatter in the list inside the customization is the default.
 
 Http Header
 ```
@@ -142,8 +146,8 @@ Accept: application/json
 Accept: text/plain
 ```
 
-- **Middleware Customization**    
-In example bellow is a sample of code to handle the unacceptted format and the response provided by it    
+- **Middleware Customization**
+In example bellow is a sample of code to handle the unacceptted format and the response provided by it
 
 ```csharp
 builder.Services.AddController (option => {
@@ -153,19 +157,19 @@ builder.Services.AddController (option => {
 //Status code 406 - Not Acceptable
 ```
 
-- **Middleware Customization**    
-In the example bellow there is a sample of the customization of the service to response xml    
+- **Middleware Customization**
+In the example bellow there is a sample of the customization of the service to response xml
 ```csharp
 app.Services.AddControllers().AddXmlDataContractSerializerFormatters();
 
 ```
 
-- **File Transfer** Example to implement the file transfer   
-**FileContentResult**, which accepts the file bytes and a content type for the file.    
-**FileStreamResult**. This accepts a stream to read from and the contentType.  
-**PhysicalFileResult** and **VirtualFileResult**. These, too, allow you to pass through a file name and a content type.  
-All of these also derive from the same **FileResult** class.   
-It's more convenient to call into return **File**. This method is defined on the ControllerBase and it acts as a wrapper around the aforementioned **FileResult** subclasses  
+- **File Transfer** Example to implement the file transfer
+**FileContentResult**, which accepts the file bytes and a content type for the file.
+**FileStreamResult**. This accepts a stream to read from and the contentType.
+**PhysicalFileResult** and **VirtualFileResult**. These, too, allow you to pass through a file name and a content type.
+All of these also derive from the same **FileResult** class.
+It's more convenient to call into return **File**. This method is defined on the ControllerBase and it acts as a wrapper around the aforementioned **FileResult** subclasses
 
 <details><summary>
 File Download Sample
@@ -242,15 +246,16 @@ namespace CityInfo.API.Controllers
 -  [FromRoute]: Route data from the current request. Inferred for any action parameter name matching a parameter in the route template.
 -  [FromServices]: The service(s) injected as action parameter
 -  [AsParameters]: Method Parameters
+The usually used are [FromBody], [FromHeader], [FromQuery] and [FromRoute]
 
 Return of the type `CreatedAtRoute` will response with the route of the newly created item. Useful as alternative for HATEOAS
 
-- **Model State (Validation Input)** It represents a collection of name‑value pairs that were submitted to our API, one for each property. It also contains a collection of error messages for each value submitted. Whenever a request comes in, the rules we just apply to our model are checked automatically. If one of them doesn't check out, the ModelStates.IsValid property will be false. This property will also be false if an invalid value for a property type is passed in. But this is not necessary. The API Controller   
+- **Model State (Validation Input)** It represents a collection of name‑value pairs that were submitted to our API, one for each property. It also contains a collection of error messages for each value submitted. Whenever a request comes in, the rules we just apply to our model are checked automatically. If one of them doesn't check out, the ModelStates.IsValid property will be false. This property will also be false if an invalid value for a property type is passed in. But this is not necessary. The API Controller
 
-- **Patch - Partially Updating a Resource** [Json Patch (RFC6902)](https://tools.ietf.org/html/rfc6902)  is the standard of ***Patch Update***. The support from Microsoft comes from the library [Microsoft.AspNetCore.JsonPatch](https://www.nuget.org/packages/Microsoft.AspNetCore.JsonPatch/#readme-body-tab) - It requires the *NewtonSoft.Json* and the *Microsoft.AspNetCore.Mvc.NewtonsoftJson*  
+- **Patch - Partially Updating a Resource** [Json Patch (RFC6902)](https://tools.ietf.org/html/rfc6902)  is the standard of ***Patch Update***. The support from Microsoft comes from the library [Microsoft.AspNetCore.JsonPatch](https://www.nuget.org/packages/Microsoft.AspNetCore.JsonPatch/#readme-body-tab) - It requires the *NewtonSoft.Json* and the *Microsoft.AspNetCore.Mvc.NewtonsoftJson*
 
-- **Middleware Customization**   
-`builder.Services.AddControllers().AddNewtonsoftJson();`  
+- **Middleware Customization**
+`builder.Services.AddControllers().AddNewtonsoftJson();`
 
 Array of Operations with the set of instruction to patch the resource
 ```json
@@ -267,13 +272,13 @@ Array of Operations with the set of instruction to patch the resource
     }
 ]
 ```
-Allowed operations:  
-1. add  
-2. remove  
-3. replace  
-4. move  
-5. copy  
-6. test  
+Allowed operations:
+1. add
+2. remove
+3. replace
+4. move
+5. copy
+6. test
 
 - **Middleware Customization**
 
@@ -281,14 +286,14 @@ Allowed operations:
 
 ### Chapter 5 : Working with Services and Dependency Injection
 
-- **Middleware Customization**    
-`builder.Logging` allows customization of the out of the box logging. `builder.Logging.ClearProviders()` clear all the previously configured providers.   
-`builder.Logging.AddConsole()` will add the console for the output of the logs.   
+- **Middleware Customization**
+`builder.Logging` allows customization of the out of the box logging. `builder.Logging.ClearProviders()` clear all the previously configured providers.
+`builder.Logging.AddConsole()` will add the console for the output of the logs.
 
 - DeveloperException: ASP.NET Core apps enable the `DeveloperException` page, by default, when two things are true, one, you must be running in the Development environment, and two, the app must have been created using WebApplication.CreateBuilder
 
-- **Middleware Customization**   
-It's important to place the `ExceptionHandler` in the begining of the request pipeline code to globally catches all the exceptions.    
+- **Middleware Customization**
+It's important to place the `ExceptionHandler` in the begining of the request pipeline code to globally catches all the exceptions.
 
 ```csharp
 if(!app.Environment.IsDevelopment())
@@ -301,21 +306,21 @@ builder.Services.AddProblemDetails();
 
 ```
 
-There are lots of logging [providers](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging?view=aspnetcore-8.0#third-party-logging-providers) like:  
-elmah.io   
-Gelf  
-JSNLog  
+There are lots of logging [providers](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging?view=aspnetcore-8.0#third-party-logging-providers) like:
+elmah.io
+Gelf
+JSNLog
 KissLog.net
-Log4Net  
-NLog  
-PLogger  
-Sentry  
-Serilog   
-Stackdriver    
+Log4Net
+NLog
+PLogger
+Sentry
+Serilog
+Stackdriver
 
-A sink is a location to save the logs.  
+A sink is a location to save the logs.
 
-Configuring the Serilog   
+Configuring the Serilog
 
 ```csharp
 
@@ -333,7 +338,7 @@ buider.Host.UseSerilog();
 
 ---
 
-### Chapter 6 : Getting Acquainted with Entity Framework Core  
+### Chapter 6 : Getting Acquainted with Entity Framework Core
 
 |Safe approaches|Potentially unsafe approaches|
 |-|-|
@@ -343,15 +348,15 @@ buider.Host.UseSerilog();
 
 ---
 
-### Chapter 09 : Securing Your API  
+### Chapter 09 : Securing Your API
 
-<details><summary> 
+<details><summary>
 Sample Class Used Generate Authentication Tokens</summary>
 
 
-The `SymmetricSecurityKey` requires the `System.IdentityModel.Tokens` library.  
-`Claim` class is defined in `System.Security.Claims`   
-`JwtSecurityToken` is defined in `System.IdentityModel.Tokens.Jwt`   
+The `SymmetricSecurityKey` requires the `System.IdentityModel.Tokens` library.
+`Claim` class is defined in `System.Security.Claims`
+`JwtSecurityToken` is defined in `System.IdentityModel.Tokens.Jwt`
 
 ```csharp
 
@@ -382,10 +387,10 @@ namespace CityInfo.API.Controllers
             public string City { get; set; }
 
             public CityInfoUser(
-                int userId, 
-                string userName, 
-                string firstName, 
-                string lastName, 
+                int userId,
+                string userName,
+                string firstName,
+                string lastName,
                 string city)
             {
                 UserId = userId;
@@ -400,17 +405,17 @@ namespace CityInfo.API.Controllers
         //Constructor to require the IConfiguration to load informations from the appsettings.json
         public AuthenticationController(IConfiguration configuration)
         {
-            _configuration = configuration ?? 
+            _configuration = configuration ??
                 throw new ArgumentNullException(nameof(configuration));
         }
 
-        //The Action to be called passing the basic user's validation. 
-        // This Action returns the token if the user is valid. 
+        //The Action to be called passing the basic user's validation.
+        // This Action returns the token if the user is valid.
         // The whole authentication process happens here.
         [HttpPost("authenticate")]
         public ActionResult<string> Authenticate(
             AuthenticationRequestBody authenticationRequestBody)
-        {  
+        {
             // Step 1: validate the username/password
             var user = ValidateUserCredentials(
                 authenticationRequestBody.UserName,
@@ -426,18 +431,18 @@ namespace CityInfo.API.Controllers
             // First retrieve a key from the appsettings then it decrypt the key to generate another SymmetricSecurityKey
             var securityKey = new SymmetricSecurityKey(
                 Convert.FromBase64String(_configuration["Authentication:SecretForKey"]));
-            
+
             // This signingCretentials will be used to sign the Jwt Token using the above security key and informing te Hash mechanism. In this case SHA256
             var signingCredentials = new SigningCredentials(
                 securityKey, SecurityAlgorithms.HmacSha256);
 
-            // Fill in the other claims             
+            // Fill in the other claims
             var claimsForToken = new List<Claim>();
             claimsForToken.Add(new Claim("sub", user.UserId.ToString()));
             claimsForToken.Add(new Claim("given_name", user.FirstName));
             claimsForToken.Add(new Claim("family_name", user.LastName));
             claimsForToken.Add(new Claim("city", user.City));
-             
+
              // Generate the Jwt Token
             var jwtSecurityToken = new JwtSecurityToken(
                 _configuration["Authentication:Issuer"],
@@ -479,7 +484,7 @@ namespace CityInfo.API.Controllers
 
 </details>
 
-`Microsoft.AspNetCore.Authentication.jwtbearer` contains the middleware to validate the token in the consumed API.  
+`Microsoft.AspNetCore.Authentication.jwtbearer` contains the middleware to validate the token in the consumed API.
 
 ```csharp
 builder.Services.AddAuthentication("Bearer")
@@ -487,11 +492,11 @@ builder.Services.AddAuthentication("Bearer")
     {
         options.TokenValidationParameters = new()
         {
-            ValidateIssuer = true, // validates the token issued 
+            ValidateIssuer = true, // validates the token issued
             ValidateAudience = true, // validates the token audience
-            ValidateIssuerSigningKey = true, 
+            ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Authentication:Issuer"], // Fills the issuer to validate the token's issuer.
-            ValidAudience = builder.Configuration["Authentication:Audience"], // Fills the audience to validate the token's audience.  
+            ValidAudience = builder.Configuration["Authentication:Audience"], // Fills the audience to validate the token's audience.
             IssuerSigningKey = new SymmetricSecurityKey(
                Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"])) // To validate the token's signature
         };
@@ -503,10 +508,10 @@ builder.Services.AddAuthentication("Bearer")
 app.UseAuthentication();
 ```
 
-And in every controller that requires authentication and authorization it must be write down in the class name the `[Authorize]`.  
+And in every controller that requires authentication and authorization it must be write down in the class name the `[Authorize]`.
 
 
-- **Authorization Policy** A policy is made up of a set of requirements. When all requirements evaluate to true, the policy is met.   
+- **Authorization Policy** A policy is made up of a set of requirements. When all requirements evaluate to true, the policy is met.
 
 ```csharp
 
@@ -525,27 +530,27 @@ builder.Services.AddAuthorization(options =>
 ```
 
 
-- [**User-Jwt Tool**](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-8.0&tabs=windows) The dotnet `user-jwts` command line tool can create and manage app specific local JSON Web Tokens (JWTs).  
+- [**User-Jwt Tool**](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-8.0&tabs=windows) The dotnet `user-jwts` command line tool can create and manage app specific local JSON Web Tokens (JWTs).
 
 ---
 
-### Chapter 10 : Versioning and Documenting Your API  
-- **Versioning**  
+### Chapter 10 : Versioning and Documenting Your API
+- **Versioning**
 
-Version via custom request header    
-- X-version: "v1"  
+Version via custom request header
+- X-version: "v1"
 
-Version via Accept header     
-- Accept:   
-   "application/json;version=v1"   
+Version via Accept header
+- Accept:
+   "application/json;version=v1"
 
 Version the media types
-- Accept:  
-   "application/vnd.marvin.book.v1+json"   
+- Accept:
+   "application/vnd.marvin.book.v1+json"
 
-`Asp.Versioning.Mvc` is a package part of the Asp.Net to version API's  
+`Asp.Versioning.Mvc` is a package part of the Asp.Net to version API's
 
-To use and configure it, register it in the builder.   
+To use and configure it, register it in the builder.
 
 ```csharp
 builder.Services.AddApiVersioning(setupAction =>
@@ -555,29 +560,29 @@ builder.Services.AddApiVersioning(setupAction =>
     setupAction.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
 }).AddMvc();
 //The AddMvc() method enable support for ASP.Net Core MVC APIs.
-```  
+```
 
 To use the specified version, pass the api version through the query string `https://.....?api-version=2`
 
-- **Documentation**  
-[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) Generates an OpenAPI specification from API and Wraps swagger-ui and provides an embedded version of it.    
+- **Documentation**
+[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) Generates an OpenAPI specification from API and Wraps swagger-ui and provides an embedded version of it.
 
 ```csharp
 builder.Services.AddEndpointsApiExplorer(); // It's a built‑in ASP.NET Core service that exposes information on your API, like the available endpoints and how to interact with them. It's used internally by Swashbuckle to generate the OpenAPI specification.
 builder.Services.AddSwaggerGen(); //It's executed. This registers services that are used for effectively generating the spec.
 
-app.UseSwagger(); //Ensures that the middleware for generating the OpenAPI specification is added. 
+app.UseSwagger(); //Ensures that the middleware for generating the OpenAPI specification is added.
 app.UseSwaggerUI(); //Ensures that the middleware that uses that specification to generate the default Swagger UI documentation URI gets added.
 ```
 
-For the documentaiton using the `ActionResult` is better than using `IActionResult` because the first gives more resources for the documentation.    
+For the documentaiton using the `ActionResult` is better than using `IActionResult` because the first gives more resources for the documentation.
 It wouldn't be suffice to place the document the Actions and models classes to reflect in the Swagger documentation. It also requires go to the project properties and under the `Builde>Output` check the option `Generate a file containing API documentation` and set the file name for the xml generated.
 
-<details><summary>	
+<details><summary>
 This middleware code bellow informs the swagger about the xml generated with the documentation of the classes.</summary>
 
 ```csharp
-builder.Services.AddSwaggerGen(setupAction => 
+builder.Services.AddSwaggerGen(setupAction =>
 {
     var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
@@ -587,7 +592,7 @@ builder.Services.AddSwaggerGen(setupAction =>
 ```
 </details>
 
-<details><summary> 
+<details><summary>
 
 ###### `Asp.Versioning.Mvc.ApiExplorer` allows automatically fills the version in the swagger documentation.  </summary>
 
@@ -604,9 +609,9 @@ builder.Services.AddApiVersioning(setupAction =>
     setupAction.SubstituteApiVersionInUrl = true;
 });
 
-// This code must be executed after the that service (the code above) has been registered on the container.  
-var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>(); 
-builder.Services.AddSwaggerGen(setupAction => 
+// This code must be executed after the that service (the code above) has been registered on the container.
+var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+builder.Services.AddSwaggerGen(setupAction =>
 {
 
     foreach(var description in
@@ -627,8 +632,8 @@ builder.Services.AddSwaggerGen(setupAction =>
     var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
 
     setupAction.IncludeXmlComments(xmlCommentsFullPath);
-    
-    
+
+
     // The instruction bellow is intended to adds security to the requests to the actions through swagger.
     setupAction.AddSecurityDefinition("CityInfoApiBearerAuth",new(){
         Type = SecuritySchemeType.Http,
@@ -659,7 +664,7 @@ builder.Services.AddSwaggerGen(setupAction =>
 app.AddSwaggerUI(setupAction =>
 {
     var descriptions = app.DescribeApiVersions(); //This is an extension method coming from that Asp.Versioning.Mvc.ApiExplorer package
-    //then create endpoints for each of them, passing through the GroupName. This should result in version‑aware specifications and Swagger UI responding to it. 
+    //then create endpoints for each of them, passing through the GroupName. This should result in version‑aware specifications and Swagger UI responding to it.
     foreach (var description in descriptions)
     {
         setupAction.SwaggerEndpoint
@@ -670,28 +675,28 @@ app.AddSwaggerUI(setupAction =>
     }
 });
 ```
-</details>   
+</details>
 
 ---
 
-### Chapter 11 : Testing and Deploying Your API 
+### Chapter 11 : Testing and Deploying Your API
 
-- [Http REPL](https://learn.microsoft.com/en-us/aspnet/core/web-api/http-repl/?view=aspnetcore-8.0&tabs=windows) is tool used to enhace the http testing   
-`dotnet install -g --prerelease microsoft.dotnet-httprel` is the command to install it globally.  
+- [Http REPL](https://learn.microsoft.com/en-us/aspnet/core/web-api/http-repl/?view=aspnetcore-8.0&tabs=windows) is tool used to enhace the http testing
+`dotnet install -g --prerelease microsoft.dotnet-httprel` is the command to install it globally.
 The Http REPL uses the OpenAPI description
-`connect https://localhost:7169 --openapi https://localhost:7169/swagger/2.0/swagger.json` is the command to find the OpenAPI description  
-`pref set editor.command.default C:/Windows/system32/notepad.exe`  
+`connect https://localhost:7169 --openapi https://localhost:7169/swagger/2.0/swagger.json` is the command to find the OpenAPI description
+`pref set editor.command.default C:/Windows/system32/notepad.exe`
 `set header Authorizations "Bearer .........` is the command to set a token in HttpREPL.
 
-- [Endpoints Explorer](#) is a Visual Studio window that allows the creation of `.http` files.  
+- [Endpoints Explorer](#) is a Visual Studio window that allows the creation of `.http` files.
 
-- Dealing with Proxies and Load Balancers  
-[X-Forward Header](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-8.0) used by middlewares to securely process the requests behind the proxies.   
+- Dealing with Proxies and Load Balancers
+[X-Forward Header](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-8.0) used by middlewares to securely process the requests behind the proxies.
 
 ```csharp
-builder.Services.Configure<ForwardedHeadersOptions>(options => 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders = ForwardedHeaders.XFowardedFor 
+    options.ForwardedHeaders = ForwardedHeaders.XFowardedFor
     | ForwardedHeaders.XForwardedProto;
 });
 ```
@@ -700,8 +705,8 @@ The middleware should and could run after is the diagnostics and error handling
 app.UseForwardedHeaders();
 ```
 
-- **Using Azure Key Vault**  
-It requires the Azure Entra package and Azure Key Vault Package. It's necessary to create a rule in the Azure Key Vault to allow the Azure Web Service to access it.  
+- **Using Azure Key Vault**
+It requires the Azure Entra package and Azure Key Vault Package. It's necessary to create a rule in the Azure Key Vault to allow the Azure Web Service to access it.
 ```csharp
 var secretClient = new SecretClient(
  new Uri("Uri address of the Azure Key Vault"),
@@ -714,26 +719,26 @@ var secretClient = new SecretClient(
 
 <details>
 
-<summary>  
+<summary>
 
 ## Other(s)</summary>
 
 <details><summary>
 
-### Tool(s)   
+### Tool(s)
 
 </summary>
 
-- HttpREPL   
-- Postman   
-- .http files    
-- Swagger   
-- Entity Framework   
-- Azure Key Vault   
-- Azure WebServices   
-- API Testing Explorer   
-- Azure Application Insights   
-- Serilog  
+- HttpREPL
+- Postman
+- .http files
+- Swagger
+- Entity Framework
+- Azure Key Vault
+- Azure WebServices
+- API Testing Explorer
+- Azure Application Insights
+- Serilog
 </details>
 
 <details><summary>

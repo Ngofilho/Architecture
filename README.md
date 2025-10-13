@@ -1,4 +1,43 @@
 # Annotations
+
+<details><summary> 
+
+## Styles</summary>
+
+[**REST**](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm), or Representational State Transfer, is intended to evoke an image of how a well‑designed web application behaves: a network of web pages (a virtual state-machine) where the user progresses through an application by selecting links (state transitions) resulting in the next page (representing the next state of the application) being transferred to the user and rendered for their use.
+
+- REST is an architectural style  
+- REST is not a standard in its own right  
+- Standards are used to implement the REST architectural style  
+- REST is, in principle, protocol agnostic  
+- Rest is defined by 6 constraints (A design decision that can have positive and negative impacts)   
+  1. ***Uniform Interface*** - API and consumers share one single technical interface: URI, Method, Media Type (payload)  (Obligatory)  
+  2. ***Client-Server*** - client and server are separeted (client and server can evolve separately) (Obligatory)  
+  3. ***Statelessness*** - state is contained within the request (Obligatory)  
+  4. ***Layered System*** - client cannot tell what layer it's connected to (Obligatory)  
+  5. ***Cacheable*** - each response message must explicitly state if it can be cached or not (Obligatory)  
+  6. ***Code on Demand*** - server can extend client functionality (Optional)   
+A system is only considered RESTful when it adheres to all the required constraints. Most "RESTful" APIs aren't really RESTful, but that doesn't make them bad APIs, as long as you understand the potential trade-offs   
+
+The Ricardson Maturity Model
+|Level|Topic|Description|Considerations|Example|
+|-|-|-|-|-|
+|0|The Swamp of POX - *P*lain *O*ld *X*ML|HTTP protocol is used for remote interaction, the rest of the protocol isn't used as it should be. |RPC-style implementations (SOAP, often seen when using WCF).|POST (info on data) `http://host/api`
+POST (author to create) `http://host/api`|
+|1|Resources|Each resource is mapped to a URI, HTTP methods aren't used as they should be.| Results in reduced complexity.|POST (info on data) `http://host/api/authors`
+POST (author to create) `http://host/api/authors/{id}`|
+|2|Verbs|Correct HTTP verbs are used, correct status codes are used|Removes unnecessary variation|GET `http://host/api/authors` 200 Ok (authors)
+POST (author representation) `http://host/api/authors` 201 Created (author)|
+|3|Hypermedia|The API supports Hypermedia as the Engine of Application State (HATEOAS). Introduces discoverability.|It's a precondition for a RESTful API|GET `http://host/api/authors` 200 Ok (authors + links that drive application state)|
+
+- Level 0 (The Swamp of POX - *P*lain *O*ld *X*ML) - HTTP protocol is used for remote interaction, the rest of the protocol isn't used as it should be. RPC-style implementations (SOAP, often seen when using WCF).  
+- Level 1 (Resources) - Each resource is mapped to a URI, HTTP methods aren't used as they should be. Results in reduced complexity.  
+- Level 2 (Verbs) - Correct HTTP verbs are used, correct status codes are used. Removes unnecessary variation.  
+- Level 3 (Hypermedia) - The API supports Hypermedia as the Engine of Application State (HATEOAS). Introduces discoverability. It's a precondition for a RESTful API.    
+
+</details>
+
+
 <details>
 <summary>
 
