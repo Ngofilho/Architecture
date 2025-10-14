@@ -731,8 +731,7 @@ Iteration can happen in different ways.
 * And another way is by calling singleton queries. Singleton queries are queries like `average`, `count`, and `first`. Because to get to the `count` or the `first` item of an `IQueryable`, the list has to be iterated over. But as long as we can avoid that, we can build our query by, for example, adding different Where statements after each other, and we can ensure that it's only executed after that. And that is exactly what we did when combining searching with filtering.
 
 <details><summary> 
-
-**Filtering and searching combined - 2 different fashion**  </summary>
+<b>Filtering and searching combined - 2 different fashion</b>  </summary>
 
 **First Fashion - Direct Query Parameters**
 ```csharp
@@ -845,6 +844,10 @@ namespace CourseLibrary.API.ResourceParameters
 
 ---
 
+## Chapter 7 - Paging
+
+
+--- 
 <details>
 <summary>
 
