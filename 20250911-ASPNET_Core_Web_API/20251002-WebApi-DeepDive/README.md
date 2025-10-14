@@ -93,13 +93,13 @@ method to use for which use case
 
 ### Advanced resource creation scenarios
 It's a good practice to annotate ApiControllers with `[ApiController]` attribute. The ApiController attribute adds a requirement for attribute‑based routing. 
-1- When we looked into routing, we learned that route templates should be applied with attributes when building APIs   
-2- what is returned in case of an error follows a certain format, the ProblemDetails format.   
-3- Bind Inferred Source   
-	1- `FromBody` is inferred for complex type parameters thanks to the `[ApiController]`, ASP.Net by default try to bind the complex model to the body of the request. 
-	2- `FromForm` is inferred for action parameters of type `IFormFile` and `IFormFileCollection`. 
-	3- `FromRoute` is inferred for any action parameter name matching a parameter in the route template. When more than one route matches an action parameter, any route value is considered `FromRoute`. 
-	4- `FromQuery` is inferred for any other action parameters.    
+1. When we looked into routing, we learned that route templates should be applied with attributes when building APIs   
+2. what is returned in case of an error follows a certain format, the ProblemDetails format.   
+3. Bind Inferred Source   
+	1. `FromBody` is inferred for complex type parameters thanks to the `[ApiController]`, ASP.Net by default try to bind the complex model to the body of the request.  
+	2. `FromForm` is inferred for action parameters of type `IFormFile` and `IFormFileCollection`.  
+	3. `FromRoute` is inferred for any action parameter name matching a parameter in the route template. When more than one route matches an action parameter, any route value is considered `FromRoute`.  
+	4. `FromQuery` is inferred for any other action parameters.    
 
 ### Creating a set of Father items along side with its children on one go.   
 ```csharp
@@ -846,8 +846,205 @@ namespace CourseLibrary.API.ResourceParameters
 
 ## Chapter 7 - Paging
 
+### Pagination
+It's considered best practice to always implement paging on each collection resource, or at least on those that can also be created.   
+The consumer is responsable to set the Pagination parameters like the page size and the page number. But the provider must set a max limit though.    
+The pagination mechanism must be implemented after fetching the data from the database.  
+If no paging parameters are provided, you should only return the first page by default.   
+Deferred execution allows us to build up our query in the repository and only execute it when we need to. So, we can add the Skip and Take methods to the IQueryable before executing it.  
+
+
+### Returning Pagination Metadata
+The metadata should be returned in the response headers. The [RFC 5988](https://tools.ietf.org/html/rfc5988) defines a way to provide links to related resources in the HTTP headers.  
+**If the metadata is returned along side with the result, it's not considered RESTFull API, because the message is not self-explanatory by itself**  
+Mind the route and the action's name. These informations influences the creation of the next and previous page links by the URI.  
+
+<details><summary><b>Steps used to implement pagination</b></summary>
+
+1. In the repository class, the last instruction before the return is to execute the pagination using the generic util class PagedList.  
+
+```csharp
+    
+    public async Task<PagedList<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
+    {
+        if (authorResourceParameters == null) throw new ArgumentNullException(nameof(authorResourceParameters));
+
+        // collection to start from
+        var collection = _context.Authors as IQueryable<Author>;
+
+        if (!string.IsNullOrWhiteSpace(authorResourceParameters.MainCategory))
+        {
+            var mainCategory = authorResourceParameters.MainCategory.Trim();
+            collection = collection.Where(a => a.MainCategory == mainCategory);
+        }
+
+        if (!string.IsNullOrEmpty(authorResourceParameters.SearchQuery))
+        {
+            var searchQuery = authorResourceParameters.SearchQuery.Trim();
+            collection = collection.Where(a => a.MainCategory.Contains(searchQuery)
+                || a.FirstName.Contains(searchQuery)
+                || a.LastName.Contains(searchQuery));
+        }
+
+        return await PagedList<Author>.CreateAsync(collection,
+            authorResourceParameters.PageNumber,
+            authorResourceParameters.PageSize);
+    }
+```
+
+2. The generic util class PagedList
+```csharp
+namespace CourseLibrary.API.Helpers
+{
+    public class PagedList<T> : List<T>
+    {
+        public int CurrentPage { get; private set; }
+        public int TotalPages { get; private set; }
+        public int PageSize { get; private set; }
+        public int TotalCount { get; private set; }
+        public bool HasPrevious => CurrentPage > 1;
+        public bool HasNext => CurrentPage < TotalPages;
+        public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+        {
+            TotalCount = count;
+            PageSize = pageSize;
+            CurrentPage = pageNumber;
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            AddRange(items);
+        }
+        public static async Task<PagedList<T>> CreateAsync(
+            IQueryable<T> source, int pageNumber, int pageSize)
+        {
+            var count = source.Count();
+            var items = await source.Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize).ToListAsync();
+            return new PagedList<T>(items, count, pageNumber, pageSize);
+        }
+    }
+}
+```
+
+3. Helper class to be used as parameter to serialize the query string parameters of the URI, the maxPageSize, the Filter criteria (MainCategory), the Search Criteria (SearchQuery), PageSize and PageNumber  
+```csharp
+namespace CourseLibrary.API.ResourceParameters
+{
+    public class AuthorResourceParameters
+    {
+        const int maxPageSize = 20;
+        public string? MainCategory { get; set; }
+        public string? SearchQuery { get; set; }
+
+        public int PageNumber { get; set; } = 1;
+        
+        private int _pageSize = 10;
+
+        public int PageSize
+        { 
+            get => _pageSize; 
+            
+            set => _pageSize = (value > maxPageSize) ? maxPageSize : value; }
+            //set => _pageSize = Math.Min(maxPageSize, value); // This algorithm has a problem when the value is 0, the page size will be 0.
+        }
+    }
+}
+```
+
+4. Enumeration to help creating the previous and next page links
+```csharp
+namespace CourseLibrary.API.Helpers
+{
+    public enum ResourceUriType
+    {
+        PreviousPage,
+        NextPage
+    }
+}
+```
+
+5. Method with the switch to create the previous and next page links and passing the mainCategory and searchQuery parameters as well.  
+```csharp
+    private string? CreateAuthorsResourceUri(
+        AuthorResourceParameters authorResourceParameters,
+        ResourceUriType type)
+    {
+
+        switch (type)
+        {
+            case ResourceUriType.PreviousPage:
+                    return Url.Link("GetAuthorsWithResourceParameters",
+                    new
+                    {
+                        mainCategory = authorResourceParameters.MainCategory,
+                        searchQuery = authorResourceParameters.SearchQuery,
+                        pageNumber = authorResourceParameters.PageNumber - 1,
+                        pageSize = authorResourceParameters.PageSize
+                    });
+            case ResourceUriType.NextPage:
+                    return Url.Link("GetAuthorsWithResourceParameters",
+                    new
+                    {
+                        mainCategory = authorResourceParameters.MainCategory,
+                        searchQuery = authorResourceParameters.SearchQuery,
+                        pageNumber = authorResourceParameters.PageNumber + 1,
+                        pageSize = authorResourceParameters.PageSize
+                    });
+            default:
+                    return Url.Link("GetAuthorsWithResourceParameters",
+                    new
+                    {
+                        mainCategory = authorResourceParameters.MainCategory,
+                        searchQuery = authorResourceParameters.SearchQuery,
+                        pageNumber = authorResourceParameters.PageNumber,
+                        pageSize = authorResourceParameters.PageSize
+                    });
+        }
+    }
+
+```
+
+6. The action creates the previous and next page links, if applicable, and adds them to the pagination metadata object. The pagination metadata object is then serialized to JSON and added to the response headers under the X-Pagination key. Finally, the method returns the authors from the repository as usual.
+After retrieving the data from the repository, it creates the previous and next page links using the CreateAuthorsResourceUri method. This method constructs the appropriate URI based on the current page number, page size, and any filtering or searching criteria provided in the AuthorResourceParameters object.
+Before returning the authors, it adds the pagination metadata to the response headers. This metadata includes information such as total count, page size, current page, total pages, and the previous and next page links if applicable. The metadata is serialized to JSON format and added to the X-Pagination header.
+```csharp
+    [HttpGet("GetAuthorsWithResourceParameters", Name = "GetAuthorsWithResourceParameters")]
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthorsWithResourceParameters([FromQuery]
+        AuthorResourceParameters authorResourceParameters)
+    {
+        // get authors from repo
+        var authorsFromRepo = await _courseLibraryRepository
+            .GetAuthorsAsync(authorResourceParameters);
+     
+        var previousPageLink = authorsFromRepo.HasPrevious ?
+            CreateAuthorsResourceUri(authorResourceParameters, 
+            ResourceUriType.PreviousPage) : null;
+
+        var nextPageLink = authorsFromRepo.HasNext ?
+            CreateAuthorsResourceUri(authorResourceParameters, 
+            ResourceUriType.NextPage) : null;
+
+        var paginationMetadata = new
+        {
+            totalCount = authorsFromRepo.TotalCount,
+            pageSize = authorsFromRepo.PageSize,
+            currentPage = authorsFromRepo.CurrentPage,
+            totalPages = authorsFromRepo.TotalPages,
+            previousPageLink = previousPageLink!,
+            nextPageLink = nextPageLink!
+        };
+
+        Response.Headers.Add("X-Pagination",
+            JsonSerializer.Serialize(paginationMetadata));
+
+        // return them
+        return Ok(authorsFromRepo);
+    }
+```
+</details>
+
+
 
 --- 
+
 <details>
 <summary>
 

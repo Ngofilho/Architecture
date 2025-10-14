@@ -1,5 +1,6 @@
 ﻿using CourseLibrary.API.DbContexts;
 using CourseLibrary.API.Entities;
+using CourseLibrary.API.Helpers;
 using CourseLibrary.API.ResourceParameters;
 using Microsoft.EntityFrameworkCore;
 
@@ -160,15 +161,16 @@ public class CourseLibraryRepository : ICourseLibraryRepository
             .ToListAsync();*/
     }
 
-    public async Task<IEnumerable<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
+    public async Task<PagedList<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
     {
         if (authorResourceParameters == null) throw new ArgumentNullException(nameof(authorResourceParameters));
 
+        /* // Used only where are the Searching and/or Filtering parameters. There is no need for it when using Pagination
         if (string.IsNullOrWhiteSpace(authorResourceParameters.MainCategory)
             && string.IsNullOrWhiteSpace(authorResourceParameters.SearchQuery))
         {
             return await GetAuthorsAsync();
-        }
+        }*/
 
         // collection to start from
         var collection = _context.Authors as IQueryable<Author>;
@@ -185,7 +187,15 @@ public class CourseLibraryRepository : ICourseLibraryRepository
                 || a.FirstName.Contains(searchQuery)
                 || a.LastName.Contains(searchQuery));
         }
-        return await collection.ToListAsync();
+
+        return await PagedList<Author>.CreateAsync(collection,
+            authorResourceParameters.PageNumber,
+            authorResourceParameters.PageSize);
+        /*
+        return await collection
+            .Skip(authorResourceParameters.PageSize * (authorResourceParameters.PageNumber - 1))
+            .Take(authorResourceParameters.PageSize)
+            .ToListAsync();*/
     }
 
     public async Task<IEnumerable<Author>> GetAuthorsAsync(IEnumerable<Guid> authorIds)
