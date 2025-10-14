@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using CourseLibrary.API.Helpers;
 using CourseLibrary.API.Models;
 using CourseLibrary.API.ResourceParameters;
 using CourseLibrary.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace CourseLibrary.API.Controllers;
 
@@ -38,16 +40,74 @@ public class AuthorsController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo));
     }
 
-    [HttpGet("GetAuthorsWithResourceParameters")]
-    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors([FromQuery]
+    [HttpGet("GetAuthorsWithResourceParameters", Name = "GetAuthorsWithResourceParameters")]
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthorsWithResourceParameters([FromQuery]
         AuthorResourceParameters authorResourceParameters)
     {
         // get authors from repo
         var authorsFromRepo = await _courseLibraryRepository
             .GetAuthorsAsync(authorResourceParameters);
-        
+     
+        var previousPageLink = authorsFromRepo.HasPrevious ?
+            CreateAuthorsResourceUri(authorResourceParameters, 
+            ResourceUriType.PreviousPage) : null;
+
+        var nextPageLink = authorsFromRepo.HasNext ?
+            CreateAuthorsResourceUri(authorResourceParameters, 
+            ResourceUriType.NextPage) : null;
+
+        var paginationMetadata = new
+        {
+            totalCount = authorsFromRepo.TotalCount,
+            pageSize = authorsFromRepo.PageSize,
+            currentPage = authorsFromRepo.CurrentPage,
+            totalPages = authorsFromRepo.TotalPages,
+            previousPageLink = previousPageLink!,
+            nextPageLink = nextPageLink!
+        };
+
+        Response.Headers.Add("X-Pagination",
+            JsonSerializer.Serialize(paginationMetadata));
+
         // return them
         return Ok(authorsFromRepo);
+    }
+
+    private string? CreateAuthorsResourceUri(
+        AuthorResourceParameters authorResourceParameters,
+        ResourceUriType type)
+    {
+
+        switch (type)
+        {
+            case ResourceUriType.PreviousPage:
+                    return Url.Link("GetAuthorsWithResourceParameters",
+                    new
+                    {
+                        mainCategory = authorResourceParameters.MainCategory ?? "Verdao",
+                        searchQuery = authorResourceParameters.SearchQuery ?? "Reidelas",
+                        pageNumber = authorResourceParameters.PageNumber - 1,
+                        pageSize = authorResourceParameters.PageSize
+                    });
+            case ResourceUriType.NextPage:
+                    return Url.Link("GetAuthorsWithResourceParameters",
+                    new
+                    {
+                        mainCategory = authorResourceParameters.MainCategory ?? "Verdao",
+                        searchQuery = authorResourceParameters.SearchQuery ?? "Palmeiras",
+                        pageNumber = authorResourceParameters.PageNumber + 1,
+                        pageSize = authorResourceParameters.PageSize
+                    });
+            default:
+                    return Url.Link("GetAuthorsWithResourceParameters",
+                    new
+                    {
+                        mainCategory = authorResourceParameters.MainCategory ?? "Verdao",
+                        searchQuery = authorResourceParameters.SearchQuery?? "Giuseppe",
+                        pageNumber = authorResourceParameters.PageNumber,
+                        pageSize = authorResourceParameters.PageSize
+                    });
+        }
     }
 
 
