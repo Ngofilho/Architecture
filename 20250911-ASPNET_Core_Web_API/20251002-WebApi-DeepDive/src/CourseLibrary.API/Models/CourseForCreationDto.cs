@@ -2,7 +2,7 @@
 
 namespace CourseLibrary.API.Models;
 
-public class CourseForCreationDto
+public class CourseForCreationDto : CourseForManipulationDto
 {
     [Required]
     [MaxLength(100)]

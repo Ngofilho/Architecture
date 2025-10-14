@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CourseLibrary.API.Models;
+using CourseLibrary.API.ResourceParameters;
 using CourseLibrary.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,17 +25,31 @@ public class AuthorsController : ControllerBase
 
     [HttpGet] 
     [HttpHead]
-    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors()
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(
+        [FromQuery] string? mainCategory = "", string? searchQuery = "")
     {
         // throw new Exception("Test exception");
 
         // get authors from repo
         var authorsFromRepo = await _courseLibraryRepository
-            .GetAuthorsAsync(); 
+            .GetAuthorsAsync(mainCategory, searchQuery); 
 
         // return them
         return Ok(_mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo));
     }
+
+    [HttpGet("GetAuthorsWithResourceParameters")]
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors([FromQuery]
+        AuthorResourceParameters authorResourceParameters)
+    {
+        // get authors from repo
+        var authorsFromRepo = await _courseLibraryRepository
+            .GetAuthorsAsync(authorResourceParameters);
+        
+        // return them
+        return Ok(authorsFromRepo);
+    }
+
 
     [HttpGet("{authorId}", Name = "GetAuthor")]
     public async Task<ActionResult<AuthorDto>> GetAuthor(Guid authorId)
