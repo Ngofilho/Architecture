@@ -502,6 +502,7 @@ When a validation error happens, the consumer of the API needs to be notified. I
 - Allows identifying distinct problem types specific to API needs  
 
 This is the desired reporting validation from the RFC. To achieve this, it's necessary to extend the `ApiController` implementation.  
+
 ```json
 // Content-Type: application/problem+json
 {
@@ -519,6 +520,328 @@ This is the desired reporting validation from the RFC. To achieve this, it's nec
 "traceId": "0HLO3MNBSPFI2:00000001"
 }}
 ```
+
+To achieve the response above, it's sugested to implement the code bellow
+```csharp
+ builder.Services.AddControllers(configure =>
+        {
+            configure.ReturnHttpNotAcceptable = true;
+        })
+        .AddNewtonsoftJson(setupAction =>
+        {
+            setupAction.SerializerSettings.ContractResolver =
+                new CamelCasePropertyNamesContractResolver();
+        })
+        .AddXmlDataContractSerializerFormatters()
+        .ConfigureApiBehaviorOptions(setupAction =>
+        {
+            setupAction.InvalidModelStateResponseFactory = context =>
+            {
+                // create a validation problem details object
+                var problemDetailsFactory = context.HttpContext.RequestServices
+                    .GetRequiredService<ProblemDetailsFactory>();
+
+                var validationProblemDetails = problemDetailsFactory
+                    .CreateValidationProblemDetails(
+                        context.HttpContext,
+                        context.ModelState);
+
+                // add additional info not added by default
+                validationProblemDetails.Detail = 
+                    "See the errors field for details.";
+                validationProblemDetails.Instance = 
+                    context.HttpContext.Request.Path;
+
+                // report invalid model state responses as validation issues
+                validationProblemDetails.Type = 
+                    "https://courselibrary.com/modelvalidationproblem";
+                validationProblemDetails.Status = 
+                    StatusCodes.Status422UnprocessableEntity;
+                validationProblemDetails.Title = 
+                    "One or more validation errors occurred.";
+
+                return new UnprocessableEntityObjectResult(
+                    validationProblemDetails)
+                {
+                    ContentTypes = { "application/problem+json" }
+                };
+            };
+        });
+```
+
+### Validation with Custom IValidatableObject
+
+```csharp
+public abstract class CourseForManipulationDto : IValidatableObject
+{
+    [Required(ErrorMessage = "You should fill out a title.")]
+    [MaxLength(100, ErrorMessage = "The title shouldn't have more than 100 characters.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(1500, ErrorMessage = "The description shouldn't have more than 1500 characters.")]
+    public virtual string Description { get; set; } = string.Empty;
+
+    public IEnumerable<ValidationResult> Validate(
+      ValidationContext validationContext)
+    {
+        if (Title == Description)
+        {
+            yield return new ValidationResult(
+            "The provided description should be different from the title.",
+            new[] { "Course" });
+        }
+    }
+}
+```
+
+### Validation with a Custom Attribute
+
+```csharp
+[CourseTitleMustBeDifferentFromDescription]
+public abstract class CourseForManipulationDto
+{
+    [Required(ErrorMessage = "You should fill out a title.")]
+    [MaxLength(100, ErrorMessage = "The title shouldn't have more than 100 characters.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(1500, ErrorMessage = "The description shouldn't have more than 1500 characters.")]
+    public virtual string Description { get; set; } = string.Empty;    
+}
+```
+
+The CourseTitleMustBeDifferentFromDescription sample code
+```csharp
+using CourseLibrary.API.Models;
+using System.ComponentModel.DataAnnotations;
+
+namespace CourseLibrary.API.ValidationAttributes;
+
+public class CourseTitleMustBeDifferentFromDescriptionAttribute
+    : ValidationAttribute
+{
+    public CourseTitleMustBeDifferentFromDescriptionAttribute()
+    {
+    }
+
+    protected override ValidationResult? IsValid(object? value, 
+        ValidationContext validationContext)
+    {
+        if (validationContext.ObjectInstance is not 
+            CourseForManipulationDto course)
+        {
+            throw new Exception($"Attribute " +
+                $"{nameof(CourseTitleMustBeDifferentFromDescriptionAttribute)} " +
+                $"must be applied to a " +
+                $"{nameof(CourseForManipulationDto)} or derived type.");
+        }
+
+        if (course.Title == course.Description)
+        {
+            return new ValidationResult(
+            "The provided description should be different from the title.",
+                new[] { nameof(CourseForManipulationDto) });
+        }
+
+        return ValidationResult.Success;
+    }
+}
+```
+ Even though at class level, the same rules still apply, at property level, custom attributes get executed before the Validate method gets called, and that can come in handy for property level validation.
+
+---
+
+## Chapter 6 - Supporting Filtering and Searching
+
+### Filtering
+Filtering allows you to be precise by adding filters until you get exactly the result you want.
+In the example bellow, it is filtering the courses from the author.
+
+<details><summary> Filter Sample Code</summary>
+
+```csharp
+//Controller
+public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(
+    [FromQuery]string? mainCategory) // the filter parameter is optional hence the string?
+{
+    var coursesToReturn = await _courseLibraryRepository
+        .GetAuthorsAsync(mainCategory);
+    return Ok(coursesToReturn);
+}
+
+//Repository
+public async Task<IEnumerable<Author>> GetAuthorsAsync(string? mainCategory)
+{
+    // If the filter parameter is null or whitespace, return all authors without the filter.
+    if (string.IsNullOrWhiteSpace(mainCategory))
+    {
+        // can be a call to the repository method to get all authors
+        return await _context.Authors.ToListAsync();
+    })
+
+    // remove all the spaces of the filter parameter
+    mainCategory = mainCategory.Trim();
+
+    // filter and return the result
+    return await _context.Authors
+        .Where(a => a.MainCategory == mainCategory)
+        .ToListAsync();}
+
+```
+
+</details>
+
+### Searching
+Searcing allows you to go wider - it's used when you don't exactly know which items will be in the collection.
+
+<details><summary> Search Sample Code</summary>
+
+```csharp
+//Controller
+public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(
+    [FromQuery]string? searchQuery) // the search parameter is optional hence the string?
+{
+    var coursesToReturn = await _courseLibraryRepository
+        .GetAuthorsAsync(searchQuery);
+    return Ok(coursesToReturn);
+}
+
+// repository
+public async Task<IEnumerable<Author>> GetAuthorsAsync(string? searchQuery)
+{
+    // Check if the search parameter is null or whitespace, return all authors without the search parameter.
+    if (string.IsNullOrWhiteSpace(searchQuery)) return await GetAuthorsAsync();
+
+    searchQuery = searchQuery.Trim();
+    return await _context.Where(a => a.MainCategory.Contains(searchQuery)
+            || a.FirstName.Contains(searchQuery)
+            || a.LastName.Contains(searchQuery));
+}
+```
+
+</details>
+
+### Deferred Execution  
+
+When working with Entity Framework Core, we use LINQ to build our queries. With deferred execution, the query variable itself doesn't hold the query results. 
+It only stores the query commands. Execution of the query is deferred until the query variable is iterated over. So, deferred execution means that query execution occurs sometime after the query is constructed. We can get this behavior by working with `IQueryable` implementing collections. `IQueryable` of `T` allows us to execute a query against a specific data source. 
+And while building upon it, it creates an expression tree. But the query itself isn't actually sent to the Datastore until iteration happens. 
+Iteration can happen in different ways. 
+* One way is by using an IQueryable in a loop. 
+* Another way is by calling something like `ToList`, `ToArray`, or `ToDictionary` on it because that means converting the expression tree to an actual list of items. 
+* And another way is by calling singleton queries. Singleton queries are queries like `average`, `count`, and `first`. Because to get to the `count` or the `first` item of an `IQueryable`, the list has to be iterated over. But as long as we can avoid that, we can build our query by, for example, adding different Where statements after each other, and we can ensure that it's only executed after that. And that is exactly what we did when combining searching with filtering.
+
+<details><summary> 
+
+**Filtering and searching combined - 2 different fashion**  </summary>
+
+**First Fashion - Direct Query Parameters**
+```csharp
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(
+        [FromQuery] string? mainCategory = "", string? searchQuery = "")
+    {
+        // throw new Exception("Test exception");
+
+        // get authors from repo
+        var authorsFromRepo = await _courseLibraryRepository
+            .GetAuthorsAsync(mainCategory, searchQuery); 
+
+        // return them
+        return Ok(_mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo));
+    }
+
+
+//repository
+public async Task<IEnumerable<Author>> GetAuthorsAsync(string? mainCategory, string? searchQuery)
+    {
+        if (string.IsNullOrWhiteSpace(mainCategory) 
+            && string.IsNullOrWhiteSpace(searchQuery)) return await GetAuthorsAsync();
+
+        // collection to start from
+        var collection = _context.Authors as IQueryable<Author>;
+
+        if (!string.IsNullOrWhiteSpace(mainCategory))
+        {
+            mainCategory = mainCategory.Trim();
+            collection = collection.Where(a => a.MainCategory == mainCategory);
+        }
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            searchQuery = searchQuery.Trim();
+            collection = collection.Where(a => a.MainCategory.Contains(searchQuery)
+                || a.FirstName.Contains(searchQuery)
+                || a.LastName.Contains(searchQuery));
+        }
+
+        return await collection.ToListAsync();
+}
+```
+
+**Second Fashion - Serialized Complex Type**
+
+```csharp
+// The URI used to request this kind of implementation. Mind the route and the query string parameters.
+// http://localhost:5001/api/authors/GetAuthorsWithResourceParameters?mainCategory=Singing&searchQuery=a
+
+
+// A complex type to serialize the query parameters of the URI
+namespace CourseLibrary.API.ResourceParameters
+{
+    public class AuthorResourceParameters
+    {
+        public string? MainCategory { get; set; }
+        public string? SearchQuery { get; set; }
+    }
+}
+
+// Controller - Mind the parameter of the Action and the bind to deserialize the parameter - [FromQuery]
+    [HttpGet("GetAuthorsWithResourceParameters")]
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors([FromQuery]
+        AuthorResourceParameters authorResourceParameters)
+    {
+        // get authors from repo
+        var authorsFromRepo = await _courseLibraryRepository
+            .GetAuthorsAsync(authorResourceParameters);
+        
+        // return them
+        return Ok(authorsFromRepo);
+    }
+
+// Repository - As Usual
+    public async Task<IEnumerable<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
+    {
+        if (authorResourceParameters == null) throw new ArgumentNullException(nameof(authorResourceParameters));
+
+        if (string.IsNullOrWhiteSpace(authorResourceParameters.MainCategory)
+            && string.IsNullOrWhiteSpace(authorResourceParameters.SearchQuery))
+        {
+            return await GetAuthorsAsync();
+        }
+
+        // collection to start from
+        var collection = _context.Authors as IQueryable<Author>;
+
+        if (!string.IsNullOrWhiteSpace(authorResourceParameters.MainCategory))
+        {
+            var mainCategory = authorResourceParameters.MainCategory.Trim();
+            collection = collection.Where(a => a.MainCategory == mainCategory);
+        }
+        if (!string.IsNullOrEmpty(authorResourceParameters.SearchQuery))
+        {
+            var searchQuery = authorResourceParameters.SearchQuery.Trim();
+            collection = collection.Where(a => a.MainCategory.Contains(searchQuery)
+                || a.FirstName.Contains(searchQuery)
+                || a.LastName.Contains(searchQuery));
+        }
+        return await collection.ToListAsync();
+    }
+
+```
+
+
+
+</details>
+
 
 ---
 

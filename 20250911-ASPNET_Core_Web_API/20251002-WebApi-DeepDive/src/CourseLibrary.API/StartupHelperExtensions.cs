@@ -23,6 +23,8 @@ internal static class StartupHelperExtensions
             new CamelCasePropertyNamesContractResolver();
         })
         .AddXmlDataContractSerializerFormatters() // The order of the calling of this method changes the default return type of the response.   
+        
+        // Extends the return to add the instance and the detail properties to the response body.  
         .ConfigureApiBehaviorOptions(configure =>
         {
             configure.InvalidModelStateResponseFactory = context =>

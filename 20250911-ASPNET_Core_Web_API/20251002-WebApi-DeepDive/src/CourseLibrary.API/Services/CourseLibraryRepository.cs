@@ -1,5 +1,6 @@
 ﻿using CourseLibrary.API.DbContexts;
-using CourseLibrary.API.Entities; 
+using CourseLibrary.API.Entities;
+using CourseLibrary.API.ResourceParameters;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseLibrary.API.Services;
@@ -125,6 +126,67 @@ public class CourseLibraryRepository : ICourseLibraryRepository
     {
         return await _context.Authors.ToListAsync();
     }
+    public async Task<IEnumerable<Author>> GetAuthorsAsync(string? mainCategory, string? searchQuery)
+    {
+        if (string.IsNullOrWhiteSpace(mainCategory) 
+            && string.IsNullOrWhiteSpace(searchQuery))
+        {
+            return await GetAuthorsAsync();
+        }
+
+        // collection to start from
+        var collection = _context.Authors as IQueryable<Author>;
+
+        if (!string.IsNullOrWhiteSpace(mainCategory))
+        {
+            mainCategory = mainCategory.Trim();
+            collection = collection.Where(a => a.MainCategory == mainCategory);
+        }
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            searchQuery = searchQuery.Trim();
+            collection = collection.Where(a => a.MainCategory.Contains(searchQuery)
+                || a.FirstName.Contains(searchQuery)
+                || a.LastName.Contains(searchQuery));
+        }
+
+        return await collection.ToListAsync();
+        /*
+        mainCategory = mainCategory.Trim();
+
+        return await _context.Authors
+            .Where(a => a.MainCategory == mainCategory)
+            .ToListAsync();*/
+    }
+
+    public async Task<IEnumerable<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
+    {
+        if (authorResourceParameters == null) throw new ArgumentNullException(nameof(authorResourceParameters));
+
+        if (string.IsNullOrWhiteSpace(authorResourceParameters.MainCategory)
+            && string.IsNullOrWhiteSpace(authorResourceParameters.SearchQuery))
+        {
+            return await GetAuthorsAsync();
+        }
+
+        // collection to start from
+        var collection = _context.Authors as IQueryable<Author>;
+
+        if (!string.IsNullOrWhiteSpace(authorResourceParameters.MainCategory))
+        {
+            var mainCategory = authorResourceParameters.MainCategory.Trim();
+            collection = collection.Where(a => a.MainCategory == mainCategory);
+        }
+        if (!string.IsNullOrEmpty(authorResourceParameters.SearchQuery))
+        {
+            var searchQuery = authorResourceParameters.SearchQuery.Trim();
+            collection = collection.Where(a => a.MainCategory.Contains(searchQuery)
+                || a.FirstName.Contains(searchQuery)
+                || a.LastName.Contains(searchQuery));
+        }
+        return await collection.ToListAsync();
+    }
 
     public async Task<IEnumerable<Author>> GetAuthorsAsync(IEnumerable<Guid> authorIds)
     {
@@ -148,5 +210,6 @@ public class CourseLibraryRepository : ICourseLibraryRepository
     {
         return (await _context.SaveChangesAsync() >= 0);
     }
+
 }
 
