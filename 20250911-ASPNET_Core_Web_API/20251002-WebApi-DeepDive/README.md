@@ -1041,7 +1041,314 @@ Before returning the authors, it adds the pagination metadata to the response he
 ```
 </details>
 
+---
 
+## Chapter 8 - Suporting Sorting
+The sorting in the this algorythm is happens in the repository layer but it is checked in the service layer though.  
+In the service layer happens the mapping between the *DTO* and the *Entity*. The clients requires a sorting by name for example, the entity doesn't know anything about *name*, the entity knows about *first* and *last* name.  
+
+<details><summary><b>Sorting Implementation Steps</b></summary>
+
+1. Class used by the controller action to serialize the query string parameters of the URI. It contains the Filter criteria (MainCategory), the Search Criteria (SearchQuery), PageSize, PageNumber and **OrderBy** for sorting.  
+The **orderBy** parameter is optional, and if not provided, the default sorting is by Name.  
+This is the same class used in the pagination, searching, filtering implementations.
+```csharp
+public class AuthorResourceParameters
+    {
+        const int maxPageSize = 20;
+        public string? MainCategory { get; set; }
+        public string? SearchQuery { get; set; }
+
+        public int PageNumber { get; set; } = 1;
+        
+        private int _pageSize = 10;
+
+        public int PageSize
+        { 
+            get => _pageSize; 
+            
+            //set => _pageSize = (value > maxPageSize) ? maxPageSize : value; }
+            set => _pageSize = Math.Min(maxPageSize, value); 
+        }
+        
+        // Property used for sorting
+        public string OrderBy { get; set; } = "Name";
+    }
+```
+
+2. In the controller, the first *if* checks if the sorting parameter exists, it not, it returns to the client a 400 status coding stating that the sortby must be a valid parameter.  
+```csharp
+    [HttpGet(Name ="GetAuthors")]
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors([FromQuery]
+        AuthorResourceParameters authorResourceParameters)
+    {
+        // Check for a valid sorting parameter
+        if (!_propertyMappingService
+            .ValidMappingExistsFor<AuthorDto, Entities.Author>(
+            authorResourceParameters.OrderBy))
+        {
+            return BadRequest();
+        }
+
+        // get authors from repo
+        var authorsFromRepo = await _courseLibraryRepository
+            .GetAuthorsAsync(authorResourceParameters);
+
+        // Same code as the example above for pagination, searching and filtering creations.
+        return Ok(_mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo));
+    }
+```
+
+3. In the repository, after the **filtering** and **searching**, but before the **pagination**, the **sorting** is applied.
+```csharp
+    public async Task<PagedList<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
+    {
+        if (authorResourceParameters == null) throw new ArgumentNullException(nameof(authorResourceParameters));
+        
+        // collection to start from
+        var collection = _context.Authors as IQueryable<Author>;
+
+        // Same as the example above for filtering, pagination and searching creations.
+
+        if (!string.IsNullOrWhiteSpace(authorResourceParameters.OrderBy))
+        {
+            // get property mapping dictionary
+            var authorPropertyMappingDictionary =
+                _propertyMappingService.GetPropertyMapping<AuthorDto, Author>();
+            
+            // apply sorting call
+            collection = collection.ApplySort(authorResourceParameters.OrderBy,
+                authorPropertyMappingDictionary);            
+        }
+
+        return await PagedList<Author>.CreateAsync(collection,
+            authorResourceParameters.PageNumber,
+            authorResourceParameters.PageSize);
+    }
+```
+
+4. The **ApplySort** extension method used to apply the sorting to the IQueryable collection.   
+
+The method uses the **System.Linq.Dynamic.Core** package to apply the sorting.  
+
+```csharp
+using System.Linq.Dynamic.Core;
+
+namespace CourseLibrary.API.Helpers;
+
+public static class IQueryableExtensions
+{
+    public static IQueryable<T> ApplySort<T>(
+        this IQueryable<T> source,
+        string orderBy,
+        Dictionary<string, PropertyMappingValue> mappingDictionary)
+    {
+    // ******************* Begining of the first part of the algorythm *******************
+    // Checks if the source is null, if the mappingDictionary is null and if the orderBy parameter is null or whitespace.
+        if (source == null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        if (mappingDictionary == null)
+        {
+            throw new ArgumentNullException(nameof(mappingDictionary));
+        }
+
+        if (string.IsNullOrWhiteSpace(orderBy))
+        {
+            return source;
+        }
+    // ******************* End of the first part of the algorythm *******************
+
+    // ******************* Begining of the second part of the algorythm *******************        
+
+        var orderByString = string.Empty;
+
+        // the orderBy string is separated by ",", so we split it.
+        var orderByAfterSplit = orderBy.Split(',');
+        
+        //apply each orderby clause
+        foreach (var orderByClause in orderByAfterSplit)
+        {
+            // trim the orderBy clause, as it might contain leading
+            // or trailing spaces. Can't trim the var in the foreach,
+            // so we use a new var.
+            var trimmedOrderByClause = orderByClause.Trim();
+
+            // if the sort option ends with " desc", we order
+            // descending, otherwise ascending
+            var orderDescending = trimmedOrderByClause.EndsWith(" desc");
+
+            // remove " asc" or " desc" from the orderBy clause, so we
+            // get the property name to look for in the mapping dictionary
+            var indexOfFirstSpace = trimmedOrderByClause.IndexOf(" ");
+            var propertyName = indexOfFirstSpace == -1 ?
+                trimmedOrderByClause : trimmedOrderByClause
+                .Remove(indexOfFirstSpace);
+
+            // find the matching property
+            if (!mappingDictionary.ContainsKey(propertyName))
+            {
+                throw new ArgumentException($"Key mapping for {propertyName} is missing");
+            }
+
+            // get the PropertyMappingValue
+            var propertyMappingValue = mappingDictionary[propertyName];
+            
+            if (propertyMappingValue == null)
+            {
+                throw new ArgumentNullException(nameof(propertyMappingValue));
+            }
+
+            // revert sort order if necessary
+            if (propertyMappingValue.Revert)
+            {
+                orderDescending = !orderDescending;
+            }
+
+            // Run through the properties names
+            foreach (var destinationProperty in 
+                propertyMappingValue.DestinationProperties)
+            {
+                orderByString = orderByString +
+                    (string.IsNullOrWhiteSpace(orderByString) ? string.Empty : ", ")
+                    + destinationProperty
+                    + (orderDescending ? " descending" : " ascending");
+            }
+        }
+    // ******************* End of the second part of the algorythm *******************
+
+    // ******************* Begining of the third part of the algorythm *******************
+        
+        // apply the orderby string to the source        
+        return source.OrderBy(orderByString);
+        
+    // ******************* End of the third part of the algorythm *******************
+    }
+}
+
+```
+
+5. The Interface IPropertyMapping used as **Mark Interface** in the PropertyMapping class.
+```csharp
+namespace CourseLibrary.API.Services;
+
+public interface IPropertyMapping
+{
+}
+```
+
+6. The **PropertyMapping** class that inherits from the IPropertyMapping interface. It holds the mapping dictionary between the DTO and the Entity.
+```csharp
+namespace CourseLibrary.API.Services;
+
+public class PropertyMapping<TSource, TDestination> : IPropertyMapping
+{
+    public Dictionary<string, PropertyMappingValue> MappingDictionary { get; private set; }
+    public PropertyMapping(Dictionary<string, PropertyMappingValue> mappingDictionary)
+    {
+        MappingDictionary = mappingDictionary ??
+            throw new ArgumentNullException(nameof(mappingDictionary));
+    }
+}
+
+```
+
+7. The **PropertyMappingValue**   
+```csharp
+public class PropertyMappingValue
+{
+    public IEnumerable<string> DestinationProperties { get; private set; }
+    public bool Revert { get; private set; }
+
+    public PropertyMappingValue(IEnumerable<string> destinationProperties, bool revert = false)
+    {
+        DestinationProperties = destinationProperties ??
+            throw new ArgumentNullException(nameof(destinationProperties));
+        Revert = revert;
+    }
+}
+```
+
+8. The **PropertyMappingService** class that holds the mapping dictionary and the methods to get the mapping dictionary and to check if the sorting parameter exists in the mapping dictionary.  
+8. The service is this case is used to validate if it's applicable to sort by the parameter provided by the client or not.  
+```csharp
+
+namespace CourseLibrary.API.Services;
+
+public class PropertyMappingService : IPropertyMappingService
+{
+    private readonly Dictionary<string, PropertyMappingValue> _authorPropertyMapping =
+        new (StringComparer.OrdinalIgnoreCase)
+        {
+            { "Id", new (new [] { "Id" }) },
+            { "MainCategory", new (new [] { "MainCategory" }) },
+            { "Age", new (new [] { "DateOfBirth" }, true) },
+            { "Name", new (new [] { "FirstName", "LastName" }) }
+        };
+
+    private readonly IList<IPropertyMapping> _propertyMappings = new List<IPropertyMapping>();
+    public PropertyMappingService()
+    {
+        _propertyMappings.Add(new PropertyMapping<AuthorDto, Author>(
+            _authorPropertyMapping));
+    }
+
+    public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>()
+    {
+        // get matching mapping
+        var matchingMapping = _propertyMappings
+            .OfType<PropertyMapping<TSource, TDestination>>();
+
+        if (matchingMapping.Count() ==1)
+        {
+            return matchingMapping.First().MappingDictionary;
+        }
+
+        throw new Exception($"Cannot find exact property mapping instance " +
+            $"for <{typeof(TSource)},{typeof(TDestination)}>");        
+    }
+
+    public bool ValidMappingExistsFor<TSource, TDestination>(string fields)
+    {
+        var propertyMapping = GetPropertyMapping<TSource, TDestination>();
+
+        if (string.IsNullOrWhiteSpace(fields))
+        {
+            return true;
+        }
+
+        // the string is separated by ",", so we split it.
+        var fieldsAfterSplit = fields.Split(',');
+
+        // run through the fields clauses
+        foreach (var field in fieldsAfterSplit)
+        {
+            // trim
+            var trimmedField = field.Trim();
+
+            // remove everything after the first " " - if the fields
+            // are coming from an orderBy string, this part must be
+            // ignored
+
+            var indexOfFirstSpace = trimmedField.IndexOf(" ");
+            var propertyName = indexOfFirstSpace == -1 ?
+                trimmedField : trimmedField.Remove(indexOfFirstSpace);
+
+            // find the matching property
+            if (!propertyMapping.ContainsKey(propertyName))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+
+</details>
 
 --- 
 
@@ -1058,4 +1365,18 @@ Before returning the authors, it adds the pagination metadata to the response he
 
 </details>
 
+<details><summary>
+### Libraries</summary>
+
+1. AutoMapper.Extensions.Microsoft.DependencyInjection - v12.0.1  
+2. Microsoft.AspNetCore.JsonPatch - v9.0.9  
+3. Microsoft.AspNetCore.Mvc.NewtonsoftJson - v8.0.0  
+4. System.Linq.Dynamic.Core - v1.3.7  
+
 </details>
+
+</details>
+
+
+```csharp
+```
