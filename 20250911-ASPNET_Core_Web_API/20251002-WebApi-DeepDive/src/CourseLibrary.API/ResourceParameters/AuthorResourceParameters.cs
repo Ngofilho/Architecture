@@ -17,5 +17,7 @@
             //set => _pageSize = (value > maxPageSize) ? maxPageSize : value; }
             set => _pageSize = Math.Min(maxPageSize, value); 
         }
+
+        public string OrderBy { get; set; } = "Name";
     }
 }
