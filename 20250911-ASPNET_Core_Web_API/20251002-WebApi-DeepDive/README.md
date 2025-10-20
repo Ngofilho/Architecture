@@ -150,7 +150,7 @@ It's a good practice to annotate ApiControllers with `[ApiController]` attribute
         }
 ```
 
-The model binder exmaple
+The model binder example
 ```csharp
     /*
     Class used to bind a list of guids from the route and to be used on the GET method of the AuthorCollectionController
@@ -222,7 +222,7 @@ The response can follow the same policy of the PUT response.
 It's the JsonPatch standard that defines a JSON document structure for expressing a sequence of operations to apply to a JSON document.  
 The `application/json‑patch+json` media type is used to identify such PATCH documents.  
 
-There's six different operations possible. 
+There's six different operations possible.  
 The **add** operation will add a property at a path location with a specific value, passed through via value. If it is used on a path that exists, the property value will be replaced. If it is used on an un‑existing path, the property should be added to the resource. But something like that is typically only possible when working with dynamic resources, often in CRM‑like systems.  
 The **remove** operation will remove a property, or in non‑dynamic cases, set it to its default value. It only has one property that has to be set next to the operation, path.   
 The **Replace** replaces the value at the specified path with the provided value. It's functionally the same as a remove operation, followed by an add operation.    
@@ -234,33 +234,38 @@ The **Test** tests that a value at a target location is equal to a specified val
 
 ```json
 [{
-"op":"add",
-"from":"/a/b",
-"value":"palmeiras"
+    "op":"add",
+    "from":"/a/b",
+    "value":"palmeiras"
 },
+
 {
-"op":"remove",
-"from":"/a/b"
+    "op":"remove",
+    "from":"/a/b"
 },
+
 {
-"op":"replace",
-"from":"/a/b",
-"path":"verdao"
+    "op":"replace",
+    "from":"/a/b",
+    "path":"verdao"
 },
+
 {
-"op":"copy",
-"from":"/a/b",
-"path":"/a/c"
+    "op":"copy",
+    "from":"/a/b",
+    "path":"/a/c"
 },
+
 {
-"op":"move",
-"from":"a/b",
-"path":"/a/c"
+    "op":"move",
+    "from":"a/b",
+    "path":"/a/c"
 },
+
 {
-"op":"test",
-"from":"/a/b",
-"path":"Palmeiras"
+    "op":"test",
+    "from":"/a/b",
+    "path":"Palmeiras"
 }
 ]
 ```
@@ -438,7 +443,8 @@ An OPTIONS request represents a request for information about the communication 
 OPTIONS tell us whether or not we can get the resource POST with deleted and so on. It thus works on the resource level. These OPTIONS should be returned in the allow response letter as a comma‑separated list of method names.  
 We could, by the way, include a response body which describes the options. But the format of that is not covered by the HTTP standard.  
 
-Sample of `OPTIONS` implementation  
+
+<details><summary>Sample of `OPTIONS` implementation  </summary>
 ```csharp
     [HttpOptions()]
     public IActionResult GetAuthorsOptions()
@@ -461,7 +467,29 @@ builder.Services.AddControllers(configure =>
         })
         .AddXmlDataContractSerializerFormatters();
 ```
+</details> 
+
 ### HTTP method overview by use case
+|Resource|Route|Responses|Possible Statuses|Obs|
+|-|-|-|-|-|
+|Reading Resources|GET `api/authors`|`[{author},{author}]` |200, 404|-|
+|Reading Resources|GET `api/authors/{authorId}`|`{author}` |200, 404|-|
+|Deleting Resources|DELETE `api/authors/{authorId}`|-|204, 404|-|
+|Deleting Resources|DELETE `api/authors/`|-|204, 404|Rarely implemented|
+|Creating Resources (server)|POST `api/authors` - Body: `{author}`|`{author}`|201, 404|-|
+|Creating Resources (server)|POST `api/authors/{authorId}`|-|404 or 409|can never be successful|
+|Creating Resources (server)|POST `api/authorcollections` - Body: `{authorCollection}`|`{authorCollection}`|201, 404|Create a resource for adding a collection in one go|
+|Creating Resources (consumer)|PUT `api/authors/{authorId}` - Body: `{author}`|`{author}`|201|-|
+|Creating Resources (consumer)|PATCH `api/authors/{authorId}` - Body: `{JsonPatchDocument on author}`|`{author}`|201|-|
+|Updating Resources (full)|PUT `api/authors/{authorId}` - Body: `{author}`|`{author}`|200, 204, 404|-|
+|Updating Resources (full)|PUT `api/authors/{authorId}` - Body: `[{author},{author}]`|`[{author},{author}]`|200, 204, 404|Rarely implemented|
+|Updating Resources (partial)|PATCH `api/authors/{authorId}` - Body: `{JsonPatchDocument on author}`|`{author}`|200, 204, 404|-|
+|Updating Resources (partial)|PATCH `api/authors` - Body: `{JsonPatchDocument on authors}`|`[{author},{author}]`|200, 204, 404|Rarely implemented|
+
+
+
+
+
 ---
 
 ## Chapter 5 - Validating Data and Reporting Validation Errors  
@@ -1352,6 +1380,231 @@ public class PropertyMappingService : IPropertyMappingService
 
 --- 
 
+## Chapter 9 - Supporting Data Shaping
+
+Implment one type of shaping for collections and another for single entities, otherwise it will jeopardize the performance.  
+
+<details><summary></summary>
+
+
+```csharp
+```
+
+```csharp
+```
+
+
+</details>
+
+---
+
+## Chapter 10 - Learning and implementing HATEOAS
+
+[HAL - Hyperlink As Language](datatracker.ietf.org/doc/html/draft-kelly-json-hal-11)  
+[Siren - Hypermedia specification for representing entities](github.com/kevinwiber/siren)    
+[NHateoas - Copilot Suggestion](github.com/JeremySkinner/NHateoas)  
+[NHateoas](github.com/yuri-sannikov/NHateoas)  
+[JSON for Linking Data](https://json-ld.org)  
+[JSON api](https://jsonapi.org)  
+[OData - OASIS](www.odata.org)
+
+---
+
+## Chapter 11 - Combining HATEOAS with Semantic Media Types
+
+### Semantic Media Types
+Media types that thell something about the semantics of the data, in other words: *what the data means*.
+
+**Vendor-specific Media Types**  
+`application/vnd.marvin.hateoas+json`  
+1. application => Top-level type  
+2. vnd => Vendor-specific  
+3. marvin => Vendor identifier  
+4. hateoas => Media type name   
+5. json => Suffix
+
+Clip 5 - Tightening the Contract Between Client and Server with Vendor Media Types  
+Combining Semantic Media Types with HATEOAS  
+There should be only one suffix per media type, and only officially registered suffixes should be used.  
+
+`application/vnd.marvin.author.friendly+json`   
+- Friendly representation without links   
+
+`application/vnd.marvin.author.friendly+hateoas+json`   
+-Friendly representation with links  
+
+`application/vnd.marvin.author.full+json`  
+- Full representation without links  
+
+`application/vnd.marvin.author.full+hateoas+json`  
+- Full representation with links  
+ 
+Friendly representation of data
+```json
+{
+   "name": "Xablaw Palmeirense"
+}
+```
+
+Full representation of data
+```json
+{
+    "firstName": "Xablaw",
+    "lastName": "Palmeirense"
+}
+```
+
+ 
+ There is a way to couple media types to specific resources. By applying the `Producers` attribute, we can restrict the media types an action will produce.  
+It's important to document the code generated on this clip "Demo: Working with Vendor-specific Media Types on Input"  
+It shows how to differentiate the input based on the media type provided by the client. Causing the use of different actions based on the payload and content-type header provided by the client.
+ 
+
+Review the Clip "Demo: Improving Resource Representation Selection with an ActionConstraint" to jot down the last observations about the combinations of input and output.  
+### Versioning
+
+<details><summary></summary>
+
+
+```csharp
+```
+
+```csharp
+```
+
+
+</details>
+
+---
+
+## Chapter 12 - Caching  
+
+Caching would be useless if it did not significantly improve performance. The goal of caching is to eliminate the need to send requests in many cases, and to eliminate the need to send full responses in many other cases.  
+
+### The Purpose of Caching
+
+**The cache is a separate component**   
+- Accepcts requests from consumer to the API   
+- Receives responses from the API and stores them if they are deemed cacheable    
+It's the middle-man of request-response communication  
+
+
+**Cache Types**
+1. Client Cache or Browser Cache - Private cache, only the client has access to it. Lives on the client.  
+2. Gateway Cache - Shared across different applications. Lives on server side. Reverse proxy caches or HTTP accelerators.  
+3. Proxy Cache - Also shared cache, but does not live at the consuming-side nor at the side of the API. It lives on the network.  
+
+Response Cache Attribute and Middleware
+
+To support caching, we essentially need two things.  
+1. The first thing we need is a way to state for each resource whether or not it's cacheable.  
+That is done via a response header. There are various headers to consider, but the one most often used is the `Cache‑Control` header. A `Cache‑Control` header with maximum age set to 120. This states that a response must only be cached for 120 seconds.  
+To achieve that, the `ResponseCache` attribute is used. 
+
+2. 2. A cache store. either at client level, server level or proxy level. The middleware is responsible for storing cacheable responses and serving them up from its store.   
+
+
+State for each resource whether or not it's cacheable  
+- Cache-Control:max-age=120  
+- [ResponseCache] attribute   
+- This does not actually cache anything  
+
+Cache store   
+- Response caching middleware  
+
+
+The response header will have a `Cache-Control` header with a `max-age` directive set to 120 seconds `public,max-age=120`. This indicates that the response can be cached for up to 120 seconds, and it could be stored publicly and privatelly
+
+**Adding a cache store with the `ResponseCaching` middleware**   
+
+```csharp
+builder.Services.AddResponseCaching();
+```
+and adds the middleware to the HTTP request pipeline. Make sure to add it before the `app.MapControllers()`
+```csharp
+app.UseResponseCaching();
+```
+An indicative that the response was served from the cache is the presence of the `Age` header with the integer value representing the seconds the resource was added in the cache.
+
+**Using cache  profiles to apply the same rules to different resources**
+
+```csharp
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add("240SecondsCacheProfile",
+        new CacheProfile()
+        {
+            Duration = 240,
+            Location = ResponseCacheLocation.Any
+        });
+});
+```
+It's possible to apply the cache profile to an action or to a controller.  
+```csharp
+    [ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
+    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(
+        [FromQuery] AuthorResourceParameters authorResourceParameters)
+    {
+        // get authors from repo
+        var authorsFromRepo = await _courseLibraryRepository
+            .GetAuthorsAsync(authorResourceParameters);
+        // return them
+        return Ok(_mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo));
+    }
+```
+
+
+
+### Expiration Model
+Allows the serv to state how long a response is considered fresh.  
+
+|Expires header|Cache-Control header|
+|-|-|
+|Expires: Wed, 21 Oct 2015 07:28:00 GMT|Cache-Control: public,max-age=3600|
+|Clocks must be synchronized|Preferred header for expiration|
+|Offers little control|[Directives](https://datatracker.ietf.org/doc/html/rfc9111)|
+Review this module and jot down the topics 
+
+### Validation Model
+Used to validate the freshness of a cached response that's been cached.  
+Review this module and jot down the topics
+
+### Exploring the Cache-control Directives
+Review this module and jot down the topics
+
+---
+
+# Chapter 13 - Supporting HTTP Cache for ASP.NET Core APIs
+
+```csharp
+    builder.Services.AddHttpCacheHeaders();
+```
+and then. Mind the order it must be before `app.MapControllers()`
+```csharp
+    app.UseHttpCacheHeaders();
+```
+
+### Demo: Dealing with Varying Response Representations
+
+### Cache Stores and Content Delivery Networks
+### Demo:
+
+<details><summary></summary>
+
+
+```csharp
+
+```
+
+```csharp
+
+```
+
+</details>
+
+
+---
+
 <details>
 <summary>
 
@@ -1361,7 +1614,7 @@ public class PropertyMappingService : IPropertyMappingService
 
 ### Version(s) </summary>
 
-20251002 - 1st Version
+20251002 - 20251018 - 1st Version
 
 </details>
 
@@ -1372,6 +1625,7 @@ public class PropertyMappingService : IPropertyMappingService
 2. Microsoft.AspNetCore.JsonPatch - v9.0.9  
 3. Microsoft.AspNetCore.Mvc.NewtonsoftJson - v8.0.0  
 4. System.Linq.Dynamic.Core - v1.3.7  
+5. [Marvin.Cache.Headers - v7.0.0](https://github.com/KevinDockx/HttpCacheHeaders)   
 
 </details>
 
