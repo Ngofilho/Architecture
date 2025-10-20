@@ -101,7 +101,11 @@ It's a good practice to annotate ApiControllers with `[ApiController]` attribute
 	3. `FromRoute` is inferred for any action parameter name matching a parameter in the route template. When more than one route matches an action parameter, any route value is considered `FromRoute`.  
 	4. `FromQuery` is inferred for any other action parameters.    
 
+<details><summary>
+
 ### Creating a set of Father items along side with its children on one go.   
+</summary>
+
 ```csharp
         /*
         1. The GET method is a bit special because it needs to take a list of ids as input.
@@ -208,7 +212,7 @@ Example of the POST method request. Mind the parenthesis in the URI request. It'
 https://localhost:5001/api/authorcollections/(guid_01,guid_02,guid_n)
 http://localhost:5000/api/authorcollections/(8e5f2179-e312-4b2d-9074-bdd0164f00f5,39b3d850-3d5d-4afe-83c6-2a19bac09ec2)
 ```
-
+</details>
 
 ### PATCH vs PUT   
 `http://localhost:5001/api/authors/25141d83-4584-4487-a306-0441695d8e24`
@@ -445,6 +449,7 @@ We could, by the way, include a response body which describes the options. But t
 
 
 <details><summary>Sample of `OPTIONS` implementation  </summary>
+
 ```csharp
     [HttpOptions()]
     public IActionResult GetAuthorsOptions()
@@ -453,8 +458,10 @@ We could, by the way, include a response body which describes the options. But t
         return Ok();
     }
 ```
+
 ### Inspecting input formatters
 This guarantees the managing of the XML and Json either in the request and the response.  
+
 ```csharp
 builder.Services.AddControllers(configure =>
         {
@@ -1104,7 +1111,7 @@ public class AuthorResourceParameters
     }
 ```
 
-2. In the controller, the first *if* checks if the sorting parameter exists, it not, it returns to the client a 400 status coding stating that the sortby must be a valid parameter.  
+2. In the controller, the first *if* checks if the sorting parameter exists, if not, it returns to the client a 400 status coding stating that the sortby must be a valid parameter.  
 ```csharp
     [HttpGet(Name ="GetAuthors")]
     public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors([FromQuery]
