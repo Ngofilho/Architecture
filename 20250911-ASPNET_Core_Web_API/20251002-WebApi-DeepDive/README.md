@@ -524,7 +524,10 @@ When a validation error happens, the consumer of the API needs to be notified. I
 ### **Validation and the `ApiController` Attribute**   
  Whenever a controller is annotated with it, it will automatically return a 400 Bad Request on validation errors. So, annotations are checked during model binding and affect the ModelState dictionary. The `ApiController` attribute ensures that in the case of an invalid ModelState, a 400 Bad Request is returned with the validation errors in the response body.
  
+ <details><summary><b>Validations Sample Codes</b></summary>
+ 
  **Customizing Error Messages**  
+ 
  ```csharp
  [Required(ErrorMessage="Yout should fill out a title")]
  [MaxLength(100, ErrorMessage= "The title shouldn't have more than 100 characters"]
@@ -682,6 +685,8 @@ public class CourseTitleMustBeDifferentFromDescriptionAttribute
 }
 ```
  Even though at class level, the same rules still apply, at property level, custom attributes get executed before the Validate method gets called, and that can come in handy for property level validation.
+ 
+ </details>
 
 ---
 
@@ -1388,18 +1393,335 @@ public class PropertyMappingService : IPropertyMappingService
 --- 
 
 ## Chapter 9 - Supporting Data Shaping
+**Data shaping allows the consumer of the API to choose the fields of the resource that have to be returned.**  
+This principle allows the consumer of the API to choose the fields of the resource representation that have to be returned.
 
-Implment one type of shaping for collections and another for single entities, otherwise it will jeopardize the performance.  
+So, rather than returning all properties of an author, a consumer of an API might only want to know the ID and the name.   
+Data shaping allows for this by looking at a fields query string parameter of which the value is a comma‑separated list of field names.  
 
-<details><summary></summary>
+The field names passed in as value of the field's query string parameter should exist on the resource. So, for our author, a field‑level selection on age is valid, as the authors resource has an age, but one on date of birth is not valid, as an authors resource does not have that. The date of birth is defined on the entity and not at level of the outer‑facing contract. 
 
+When shaping data to return, not always we will be able to use strongly typed objects. To handle this scenario, we need a way to dynamically create an object at runtime. That's where the `ExpandoObject` comes in handy. It's defined in `System.Dynamic`. Its members can be added and removed at runtime.    
+
+When returning a collection of resources, we can use strongly typed objects, but when returning a single resource, we might not be able to do that.
+
+**Caveats**
+When implementing Data Shaping, keep in mind that it might violate the sub-constraint of REST: "Manipulation of Resources Through Representations".  
+To avoid this, make sure that the representation returned to the client contains all the necessary information to manipulate the resource, such as its URI.  
+Another approach is to implement HATEOAS, which provides links to related resources and actions, ensuring that the client has enough context to interact with the resource effectively.
+And finally, makes sure to create a mechanism to avoid 500 status code errors when the client requests fields that do not exist on the resource.
+
+<details><summary><b>Data Shaping Implementation Steps</b></summary>
+
+1. The Resource Parameters class to carry the fields selected by the user in the query parameters of the URI. The last property is the `Fields`
 
 ```csharp
+namespace CourseLibrary.API.ResourceParameters;
+
+public class AuthorsResourceParameters
+{
+    const int maxPageSize = 20;
+    public string? MainCategory { get; set; }
+    public string? SearchQuery { get; set; }
+    public int PageNumber { get; set; } = 1;
+
+    private int _pageSize = 10;
+    public int PageSize
+    {
+        get => _pageSize;
+        set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
+    }
+    public string OrderBy { get; set; } = "Name";
+
+    public string? Fields { get; set; }
+}
 ```
+
+2. The extension helper class to shape the data using ExpandoObject
 
 ```csharp
+using System.Dynamic;
+using System.Reflection;
+
+namespace CourseLibrary.API.Helpers;
+
+public static class IEnumerableExtensions
+{
+    public static IEnumerable<ExpandoObject> ShapeData<TSource>(
+            this IEnumerable<TSource> source,
+            string? fields)
+    {
+        if (source == null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        // create a list to hold our ExpandoObjects
+        var expandoObjectList = new List<ExpandoObject>();
+
+        // create a list with PropertyInfo objects on TSource.  Reflection is
+        // expensive, so rather than doing it for each object in the list, we do 
+        // it once and reuse the results.  After all, part of the reflection is on the 
+        // type of the object (TSource), not on the instance
+        var propertyInfoList = new List<PropertyInfo>();
+
+        if (string.IsNullOrWhiteSpace(fields))
+        {
+            // all public properties should be in the ExpandoObject
+            var propertyInfos = typeof(TSource)
+                    .GetProperties(BindingFlags.IgnoreCase
+                    | BindingFlags.Public | BindingFlags.Instance);
+
+            propertyInfoList.AddRange(propertyInfos);
+        }
+        else
+        {       // the field are separated by ",", so we split it.
+            var fieldsAfterSplit = fields.Split(',');
+
+            foreach (var field in fieldsAfterSplit)
+            {
+                // trim each field, as it might contain leading 
+                // or trailing spaces. Can't trim the var in foreach,
+                // so use another var.
+                var propertyName = field.Trim();
+
+                // use reflection to get the property on the source object
+                // we need to include public and instance, b/c specifying a binding 
+                // flag overwrites the already-existing binding flags.
+                var propertyInfo = typeof(TSource)
+                    .GetProperty(propertyName, BindingFlags.IgnoreCase |
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                if (propertyInfo == null)
+                {
+                    throw new Exception($"Property {propertyName} wasn't found on" +
+                        $" {typeof(TSource)}");
+                }
+
+                // add propertyInfo to list 
+                propertyInfoList.Add(propertyInfo);
+            }
+        }
+
+        // run through the source objects
+        foreach (TSource sourceObject in source)
+        {
+            // create an ExpandoObject that will hold the 
+            // selected properties & values
+            var dataShapedObject = new ExpandoObject();
+
+            // Get the value of each property we have to return.  For that,
+            // we run through the list
+            foreach (var propertyInfo in propertyInfoList)
+            {
+                // GetValue returns the value of the property on the source object
+                var propertyValue = propertyInfo.GetValue(sourceObject);
+
+                // add the field to the ExpandoObject
+                ((IDictionary<string, object?>)dataShapedObject)
+                    .Add(propertyInfo.Name, propertyValue);
+            }
+
+            // add the ExpandoObject to the list
+            expandoObjectList.Add(dataShapedObject);
+        }
+
+        // return the list
+        return expandoObjectList;
+    }
+}
 ```
 
+3. Implementation for an object. For sake of perfomance, we implement a different method for single objects. Since using `Reflection` is costly in terms of performance.   
+```csharp
+using System.Dynamic;
+using System.Reflection;
+
+namespace CourseLibrary.API.Helpers;
+
+public static class ObjectExtensions
+{
+    public static ExpandoObject ShapeData<TSource>(this TSource source,
+     string? fields)
+    {
+        if (source == null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        var dataShapedObject = new ExpandoObject();
+
+        if (string.IsNullOrWhiteSpace(fields))
+        {
+            // all public properties should be in the ExpandoObject 
+            var propertyInfos = typeof(TSource)
+                    .GetProperties(BindingFlags.IgnoreCase |
+                    BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var propertyInfo in propertyInfos)
+            {
+                // get the value of the property on the source object
+                var propertyValue = propertyInfo.GetValue(source);
+
+                // add the field to the ExpandoObject
+                ((IDictionary<string, object?>)dataShapedObject)
+                    .Add(propertyInfo.Name, propertyValue);
+            }
+
+            return dataShapedObject;
+        }
+
+        // the field are separated by ",", so we split it.
+        var fieldsAfterSplit = fields.Split(',');
+
+        foreach (var field in fieldsAfterSplit)
+        {
+            // trim each field, as it might contain leading 
+            // or trailing spaces. Can't trim the var in foreach,
+            // so use another var.
+            var propertyName = field.Trim();
+
+            // use reflection to get the property on the source object
+            // we need to include public and instance, b/c specifying a 
+            // binding flag overwrites the already-existing binding flags.
+            var propertyInfo = typeof(TSource)
+                .GetProperty(propertyName,
+                BindingFlags.IgnoreCase | BindingFlags.Public |
+                BindingFlags.Instance);
+
+            if (propertyInfo == null)
+            {
+                throw new Exception($"Property {propertyName} wasn't found " +
+                    $"on {typeof(TSource)}");
+            }
+
+            // get the value of the property on the source object
+            var propertyValue = propertyInfo.GetValue(source);
+
+            // add the field to the ExpandoObject
+            ((IDictionary<string, object?>)dataShapedObject)
+                .Add(propertyInfo.Name, propertyValue);
+        }
+
+        // return the shaped object
+        return dataShapedObject;
+    }
+
+}
+
+```
+
+4. Change the controller to return `IActionResult`, this is to allow returning different types of objects, thereby accepting the `ExpandoObject` returned by the `ShapeData` method.  
+The first instruction is to check if the fields provided by the client exists on the resource. If not, is called the factory method to create a `ProblemDetails` object and return a 400 status code to the client.
+```csharp
+    [HttpGet("{authorId}", Name = "GetAuthor")]
+    public async Task<IActionResult> GetAuthor(Guid authorId,
+        string? fields)
+    {
+        if (!_propertyCheckerService.TypeHasProperties<AuthorDto>
+           (fields))
+        {
+            return BadRequest(
+              _problemDetailsFactory.CreateProblemDetails(HttpContext,
+                  statusCode: 400,
+                  detail: $"Not all requested data shaping fields exist on " +
+                  $"the resource: {fields}"));
+        }
+
+        // get author from repo
+        var authorFromRepo = await _courseLibraryRepository
+            .GetAuthorAsync(authorId);
+
+        if (authorFromRepo == null)
+        {
+            return NotFound();
+        }
+
+        // return author
+        return Ok(_mapper.Map<AuthorDto>(authorFromRepo)
+            .ShapeData(fields));
+    }
+```
+
+5. Class to validate if the fields provided by the client exists on the resource. Create a interface and register in the DI container to it could be injected in the controller.      
+```csharp
+using System.Reflection;
+
+namespace CourseLibrary.API.Services;
+
+public class PropertyCheckerService : IPropertyCheckerService
+{
+    public bool TypeHasProperties<T>(string? fields)
+    {
+        if (string.IsNullOrWhiteSpace(fields))
+        {
+            return true;
+        }
+
+        // the field are separated by ",", so we split it.
+        var fieldsAfterSplit = fields.Split(',');
+
+        // check if the requested fields exist on source
+        foreach (var field in fieldsAfterSplit)
+        {
+            // trim each field, as it might contain leading 
+            // or trailing spaces. Can't trim the var in foreach,
+            // so use another var.
+            var propertyName = field.Trim();
+
+            // use reflection to check if the property can be
+            // found on T. 
+            var propertyInfo = typeof(T)
+                .GetProperty(propertyName,
+                BindingFlags.IgnoreCase | BindingFlags.Public |
+                BindingFlags.Instance);
+
+            // it can't be found, return false
+            if (propertyInfo == null)
+            {
+                return false;
+            }
+        }
+
+        // all checks out, return true
+        return true;
+
+    }
+}
+```
+
+6. Controller with the injected `IPropertyCheckerService` and the `ProblemDetailsFactory` from the `Microsoft.AspNetCore.Mvc.Infrastructure` namespace to create the `ProblemDetails` object to return to the client in case of error. In the code snippet #4, of this very section, there is a example to use it.
+```csharp
+    public AuthorsController(ICourseLibraryRepository courseLibraryRepository,
+        IMapper mapper, IPropertyMappingService propertyMappingService,
+        IPropertyCheckerService propertyCheckerService,
+        ProblemDetailsFactory problemDetailsFactory)
+    {
+        _courseLibraryRepository = courseLibraryRepository ??
+            throw new ArgumentNullException(nameof(courseLibraryRepository));
+        _mapper = mapper ??
+            throw new ArgumentNullException(nameof(mapper));
+        _propertyMappingService = propertyMappingService ??
+            throw new ArgumentNullException(nameof(propertyMappingService));
+        _propertyCheckerService = propertyCheckerService ??
+            throw new ArgumentNullException(nameof(propertyCheckerService));
+        _problemDetailsFactory = problemDetailsFactory ??
+            throw new ArgumentNullException(nameof(problemDetailsFactory));
+    }
+```
+
+7. Request passing the required fields and the pagenumber.
+```json
+http://localhost:5000/api/authors?fields=id,name&pageSize=2&pageNumber=1
+```
+
+</details>
+
+
+<details><summary>Pending</summary>
+
+- Others implementation of the Data Shaping  
+- Implementing Data Shaping for children objects  
 
 </details>
 
