@@ -1728,7 +1728,302 @@ http://localhost:5000/api/authors?fields=id,name&pageSize=2&pageNumber=1
 ---
 
 ## Chapter 10 - Learning and implementing HATEOAS
+*You can't have evolvability if clients have their controls baked into their design at deployment. Controls have to be learned on the fly. That's what hypermedia enables.*
+[Roy Fielding](https://www.infoq.com/articles/roy-fielding-on-versioning/)  
 
+**Supporting HATEOAS**  
+`<a href="uri" rel="type" type="media type">`  
+HTML represents links with the anchor element
+- href: contains the URI
+- rel: describes how the link relates to the resource
+- type: describes the media type
+
+```json
+{
+    "links": 
+    [{
+        "href": "http://localhost:5000/api/authors/1",
+        "rel":"reserve-course",
+        "method": "POST"
+        }]
+}
+```
+
+For complex responses with collections, we need a kind of envelop to hold a list of resources
+```json
+{
+    "value":[{"author":"A"},{"author":"B"}],
+    "links":[{...},{...}]
+}
+```
+
+|Statically typed approach|Dynamically typed approach|
+|-|-|
+|Base class (with links) and wrapper class|Anonymous types & ExpandoObject|
+|Inherit base class for single resources|Add links to ExpandoObject for single resources|
+|Use wrapper class for collection resources|Use anonymous type for collection resources|
+
+<details><summary><b>Sample code to implement HATEOAS</b></summary>
+
+Simple case, with only one object on the response.  
+
+1. Model class for LinkDto
+```csharp
+namespace CourseLibrary.API.Models;
+
+public class LinkDto
+{
+    public LinkDto(string? href, string? rel, string method)
+    {
+        Href = href;
+        Rel = rel;
+        Method = method;
+    }
+
+    public string? Href { get; }
+    public string? Rel { get; }
+    public string Method { get; }
+}
+```
+
+2. Create a method to create the links to be used as the response.
+The first one is `_self`. It's the link to the resource itself, the rest of the links are related to the possible actions on the resource, like retrieving the courses or create a course for the author.   
+**It's the place to define which links should return to the client based on business rules.**.
+```csharp
+private IEnumerable<LinkDto> CreateLinksForResponse(Guid authorId, string? fields)
+{
+    var links = new List<LinkDto>();
+    if (string.IsNullOrWhiteSpace(fields))
+    {
+        links.Add(
+            new LinkDto(Url.Link("GetAuthor", new { authorId }),
+            "self",
+            "GET"));
+    }
+    else
+    {
+        // Fields here could be verified by inspecting the fields parameter
+        links.Add(
+            new LinkDto(Url.Link("GetAuthor", new { authorId, fields }),
+            "self",
+            "GET"));
+    }
+
+    // Link to create a course for the author. The second parameter is the route name in the Course Controller for the method to get the courses of the author.
+    links.Add(
+    new (Url.Link("CreateCourseForAuthor", new { authorId }),
+    "create_course_for_author",
+    "POST"
+    ));
+
+    // Link to get all courses for the author. Same think for the route name as the rel value "courses".
+    links.Add(
+    new (Url.Link("GetCoursesForAuthor", new { authorId }),
+    "courses",
+    "GET"));
+
+    return links;
+}
+```
+
+3. The action code to create the links to return to the client.
+After the creation of the resource to be returned for the client, is created a variable called `links` that calls the method to create the links.  
+Then, the resource to be returned is mapped to a DTO and shaped using the `ShapeData` extension method. The result is casted to an `IDictionary<string, object?>` to allow adding the links to it.  
+Finally, the links are added to the resource and returned to the client.
+```csharp
+[HttpGet("{authorId}", Name = "GetAuthor")]
+    public async Task<IActionResult> GetAuthor(Guid authorId,
+        string? fields)
+    {
+        ....
+
+        // create links
+        var links = CreateLinksForAuthor(authorId, fields);
+
+        //add
+        var linkedResourceToReturn = _mapper.Map<AuthorDto>(authorFromRepo)
+            .ShapeData(fields) as IDictionary<string, object?>;
+
+        linkedResourceToReturn.Add("links", links);
+
+        // return 
+        return Ok(linkedResourceToReturn);
+    }
+```
+</details>
+
+<details><summary><b>Example of HATEOAS with Complex Type</b></summary>
+
+1. Method to create links with the self using the default logic. The *ResourceUriType* is a enumerator type. 
+With this routine, there is no need to send pagination on response header.
+```csharp
+private string? CreateAuthorsResourceUri(
+        AuthorsResourceParameters authorsResourceParameters,
+        ResourceUriType type)
+    {
+        switch (type)
+        {
+            case ResourceUriType.PreviousPage:
+                return Url.Link("GetAuthors",
+                    new
+                    {
+                        fields = authorsResourceParameters.Fields,
+                        orderBy = authorsResourceParameters.OrderBy,
+                        pageNumber = authorsResourceParameters.PageNumber - 1,
+                        pageSize = authorsResourceParameters.PageSize,
+                        mainCategory = authorsResourceParameters.MainCategory,
+                        searchQuery = authorsResourceParameters.SearchQuery
+                    }); 
+            case ResourceUriType.NextPage:
+                return Url.Link("GetAuthors",
+                    new
+                    {
+                        fields = authorsResourceParameters.Fields,
+                        orderBy = authorsResourceParameters.OrderBy,
+                        pageNumber = authorsResourceParameters.PageNumber + 1,
+                        pageSize = authorsResourceParameters.PageSize,
+                        mainCategory = authorsResourceParameters.MainCategory,
+                        searchQuery = authorsResourceParameters.SearchQuery
+                    });
+            case ResourceUriType.Current:
+            default:
+                return Url.Link("GetAuthors",
+                    new
+                    {
+                        fields = authorsResourceParameters.Fields,
+                        orderBy = authorsResourceParameters.OrderBy,
+                        pageNumber = authorsResourceParameters.PageNumber,
+                        pageSize = authorsResourceParameters.PageSize,
+                        mainCategory = authorsResourceParameters.MainCategory,
+                        searchQuery = authorsResourceParameters.SearchQuery
+                    });
+        } 
+    }
+```
+
+2. Method to create the self, next and previous links. The method itself calls the previous method shown above on section #1 of this examples.
+```csharp
+    private IEnumerable<LinkDto> CreateLinksForAuthors(AuthorsResourceParameters authorsResourceParameters, bool hasNext, bool hasPrevious)
+    {
+        var links = new List<LinkDto>();
+        // self
+        links.Add(new (CreateAuthorsResourceUri(authorsResourceParameters, ResourceUriType.Current), "self", "GET"));
+
+        if (hasNext)
+        {
+            links.Add(new LinkDto(CreateAuthorsResourceUri(authorsResourceParameters, ResourceUriType.NextPage), "nextPage", "GET"));
+        }
+
+        if (hasPrevious)
+        {
+            links.Add(new LinkDto(CreateAuthorsResourceUri(authorsResourceParameters, ResourceUriType.PreviousPage), "previousPage", "GET"));
+        }
+        return links;
+    }
+```
+
+3. Action with the calling to the HATEOAS routine.
+```csharp
+[HttpGet(Name = "GetAuthors")] 
+    [HttpHead]
+    public async Task<IActionResult> GetAuthors(
+        [FromQuery] AuthorsResourceParameters authorsResourceParameters)
+    {
+        // after the retrieval of the data from the layers beneath the controller, is called the 
+        var authorsFromRepo = await _courseLibraryRepository
+            .GetAuthorsAsync(authorsResourceParameters);        
+
+        // pagination meta data used in the response's header
+        var paginationMetadata = new
+        {
+            totalCount = authorsFromRepo.TotalCount,
+            pageSize = authorsFromRepo.PageSize,
+            currentPage = authorsFromRepo.CurrentPage,
+            totalPages = authorsFromRepo.TotalPages,
+        };
+
+        // serialization of the metadata in the header
+        Response.Headers.Add("X-Pagination",
+               JsonSerializer.Serialize(paginationMetadata));
+        
+        // create links to be used in the response roots to indicate the next possible requests to the API
+        var links = CreateLinksForAuthors(authorsResourceParameters, authorsFromRepo.HasNext, authorsFromRepo.HasPrevious);
+        
+        // The data from the layers beneath the controller to be shaped onto the response.
+        var shapedAuthors = _mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo)
+                    .ShapeData(authorsResourceParameters.Fields);
+
+        // building of the shaped authors to be returned with the links.
+        var shapedAuthorsWithLinks = shapedAuthors.Select(author =>
+        {
+            var authorAsDictionary = author as IDictionary<string, object?>;
+            var authorLinks = CreateLinksForAuthor((Guid)authorAsDictionary["Id"], null);
+            authorAsDictionary.Add("links", authorLinks);
+            return authorAsDictionary;
+        });
+
+        // final building before the response to be sent to the client.
+        var linkedCollectionResource = new
+        {
+            value = shapedAuthorsWithLinks,
+            links = links
+        };
+
+        // return them
+        return Ok(linkedCollectionResource);
+    }
+```
+
+
+</details>
+
+### Root Document
+For this kind of document, the client can learn how to interact with the rest of the API. This document will live at the API root, so host/api. 
+It's an empty API controller, generally named RootController. 
+It should be executed on a GET request to /api and contains links to the document itself and links to actions that can happen on URIs at root level or that are not accessible otherwise.
+From this root document, consumers of the API can start interacting with the API. 
+
+<details><summary><b>Example of `Root` implementation</b></summary>
+
+```csharp
+using CourseLibrary.API.Models;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CourseLibrary.API.Controllers;
+
+[Route("api")]
+[ApiController]
+public class RootController : ControllerBase
+{
+    [HttpGet(Name = "GetRoot")]
+    public IActionResult GetRoot()
+    { 
+        // create links for root
+        var links = new List<LinkDto>();
+
+        links.Add(
+          new(Url.Link("GetRoot", new { }),
+          "self",
+          "GET"));
+
+        links.Add(
+          new(Url.Link("GetAuthors", new { }),
+          "authors",
+          "GET"));
+
+        links.Add(
+          new(Url.Link("CreateAuthor", new { }),
+          "create_author",
+          "POST"));
+
+        return Ok(links);
+    }
+}
+```
+
+</details>
+
+###  Other options to implement HATEOAS or attempts to standardization of API responses. 
 [HAL - Hyperlink As Language](datatracker.ietf.org/doc/html/draft-kelly-json-hal-11)  
 [Siren - Hypermedia specification for representing entities](github.com/kevinwiber/siren)    
 [NHateoas - Copilot Suggestion](github.com/JeremySkinner/NHateoas)  
