@@ -4,8 +4,8 @@
 ## Chapter 3 : Designing the Outer Facing Contract
 Consists of three big concepts a consumer of an API uses to interact with that API
 
-- First, the resource identifiers. In other words, the URIs where the resources can be found. 
-- Combined with [HTTP methods](https://datatracker.ietf.org/doc/html/rfc9110) like GET to get resources, POST to create them, and other ones. These methods are part of the HTTP standard. 
+- First, the resource identifiers. In other words, the URIs where the resources can be found.
+- Combined with [HTTP methods](https://datatracker.ietf.org/doc/html/rfc9110) like GET to get resources, POST to create them, and other ones. These methods are part of the HTTP standard.
 - Third is the optional payload. For example, when creating a resource, the HTTP request will have to contain a representation of the resource you want to create. When getting a resource, the HTTP response will contain a resource representation in its response body
 
 Resource Identifier: Covers the fact that resources are identified by URIs.
@@ -16,7 +16,7 @@ Convey meaning when choosing nouns.
 Avoid ~~api/something/somethingelse/employees~~ use instead `api/employees`
 Avoid ~~api/id/employees/~~ use instead `api/employees/{employeeId}`
 
-- Represent hierarchy when naming resources  
+- Represent hierarchy when naming resources
 api/authors/{authorId}/courses
 api/authors/{authorId}/courses/{courseId}
 
@@ -25,8 +25,8 @@ They should be passed by query string
 ~~api/authors/orderby/name~~ use instead api/authors?ordeby=name
 
 
-- **Routing**   
- Matches a request URI to an action on a controller achieved by 
+- **Routing**
+ Matches a request URI to an action on a controller achieved by
 ```csharp
 app.MapControllers();
 ```
@@ -74,9 +74,9 @@ else
 
 ### Method Safety and Idempotency
 
-Method is considered safe when it does not change the resource representation. `GETS` and `HEADS` are safe methods. the side effects of calling it once are the same side effects that happen when calling it multiple times.  
+Method is considered safe when it does not change the resource representation. `GETS` and `HEADS` are safe methods. the side effects of calling it once are the same side effects that happen when calling it multiple times.
 
-Method is considered idempotent when the same request can be made multiple times with the same effect as making it once. `PUTS`, `DELETES` and `HEADS` are idempotent methods.   
+Method is considered idempotent when the same request can be made multiple times with the same effect as making it once. `PUTS`, `DELETES` and `HEADS` are idempotent methods.
 
 |HTTP Method|Safe|Idempotent|
 |-|-|-|
@@ -92,18 +92,18 @@ Method safety and idempotency help decide which
 method to use for which use case
 
 ### Advanced resource creation scenarios
-It's a good practice to annotate ApiControllers with `[ApiController]` attribute. The ApiController attribute adds a requirement for attribute‑based routing. 
-1. When we looked into routing, we learned that route templates should be applied with attributes when building APIs   
-2. what is returned in case of an error follows a certain format, the ProblemDetails format.   
-3. Bind Inferred Source   
-	1. `FromBody` is inferred for complex type parameters thanks to the `[ApiController]`, ASP.Net by default try to bind the complex model to the body of the request.  
-	2. `FromForm` is inferred for action parameters of type `IFormFile` and `IFormFileCollection`.  
-	3. `FromRoute` is inferred for any action parameter name matching a parameter in the route template. When more than one route matches an action parameter, any route value is considered `FromRoute`.  
-	4. `FromQuery` is inferred for any other action parameters.    
+It's a good practice to annotate ApiControllers with `[ApiController]` attribute. The ApiController attribute adds a requirement for attribute‑based routing.
+1. When we looked into routing, we learned that route templates should be applied with attributes when building APIs
+2. what is returned in case of an error follows a certain format, the ProblemDetails format.
+3. Bind Inferred Source
+	1. `FromBody` is inferred for complex type parameters thanks to the `[ApiController]`, ASP.Net by default try to bind the complex model to the body of the request.
+	2. `FromForm` is inferred for action parameters of type `IFormFile` and `IFormFileCollection`.
+	3. `FromRoute` is inferred for any action parameter name matching a parameter in the route template. When more than one route matches an action parameter, any route value is considered `FromRoute`.
+	4. `FromQuery` is inferred for any other action parameters.
 
 <details><summary>
 
-### Creating a set of Father items along side with its children on one go.   
+### Creating a set of Father items along side with its children on one go.
 </summary>
 
 ```csharp
@@ -113,7 +113,7 @@ It's a good practice to annotate ApiControllers with `[ApiController]` attribute
         */
         [HttpGet("({authorIds})", Name = "GetAuthorCollection")]
         public async Task<ActionResult<IEnumerable<AuthorForCreationDto>>> GetAuthorCollection(
-            [ModelBinder(BinderType = typeof(ArrayModelBinder))]            
+            [ModelBinder(BinderType = typeof(ArrayModelBinder))]
             [FromRoute] IEnumerable<Guid> authorIds)
         {
             var authorEntities = await _courseLibraryRepository.GetAuthorsAsync(authorIds);
@@ -130,7 +130,7 @@ It's a good practice to annotate ApiControllers with `[ApiController]` attribute
         }
 
         /*The post method is usual as always. Nothing special but the return response from it
-        It's been used the CreatedAtRoute method to return a 201 status code along with a Location header. 
+        It's been used the CreatedAtRoute method to return a 201 status code along with a Location header.
         The location header contains the URI of the newly created resource plus ids to be used on the GET method and the response body contains the newly created resources.
         */
         [HttpPost]
@@ -161,7 +161,7 @@ The model binder example
     */
     public class ArrayModelBinder : IModelBinder
     {
-        // This is the only method (BindModelAsync) to implement from this interface 
+        // This is the only method (BindModelAsync) to implement from this interface
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             // Our binder works only on enumerable types
@@ -174,7 +174,7 @@ The model binder example
             // Get the inputed value through the value provider
             var value = bindingContext.ValueProvider
                 .GetValue(bindingContext.ModelName).ToString();
-            
+
             // If that value is null or whitespace,we return null
             if (string.IsNullOrEmpty(value))
             {
@@ -194,7 +194,7 @@ The model binder example
             .Select(x => converter.ConvertFromString(x.Trim()))
                 .ToArray();
 
-            // Create an array of that type, and set it as the Model value 
+            // Create an array of that type, and set it as the Model value
             var typedValues = Array.CreateInstance(elementType, values.Length);
             values.CopyTo(typedValues, 0);
             bindingContext.Model = typedValues;
@@ -207,32 +207,32 @@ The model binder example
 
 ```
 
-Example of the POST method request. Mind the parenthesis in the URI request. It's obligatory   
+Example of the POST method request. Mind the parenthesis in the URI request. It's obligatory
 ```json
 https://localhost:5001/api/authorcollections/(guid_01,guid_02,guid_n)
 http://localhost:5000/api/authorcollections/(8e5f2179-e312-4b2d-9074-bdd0164f00f5,39b3d850-3d5d-4afe-83c6-2a19bac09ec2)
 ```
 </details>
 
-### PATCH vs PUT   
+### PATCH vs PUT
 `http://localhost:5001/api/authors/25141d83-4584-4487-a306-0441695d8e24`
-`POST` with id in the route turns the verb idempotent, which by default it's not. In this kind of scenario the best approach is use the `405 - Method not allowed` or `409 - Conflict`. 
+`POST` with id in the route turns the verb idempotent, which by default it's not. In this kind of scenario the best approach is use the `405 - Method not allowed` or `409 - Conflict`.
 
-When issuing a `PUT` request, all fields of the resource should be overwritten or set to their default values. When issuing a PUT request, all fields of the resource should be overwritten or set to their default values. If a field is missing, that field should be put to its default value. Regarding the response, the updated resource or an empty response are valid.  
+When issuing a `PUT` request, all fields of the resource should be overwritten or set to their default values. When issuing a PUT request, all fields of the resource should be overwritten or set to their default values. If a field is missing, that field should be put to its default value. Regarding the response, the updated resource or an empty response are valid.
 
-When in need to partially update a resource, `PATCH` comes in hand.  
-The URI is the same as for PUT, but the request payload is somewhat special. It's a `JsonPatchDocument`.   
-The response can follow the same policy of the PUT response.  
-It's the JsonPatch standard that defines a JSON document structure for expressing a sequence of operations to apply to a JSON document.  
-The `application/json‑patch+json` media type is used to identify such PATCH documents.  
+When in need to partially update a resource, `PATCH` comes in hand.
+The URI is the same as for PUT, but the request payload is somewhat special. It's a `JsonPatchDocument`.
+The response can follow the same policy of the PUT response.
+It's the JsonPatch standard that defines a JSON document structure for expressing a sequence of operations to apply to a JSON document.
+The `application/json‑patch+json` media type is used to identify such PATCH documents.
 
-There's six different operations possible.  
-The **add** operation will add a property at a path location with a specific value, passed through via value. If it is used on a path that exists, the property value will be replaced. If it is used on an un‑existing path, the property should be added to the resource. But something like that is typically only possible when working with dynamic resources, often in CRM‑like systems.  
-The **remove** operation will remove a property, or in non‑dynamic cases, set it to its default value. It only has one property that has to be set next to the operation, path.   
-The **Replace** replaces the value at the specified path with the provided value. It's functionally the same as a remove operation, followed by an add operation.    
-The **Copy** will take the value from the from property and copy it over to the path property. It is thus an add operation at the path location with the value specified in the from member.   
-The **Move** then will copy over the value at the from property to the path property and remove the value at the from property. This operation is functionally identical to a remove operation on the from location, followed by an add operation at the path location with a removed value.   
-The **Test** tests that a value at a target location is equal to a specified value.   
+There's six different operations possible.
+The **add** operation will add a property at a path location with a specific value, passed through via value. If it is used on a path that exists, the property value will be replaced. If it is used on an un‑existing path, the property should be added to the resource. But something like that is typically only possible when working with dynamic resources, often in CRM‑like systems.
+The **remove** operation will remove a property, or in non‑dynamic cases, set it to its default value. It only has one property that has to be set next to the operation, path.
+The **Replace** replaces the value at the specified path with the provided value. It's functionally the same as a remove operation, followed by an add operation.
+The **Copy** will take the value from the from property and copy it over to the path property. It is thus an add operation at the path location with the value specified in the from member.
+The **Move** then will copy over the value at the from property to the path property and remove the value at the from property. This operation is functionally identical to a remove operation on the from location, followed by an add operation at the path location with a removed value.
+The **Test** tests that a value at a target location is equal to a specified value.
 
 <details><summary>Example of the 6 Possible JsonPatchDocument Operations and the C# method to handle</summary>
 
@@ -289,7 +289,7 @@ The C# code to handle the JsonPatch operation. It requires the `Microsoft.AspNet
 
         var courseForAuthorFromRepo = await _courseLibraryRepository
             .GetCourseAsync(authorId, courseId);
-        
+
         if (courseForAuthorFromRepo == null)
         {
             var courseDto = new CourseForUpdateDto();
@@ -315,29 +315,29 @@ The C# code to handle the JsonPatch operation. It requires the `Microsoft.AspNet
         _courseLibraryRepository.UpdateCourse(courseForAuthorFromRepo);
 
         await _courseLibraryRepository.SaveAsync();
-        
+
         return NoContent();
     }
 ```
 </details>
 
-Now, these cases are not limited to simple properties on a resource. You can manipulate array properties, You can access nested properties. You can even add a list of items to an array in one go. So, path doesn't have to be a simple property, and value doesn't have to be one string value. From these, it follows that patch is neither safe nor idempotent. It changes resource representations, and as it can add to an array, sending it multiple times will have different outcomes.   
-The most important thing to remember is that a JSON PATCH document is essentially a list of operations that have to be applied to the resource, which thus allows for partial updates.    
+Now, these cases are not limited to simple properties on a resource. You can manipulate array properties, You can access nested properties. You can even add a list of items to an array in one go. So, path doesn't have to be a simple property, and value doesn't have to be one string value. From these, it follows that patch is neither safe nor idempotent. It changes resource representations, and as it can add to an array, sending it multiple times will have different outcomes.
+The most important thing to remember is that a JSON PATCH document is essentially a list of operations that have to be applied to the resource, which thus allows for partial updates.
 
-It's the middleware used return either json or xml.  
+It's the middleware used return either json or xml.
 ```csharp
 builder.Services.AddControllers(configure =>
-{ 
-	configure.ReturnHttpNotAcceptable = true; 
+{
+	configure.ReturnHttpNotAcceptable = true;
 })
 .AddXmlDataContractSerializerFormatters()
-AddNewtonsoftJson(setupAction => 
+AddNewtonsoftJson(setupAction =>
     {
         setupAction.SeriallizerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
     })
 ```
 
-with this above ordenation, if it's no passed the `accept:application/json` in the header request, the response will be a xml, this happens due the middleware order.  
+with this above ordenation, if it's no passed the `accept:application/json` in the header request, the response will be a xml, this happens due the middleware order.
 
 
 ### Upserting
@@ -378,7 +378,7 @@ Considerations regarding the Architecture
 
             var courseToReturn = _mapper.Map<CourseDto>(courseToAdd);
             return CreatedAtRoute("GetCourseForAuthor",
-                new { authorId, courseId = courseToReturn.Id }, 
+                new { authorId, courseId = courseToReturn.Id },
                 courseToReturn);
         }
 
@@ -394,7 +394,7 @@ Considerations regarding the Architecture
 
 <details><suumary>
 
-**Upserting with PATCH**  
+**Upserting with PATCH**
 ```csharp
     [HttpPatch("{courseId}")]
     public async Task<IActionResult> PartiallyUpdateCourseForAuthor(
@@ -422,7 +422,7 @@ Considerations regarding the Architecture
 
             var courseToReturn = _mapper.Map<CourseDto>(courseToAdd);
             return CreatedAtRoute("GetCourseForAuthor",
-                new { authorId, courseId = courseToReturn.Id }, 
+                new { authorId, courseId = courseToReturn.Id },
                 courseToReturn);
         }
 
@@ -442,10 +442,10 @@ Considerations regarding the Architecture
 ```
 </details>
 
-### Supporting OPTIONS   
-An OPTIONS request represents a request for information about the communication options available at a certain URI. It allows a clients to determine the options and/or requirements associated with a resource, or the capabilities of an API. OPTIONS tell us whether or not we can get the resource POST with deleted and so on. It thus works on the resource level. OPTIONS should be returned in the allow response letter as a comma‑separated list of method names.   
-OPTIONS tell us whether or not we can get the resource POST with deleted and so on. It thus works on the resource level. These OPTIONS should be returned in the allow response letter as a comma‑separated list of method names.  
-We could, by the way, include a response body which describes the options. But the format of that is not covered by the HTTP standard.  
+### Supporting OPTIONS
+An OPTIONS request represents a request for information about the communication options available at a certain URI. It allows a clients to determine the options and/or requirements associated with a resource, or the capabilities of an API. OPTIONS tell us whether or not we can get the resource POST with deleted and so on. It thus works on the resource level. OPTIONS should be returned in the allow response letter as a comma‑separated list of method names.
+OPTIONS tell us whether or not we can get the resource POST with deleted and so on. It thus works on the resource level. These OPTIONS should be returned in the allow response letter as a comma‑separated list of method names.
+We could, by the way, include a response body which describes the options. But the format of that is not covered by the HTTP standard.
 
 
 <details><summary>Sample of `OPTIONS` implementation  </summary>
@@ -460,7 +460,7 @@ We could, by the way, include a response body which describes the options. But t
 ```
 
 ### Inspecting input formatters
-This guarantees the managing of the XML and Json either in the request and the response.  
+This guarantees the managing of the XML and Json either in the request and the response.
 
 ```csharp
 builder.Services.AddControllers(configure =>
@@ -474,7 +474,7 @@ builder.Services.AddControllers(configure =>
         })
         .AddXmlDataContractSerializerFormatters();
 ```
-</details> 
+</details>
 
 ### HTTP method overview by use case
 |Resource|Route|Responses|Possible Statuses|Obs|
@@ -499,54 +499,54 @@ builder.Services.AddControllers(configure =>
 
 ---
 
-## Chapter 5 - Validating Data and Reporting Validation Errors  
-### **Working with Validation in a RESTful World**   
-1- **Defining validation rules**  
+## Chapter 5 - Validating Data and Reporting Validation Errors
+### **Working with Validation in a RESTful World**
+1- **Defining validation rules**
  - In ASP.NET Core rules are defined throught
-	1. Data Annotations   
-	2. Implementing `IValidatableObject` 
-  
-2- **Checking validation rules**   
+	1. Data Annotations
+	2. Implementing `IValidatableObject`
+
+2- **Checking validation rules**
  - Model State
-	1. It's dictionary containing the state of the model and model binding validation.   
-	2. Contains a collection of erros messages for each property value submitted.      
-	If one of them is false, the `ModelState.IsValid()` is `false`  
+	1. It's dictionary containing the state of the model and model binding validation.
+	2. Contains a collection of erros messages for each property value submitted.
+	If one of them is false, the `ModelState.IsValid()` is `false`
 
-3- **Reporting validation errors**  
- - Response status should be `422` status code. This means that the server understands the Content‑Type of the request       
-    1. Unprocessable Content  
-    2. `415` is inappropriate because the `Content-Type` is understood although incorrect.       
- - Response body should contain validation errors   
-    1. Problem details RFC   
+3- **Reporting validation errors**
+ - Response status should be `422` status code. This means that the server understands the Content‑Type of the request
+    1. Unprocessable Content
+    2. `415` is inappropriate because the `Content-Type` is understood although incorrect.
+ - Response body should contain validation errors
+    1. Problem details RFC
 
-When a validation error happens, the consumer of the API needs to be notified. It's a mistake the client made, so that warrants a 400 level status code.  
+When a validation error happens, the consumer of the API needs to be notified. It's a mistake the client made, so that warrants a 400 level status code.
 
-### **Validation and the `ApiController` Attribute**   
+### **Validation and the `ApiController` Attribute**
  Whenever a controller is annotated with it, it will automatically return a 400 Bad Request on validation errors. So, annotations are checked during model binding and affect the ModelState dictionary. The `ApiController` attribute ensures that in the case of an invalid ModelState, a 400 Bad Request is returned with the validation errors in the response body.
- 
+
  <details><summary><b>Validations Sample Codes</b></summary>
- 
- **Customizing Error Messages**  
- 
+
+ **Customizing Error Messages**
+
  ```csharp
  [Required(ErrorMessage="Yout should fill out a title")]
  [MaxLength(100, ErrorMessage= "The title shouldn't have more than 100 characters"]
  public string Title {get;set;} = string.Empty;
  ```
 
-### Reporting Validation Errors   
-[Problem details for HTTP APIs RFC](https://tools.ietf.org/html/rfc7807)  
-- Defines common error formats for those applications that need one  
-- Allows identifying distinct problem types specific to API needs  
+### Reporting Validation Errors
+[Problem details for HTTP APIs RFC](https://tools.ietf.org/html/rfc7807)
+- Defines common error formats for those applications that need one
+- Allows identifying distinct problem types specific to API needs
 
-This is the desired reporting validation from the RFC. To achieve this, it's necessary to extend the `ApiController` implementation.  
+This is the desired reporting validation from the RFC. To achieve this, it's necessary to extend the `ApiController` implementation.
 
 ```json
 // Content-Type: application/problem+json
 {
 "errors":
 {
-	"title": [ 
+	"title": [
 		"The title shouldn't have more than 100 characters."
 	] },
 "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
@@ -585,17 +585,17 @@ To achieve the response above, it's sugested to implement the code bellow
                         context.ModelState);
 
                 // add additional info not added by default
-                validationProblemDetails.Detail = 
+                validationProblemDetails.Detail =
                     "See the errors field for details.";
-                validationProblemDetails.Instance = 
+                validationProblemDetails.Instance =
                     context.HttpContext.Request.Path;
 
                 // report invalid model state responses as validation issues
-                validationProblemDetails.Type = 
+                validationProblemDetails.Type =
                     "https://courselibrary.com/modelvalidationproblem";
-                validationProblemDetails.Status = 
+                validationProblemDetails.Status =
                     StatusCodes.Status422UnprocessableEntity;
-                validationProblemDetails.Title = 
+                validationProblemDetails.Title =
                     "One or more validation errors occurred.";
 
                 return new UnprocessableEntityObjectResult(
@@ -643,7 +643,7 @@ public abstract class CourseForManipulationDto
     public string Title { get; set; } = string.Empty;
 
     [MaxLength(1500, ErrorMessage = "The description shouldn't have more than 1500 characters.")]
-    public virtual string Description { get; set; } = string.Empty;    
+    public virtual string Description { get; set; } = string.Empty;
 }
 ```
 
@@ -661,10 +661,10 @@ public class CourseTitleMustBeDifferentFromDescriptionAttribute
     {
     }
 
-    protected override ValidationResult? IsValid(object? value, 
+    protected override ValidationResult? IsValid(object? value,
         ValidationContext validationContext)
     {
-        if (validationContext.ObjectInstance is not 
+        if (validationContext.ObjectInstance is not
             CourseForManipulationDto course)
         {
             throw new Exception($"Attribute " +
@@ -685,7 +685,7 @@ public class CourseTitleMustBeDifferentFromDescriptionAttribute
 }
 ```
  Even though at class level, the same rules still apply, at property level, custom attributes get executed before the Validate method gets called, and that can come in handy for property level validation.
- 
+
  </details>
 
 ---
@@ -760,17 +760,17 @@ public async Task<IEnumerable<Author>> GetAuthorsAsync(string? searchQuery)
 
 </details>
 
-### Deferred Execution  
+### Deferred Execution
 
-When working with Entity Framework Core, we use LINQ to build our queries. With deferred execution, the query variable itself doesn't hold the query results. 
-It only stores the query commands. Execution of the query is deferred until the query variable is iterated over. So, deferred execution means that query execution occurs sometime after the query is constructed. We can get this behavior by working with `IQueryable` implementing collections. `IQueryable` of `T` allows us to execute a query against a specific data source. 
-And while building upon it, it creates an expression tree. But the query itself isn't actually sent to the Datastore until iteration happens. 
-Iteration can happen in different ways. 
-* One way is by using an IQueryable in a loop. 
-* Another way is by calling something like `ToList`, `ToArray`, or `ToDictionary` on it because that means converting the expression tree to an actual list of items. 
+When working with Entity Framework Core, we use LINQ to build our queries. With deferred execution, the query variable itself doesn't hold the query results.
+It only stores the query commands. Execution of the query is deferred until the query variable is iterated over. So, deferred execution means that query execution occurs sometime after the query is constructed. We can get this behavior by working with `IQueryable` implementing collections. `IQueryable` of `T` allows us to execute a query against a specific data source.
+And while building upon it, it creates an expression tree. But the query itself isn't actually sent to the Datastore until iteration happens.
+Iteration can happen in different ways.
+* One way is by using an IQueryable in a loop.
+* Another way is by calling something like `ToList`, `ToArray`, or `ToDictionary` on it because that means converting the expression tree to an actual list of items.
 * And another way is by calling singleton queries. Singleton queries are queries like `average`, `count`, and `first`. Because to get to the `count` or the `first` item of an `IQueryable`, the list has to be iterated over. But as long as we can avoid that, we can build our query by, for example, adding different Where statements after each other, and we can ensure that it's only executed after that. And that is exactly what we did when combining searching with filtering.
 
-<details><summary> 
+<details><summary>
 <b>Filtering and searching combined - 2 different fashion</b>  </summary>
 
 **First Fashion - Direct Query Parameters**
@@ -782,7 +782,7 @@ Iteration can happen in different ways.
 
         // get authors from repo
         var authorsFromRepo = await _courseLibraryRepository
-            .GetAuthorsAsync(mainCategory, searchQuery); 
+            .GetAuthorsAsync(mainCategory, searchQuery);
 
         // return them
         return Ok(_mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo));
@@ -792,7 +792,7 @@ Iteration can happen in different ways.
 //repository
 public async Task<IEnumerable<Author>> GetAuthorsAsync(string? mainCategory, string? searchQuery)
     {
-        if (string.IsNullOrWhiteSpace(mainCategory) 
+        if (string.IsNullOrWhiteSpace(mainCategory)
             && string.IsNullOrWhiteSpace(searchQuery)) return await GetAuthorsAsync();
 
         // collection to start from
@@ -841,7 +841,7 @@ namespace CourseLibrary.API.ResourceParameters
         // get authors from repo
         var authorsFromRepo = await _courseLibraryRepository
             .GetAuthorsAsync(authorResourceParameters);
-        
+
         // return them
         return Ok(authorsFromRepo);
     }
@@ -887,24 +887,24 @@ namespace CourseLibrary.API.ResourceParameters
 ## Chapter 7 - Paging
 
 ### Pagination
-It's considered best practice to always implement paging on each collection resource, or at least on those that can also be created.   
-The consumer is responsable to set the Pagination parameters like the page size and the page number. But the provider must set a max limit though.    
-The pagination mechanism must be implemented after fetching the data from the database.  
-If no paging parameters are provided, you should only return the first page by default.   
-Deferred execution allows us to build up our query in the repository and only execute it when we need to. So, we can add the Skip and Take methods to the IQueryable before executing it.  
+It's considered best practice to always implement paging on each collection resource, or at least on those that can also be created.
+The consumer is responsable to set the Pagination parameters like the page size and the page number. But the provider must set a max limit though.
+The pagination mechanism must be implemented after fetching the data from the database.
+If no paging parameters are provided, you should only return the first page by default.
+Deferred execution allows us to build up our query in the repository and only execute it when we need to. So, we can add the Skip and Take methods to the IQueryable before executing it.
 
 
 ### Returning Pagination Metadata
-The metadata should be returned in the response headers. The [RFC 5988](https://tools.ietf.org/html/rfc5988) defines a way to provide links to related resources in the HTTP headers.  
-**If the metadata is returned along side with the result, it's not considered RESTFull API, because the message is not self-explanatory by itself**  
-Mind the route and the action's name. These informations influences the creation of the next and previous page links by the URI.  
+The metadata should be returned in the response headers. The [RFC 5988](https://tools.ietf.org/html/rfc5988) defines a way to provide links to related resources in the HTTP headers.
+**If the metadata is returned along side with the result, it's not considered RESTFull API, because the message is not self-explanatory by itself**
+Mind the route and the action's name. These informations influences the creation of the next and previous page links by the URI.
 
 <details><summary><b>Steps used to implement pagination</b></summary>
 
-1. In the repository class, the last instruction before the return is to execute the pagination using the generic util class PagedList.  
+1. In the repository class, the last instruction before the return is to execute the pagination using the generic util class PagedList.
 
 ```csharp
-    
+
     public async Task<PagedList<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
     {
         if (authorResourceParameters == null) throw new ArgumentNullException(nameof(authorResourceParameters));
@@ -964,7 +964,7 @@ namespace CourseLibrary.API.Helpers
 }
 ```
 
-3. Helper class to be used as parameter to serialize the query string parameters of the URI, the maxPageSize, the Filter criteria (MainCategory), the Search Criteria (SearchQuery), PageSize and PageNumber  
+3. Helper class to be used as parameter to serialize the query string parameters of the URI, the maxPageSize, the Filter criteria (MainCategory), the Search Criteria (SearchQuery), PageSize and PageNumber
 ```csharp
 namespace CourseLibrary.API.ResourceParameters
 {
@@ -975,13 +975,13 @@ namespace CourseLibrary.API.ResourceParameters
         public string? SearchQuery { get; set; }
 
         public int PageNumber { get; set; } = 1;
-        
+
         private int _pageSize = 10;
 
         public int PageSize
-        { 
-            get => _pageSize; 
-            
+        {
+            get => _pageSize;
+
             set => _pageSize = (value > maxPageSize) ? maxPageSize : value; }
             //set => _pageSize = Math.Min(maxPageSize, value); // This algorithm has a problem when the value is 0, the page size will be 0.
         }
@@ -1001,7 +1001,7 @@ namespace CourseLibrary.API.Helpers
 }
 ```
 
-5. Method with the switch to create the previous and next page links and passing the mainCategory and searchQuery parameters as well.  
+5. Method with the switch to create the previous and next page links and passing the mainCategory and searchQuery parameters as well.
 ```csharp
     private string? CreateAuthorsResourceUri(
         AuthorResourceParameters authorResourceParameters,
@@ -1053,13 +1053,13 @@ Before returning the authors, it adds the pagination metadata to the response he
         // get authors from repo
         var authorsFromRepo = await _courseLibraryRepository
             .GetAuthorsAsync(authorResourceParameters);
-     
+
         var previousPageLink = authorsFromRepo.HasPrevious ?
-            CreateAuthorsResourceUri(authorResourceParameters, 
+            CreateAuthorsResourceUri(authorResourceParameters,
             ResourceUriType.PreviousPage) : null;
 
         var nextPageLink = authorsFromRepo.HasNext ?
-            CreateAuthorsResourceUri(authorResourceParameters, 
+            CreateAuthorsResourceUri(authorResourceParameters,
             ResourceUriType.NextPage) : null;
 
         var paginationMetadata = new
@@ -1084,13 +1084,13 @@ Before returning the authors, it adds the pagination metadata to the response he
 ---
 
 ## Chapter 8 - Suporting Sorting
-The sorting in the this algorythm is happens in the repository layer but it is checked in the service layer though.  
-In the service layer happens the mapping between the *DTO* and the *Entity*. The clients requires a sorting by name for example, the entity doesn't know anything about *name*, the entity knows about *first* and *last* name.  
+The sorting in the this algorythm is happens in the repository layer but it is checked in the service layer though.
+In the service layer happens the mapping between the *DTO* and the *Entity*. The clients requires a sorting by name for example, the entity doesn't know anything about *name*, the entity knows about *first* and *last* name.
 
 <details><summary><b>Sorting Implementation Steps</b></summary>
 
-1. Class used by the controller action to serialize the query string parameters of the URI. It contains the Filter criteria (MainCategory), the Search Criteria (SearchQuery), PageSize, PageNumber and **OrderBy** for sorting.  
-The **orderBy** parameter is optional, and if not provided, the default sorting is by Name.  
+1. Class used by the controller action to serialize the query string parameters of the URI. It contains the Filter criteria (MainCategory), the Search Criteria (SearchQuery), PageSize, PageNumber and **OrderBy** for sorting.
+The **orderBy** parameter is optional, and if not provided, the default sorting is by Name.
 This is the same class used in the pagination, searching, filtering implementations.
 ```csharp
 public class AuthorResourceParameters
@@ -1100,23 +1100,23 @@ public class AuthorResourceParameters
         public string? SearchQuery { get; set; }
 
         public int PageNumber { get; set; } = 1;
-        
+
         private int _pageSize = 10;
 
         public int PageSize
-        { 
-            get => _pageSize; 
-            
+        {
+            get => _pageSize;
+
             //set => _pageSize = (value > maxPageSize) ? maxPageSize : value; }
-            set => _pageSize = Math.Min(maxPageSize, value); 
+            set => _pageSize = Math.Min(maxPageSize, value);
         }
-        
+
         // Property used for sorting
         public string OrderBy { get; set; } = "Name";
     }
 ```
 
-2. In the controller, the first *if* checks if the sorting parameter exists, if not, it returns to the client a 400 status coding stating that the sortby must be a valid parameter.  
+2. In the controller, the first *if* checks if the sorting parameter exists, if not, it returns to the client a 400 status coding stating that the sortby must be a valid parameter.
 ```csharp
     [HttpGet(Name ="GetAuthors")]
     public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors([FromQuery]
@@ -1144,7 +1144,7 @@ public class AuthorResourceParameters
     public async Task<PagedList<Author>> GetAuthorsAsync(AuthorResourceParameters authorResourceParameters)
     {
         if (authorResourceParameters == null) throw new ArgumentNullException(nameof(authorResourceParameters));
-        
+
         // collection to start from
         var collection = _context.Authors as IQueryable<Author>;
 
@@ -1155,10 +1155,10 @@ public class AuthorResourceParameters
             // get property mapping dictionary
             var authorPropertyMappingDictionary =
                 _propertyMappingService.GetPropertyMapping<AuthorDto, Author>();
-            
+
             // apply sorting call
             collection = collection.ApplySort(authorResourceParameters.OrderBy,
-                authorPropertyMappingDictionary);            
+                authorPropertyMappingDictionary);
         }
 
         return await PagedList<Author>.CreateAsync(collection,
@@ -1167,9 +1167,9 @@ public class AuthorResourceParameters
     }
 ```
 
-4. The **ApplySort** extension method used to apply the sorting to the IQueryable collection.   
+4. The **ApplySort** extension method used to apply the sorting to the IQueryable collection.
 
-The method uses the **System.Linq.Dynamic.Core** package to apply the sorting.  
+The method uses the **System.Linq.Dynamic.Core** package to apply the sorting.
 
 ```csharp
 using System.Linq.Dynamic.Core;
@@ -1201,13 +1201,13 @@ public static class IQueryableExtensions
         }
     // ******************* End of the first part of the algorythm *******************
 
-    // ******************* Begining of the second part of the algorythm *******************        
+    // ******************* Begining of the second part of the algorythm *******************
 
         var orderByString = string.Empty;
 
         // the orderBy string is separated by ",", so we split it.
         var orderByAfterSplit = orderBy.Split(',');
-        
+
         //apply each orderby clause
         foreach (var orderByClause in orderByAfterSplit)
         {
@@ -1235,7 +1235,7 @@ public static class IQueryableExtensions
 
             // get the PropertyMappingValue
             var propertyMappingValue = mappingDictionary[propertyName];
-            
+
             if (propertyMappingValue == null)
             {
                 throw new ArgumentNullException(nameof(propertyMappingValue));
@@ -1248,7 +1248,7 @@ public static class IQueryableExtensions
             }
 
             // Run through the properties names
-            foreach (var destinationProperty in 
+            foreach (var destinationProperty in
                 propertyMappingValue.DestinationProperties)
             {
                 orderByString = orderByString +
@@ -1260,10 +1260,10 @@ public static class IQueryableExtensions
     // ******************* End of the second part of the algorythm *******************
 
     // ******************* Begining of the third part of the algorythm *******************
-        
-        // apply the orderby string to the source        
+
+        // apply the orderby string to the source
         return source.OrderBy(orderByString);
-        
+
     // ******************* End of the third part of the algorythm *******************
     }
 }
@@ -1295,7 +1295,7 @@ public class PropertyMapping<TSource, TDestination> : IPropertyMapping
 
 ```
 
-7. The **PropertyMappingValue**   
+7. The **PropertyMappingValue**
 ```csharp
 public class PropertyMappingValue
 {
@@ -1311,8 +1311,8 @@ public class PropertyMappingValue
 }
 ```
 
-8. The **PropertyMappingService** class that holds the mapping dictionary and the methods to get the mapping dictionary and to check if the sorting parameter exists in the mapping dictionary.  
-8. The service is this case is used to validate if it's applicable to sort by the parameter provided by the client or not.  
+8. The **PropertyMappingService** class that holds the mapping dictionary and the methods to get the mapping dictionary and to check if the sorting parameter exists in the mapping dictionary.
+8. The service is this case is used to validate if it's applicable to sort by the parameter provided by the client or not.
 ```csharp
 
 namespace CourseLibrary.API.Services;
@@ -1347,7 +1347,7 @@ public class PropertyMappingService : IPropertyMappingService
         }
 
         throw new Exception($"Cannot find exact property mapping instance " +
-            $"for <{typeof(TSource)},{typeof(TDestination)}>");        
+            $"for <{typeof(TSource)},{typeof(TDestination)}>");
     }
 
     public bool ValidMappingExistsFor<TSource, TDestination>(string fields)
@@ -1390,24 +1390,24 @@ public class PropertyMappingService : IPropertyMappingService
 
 </details>
 
---- 
+---
 
 ## Chapter 9 - Supporting Data Shaping
-**Data shaping allows the consumer of the API to choose the fields of the resource that have to be returned.**  
+**Data shaping allows the consumer of the API to choose the fields of the resource that have to be returned.**
 This principle allows the consumer of the API to choose the fields of the resource representation that have to be returned.
 
-So, rather than returning all properties of an author, a consumer of an API might only want to know the ID and the name.   
-Data shaping allows for this by looking at a fields query string parameter of which the value is a comma‑separated list of field names.  
+So, rather than returning all properties of an author, a consumer of an API might only want to know the ID and the name.
+Data shaping allows for this by looking at a fields query string parameter of which the value is a comma‑separated list of field names.
 
-The field names passed in as value of the field's query string parameter should exist on the resource. So, for our author, a field‑level selection on age is valid, as the authors resource has an age, but one on date of birth is not valid, as an authors resource does not have that. The date of birth is defined on the entity and not at level of the outer‑facing contract. 
+The field names passed in as value of the field's query string parameter should exist on the resource. So, for our author, a field‑level selection on age is valid, as the authors resource has an age, but one on date of birth is not valid, as an authors resource does not have that. The date of birth is defined on the entity and not at level of the outer‑facing contract.
 
-When shaping data to return, not always we will be able to use strongly typed objects. To handle this scenario, we need a way to dynamically create an object at runtime. That's where the `ExpandoObject` comes in handy. It's defined in `System.Dynamic`. Its members can be added and removed at runtime.    
+When shaping data to return, not always we will be able to use strongly typed objects. To handle this scenario, we need a way to dynamically create an object at runtime. That's where the `ExpandoObject` comes in handy. It's defined in `System.Dynamic`. Its members can be added and removed at runtime.
 
 When returning a collection of resources, we can use strongly typed objects, but when returning a single resource, we might not be able to do that.
 
 **Caveats**
-When implementing Data Shaping, keep in mind that it might violate the sub-constraint of REST: "Manipulation of Resources Through Representations".  
-To avoid this, make sure that the representation returned to the client contains all the necessary information to manipulate the resource, such as its URI.  
+When implementing Data Shaping, keep in mind that it might violate the sub-constraint of REST: "Manipulation of Resources Through Representations".
+To avoid this, make sure that the representation returned to the client contains all the necessary information to manipulate the resource, such as its URI.
 Another approach is to implement HATEOAS, which provides links to related resources and actions, ensuring that the client has enough context to interact with the resource effectively.
 And finally, makes sure to create a mechanism to avoid 500 status code errors when the client requests fields that do not exist on the resource.
 
@@ -1460,8 +1460,8 @@ public static class IEnumerableExtensions
         var expandoObjectList = new List<ExpandoObject>();
 
         // create a list with PropertyInfo objects on TSource.  Reflection is
-        // expensive, so rather than doing it for each object in the list, we do 
-        // it once and reuse the results.  After all, part of the reflection is on the 
+        // expensive, so rather than doing it for each object in the list, we do
+        // it once and reuse the results.  After all, part of the reflection is on the
         // type of the object (TSource), not on the instance
         var propertyInfoList = new List<PropertyInfo>();
 
@@ -1480,13 +1480,13 @@ public static class IEnumerableExtensions
 
             foreach (var field in fieldsAfterSplit)
             {
-                // trim each field, as it might contain leading 
+                // trim each field, as it might contain leading
                 // or trailing spaces. Can't trim the var in foreach,
                 // so use another var.
                 var propertyName = field.Trim();
 
                 // use reflection to get the property on the source object
-                // we need to include public and instance, b/c specifying a binding 
+                // we need to include public and instance, b/c specifying a binding
                 // flag overwrites the already-existing binding flags.
                 var propertyInfo = typeof(TSource)
                     .GetProperty(propertyName, BindingFlags.IgnoreCase |
@@ -1498,7 +1498,7 @@ public static class IEnumerableExtensions
                         $" {typeof(TSource)}");
                 }
 
-                // add propertyInfo to list 
+                // add propertyInfo to list
                 propertyInfoList.Add(propertyInfo);
             }
         }
@@ -1506,7 +1506,7 @@ public static class IEnumerableExtensions
         // run through the source objects
         foreach (TSource sourceObject in source)
         {
-            // create an ExpandoObject that will hold the 
+            // create an ExpandoObject that will hold the
             // selected properties & values
             var dataShapedObject = new ExpandoObject();
 
@@ -1532,7 +1532,7 @@ public static class IEnumerableExtensions
 }
 ```
 
-3. Implementation for an object. For sake of perfomance, we implement a different method for single objects. Since using `Reflection` is costly in terms of performance.   
+3. Implementation for an object. For sake of perfomance, we implement a different method for single objects. Since using `Reflection` is costly in terms of performance.
 ```csharp
 using System.Dynamic;
 using System.Reflection;
@@ -1553,7 +1553,7 @@ public static class ObjectExtensions
 
         if (string.IsNullOrWhiteSpace(fields))
         {
-            // all public properties should be in the ExpandoObject 
+            // all public properties should be in the ExpandoObject
             var propertyInfos = typeof(TSource)
                     .GetProperties(BindingFlags.IgnoreCase |
                     BindingFlags.Public | BindingFlags.Instance);
@@ -1576,13 +1576,13 @@ public static class ObjectExtensions
 
         foreach (var field in fieldsAfterSplit)
         {
-            // trim each field, as it might contain leading 
+            // trim each field, as it might contain leading
             // or trailing spaces. Can't trim the var in foreach,
             // so use another var.
             var propertyName = field.Trim();
 
             // use reflection to get the property on the source object
-            // we need to include public and instance, b/c specifying a 
+            // we need to include public and instance, b/c specifying a
             // binding flag overwrites the already-existing binding flags.
             var propertyInfo = typeof(TSource)
                 .GetProperty(propertyName,
@@ -1611,7 +1611,7 @@ public static class ObjectExtensions
 
 ```
 
-4. Change the controller to return `IActionResult`, this is to allow returning different types of objects, thereby accepting the `ExpandoObject` returned by the `ShapeData` method.  
+4. Change the controller to return `IActionResult`, this is to allow returning different types of objects, thereby accepting the `ExpandoObject` returned by the `ShapeData` method.
 The first instruction is to check if the fields provided by the client exists on the resource. If not, is called the factory method to create a `ProblemDetails` object and return a 400 status code to the client.
 ```csharp
     [HttpGet("{authorId}", Name = "GetAuthor")]
@@ -1643,7 +1643,7 @@ The first instruction is to check if the fields provided by the client exists on
     }
 ```
 
-5. Class to validate if the fields provided by the client exists on the resource. Create a interface and register in the DI container to it could be injected in the controller.      
+5. Class to validate if the fields provided by the client exists on the resource. Create a interface and register in the DI container to it could be injected in the controller.
 ```csharp
 using System.Reflection;
 
@@ -1664,13 +1664,13 @@ public class PropertyCheckerService : IPropertyCheckerService
         // check if the requested fields exist on source
         foreach (var field in fieldsAfterSplit)
         {
-            // trim each field, as it might contain leading 
+            // trim each field, as it might contain leading
             // or trailing spaces. Can't trim the var in foreach,
             // so use another var.
             var propertyName = field.Trim();
 
             // use reflection to check if the property can be
-            // found on T. 
+            // found on T.
             var propertyInfo = typeof(T)
                 .GetProperty(propertyName,
                 BindingFlags.IgnoreCase | BindingFlags.Public |
@@ -1720,8 +1720,8 @@ http://localhost:5000/api/authors?fields=id,name&pageSize=2&pageNumber=1
 
 <details><summary>Pending</summary>
 
-- Others implementation of the Data Shaping  
-- Implementing Data Shaping for children objects  
+- Others implementation of the Data Shaping
+- Implementing Data Shaping for children objects
 
 </details>
 
@@ -1729,10 +1729,10 @@ http://localhost:5000/api/authors?fields=id,name&pageSize=2&pageNumber=1
 
 ## Chapter 10 - Learning and implementing HATEOAS
 *You can't have evolvability if clients have their controls baked into their design at deployment. Controls have to be learned on the fly. That's what hypermedia enables.*
-[Roy Fielding](https://www.infoq.com/articles/roy-fielding-on-versioning/)  
+[Roy Fielding](https://www.infoq.com/articles/roy-fielding-on-versioning/)
 
-**Supporting HATEOAS**  
-`<a href="uri" rel="type" type="media type">`  
+**Supporting HATEOAS**
+`<a href="uri" rel="type" type="media type">`
 HTML represents links with the anchor element
 - href: contains the URI
 - rel: describes how the link relates to the resource
@@ -1740,7 +1740,7 @@ HTML represents links with the anchor element
 
 ```json
 {
-    "links": 
+    "links":
     [{
         "href": "http://localhost:5000/api/authors/1",
         "rel":"reserve-course",
@@ -1765,7 +1765,7 @@ For complex responses with collections, we need a kind of envelop to hold a list
 
 <details><summary><b>Sample code to implement HATEOAS</b></summary>
 
-Simple case, with only one object on the response.  
+Simple case, with only one object on the response.
 
 1. Model class for LinkDto
 ```csharp
@@ -1787,7 +1787,7 @@ public class LinkDto
 ```
 
 2. Create a method to create the links to be used as the response.
-The first one is `_self`. It's the link to the resource itself, the rest of the links are related to the possible actions on the resource, like retrieving the courses or create a course for the author.   
+The first one is `_self`. It's the link to the resource itself, the rest of the links are related to the possible actions on the resource, like retrieving the courses or create a course for the author.
 **It's the place to define which links should return to the client based on business rules.**.
 ```csharp
 private IEnumerable<LinkDto> CreateLinksForResponse(Guid authorId, string? fields)
@@ -1827,8 +1827,8 @@ private IEnumerable<LinkDto> CreateLinksForResponse(Guid authorId, string? field
 ```
 
 3. The action code to create the links to return to the client.
-After the creation of the resource to be returned for the client, is created a variable called `links` that calls the method to create the links.  
-Then, the resource to be returned is mapped to a DTO and shaped using the `ShapeData` extension method. The result is casted to an `IDictionary<string, object?>` to allow adding the links to it.  
+After the creation of the resource to be returned for the client, is created a variable called `links` that calls the method to create the links.
+Then, the resource to be returned is mapped to a DTO and shaped using the `ShapeData` extension method. The result is casted to an `IDictionary<string, object?>` to allow adding the links to it.
 Finally, the links are added to the resource and returned to the client.
 ```csharp
 [HttpGet("{authorId}", Name = "GetAuthor")]
@@ -1846,7 +1846,7 @@ Finally, the links are added to the resource and returned to the client.
 
         linkedResourceToReturn.Add("links", links);
 
-        // return 
+        // return
         return Ok(linkedResourceToReturn);
     }
 ```
@@ -1854,7 +1854,7 @@ Finally, the links are added to the resource and returned to the client.
 
 <details><summary><b>Example of HATEOAS with Complex Type</b></summary>
 
-1. Method to create links with the self using the default logic. The *ResourceUriType* is a enumerator type. 
+1. Method to create links with the self using the default logic. The *ResourceUriType* is a enumerator type.
 With this routine, there is no need to send pagination on response header.
 ```csharp
 private string? CreateAuthorsResourceUri(
@@ -1873,7 +1873,7 @@ private string? CreateAuthorsResourceUri(
                         pageSize = authorsResourceParameters.PageSize,
                         mainCategory = authorsResourceParameters.MainCategory,
                         searchQuery = authorsResourceParameters.SearchQuery
-                    }); 
+                    });
             case ResourceUriType.NextPage:
                 return Url.Link("GetAuthors",
                     new
@@ -1897,7 +1897,7 @@ private string? CreateAuthorsResourceUri(
                         mainCategory = authorsResourceParameters.MainCategory,
                         searchQuery = authorsResourceParameters.SearchQuery
                     });
-        } 
+        }
     }
 ```
 
@@ -1924,14 +1924,14 @@ private string? CreateAuthorsResourceUri(
 
 3. Action with the calling to the HATEOAS routine.
 ```csharp
-[HttpGet(Name = "GetAuthors")] 
+[HttpGet(Name = "GetAuthors")]
     [HttpHead]
     public async Task<IActionResult> GetAuthors(
         [FromQuery] AuthorsResourceParameters authorsResourceParameters)
     {
-        // after the retrieval of the data from the layers beneath the controller, is called the 
+        // after the retrieval of the data from the layers beneath the controller, is called the
         var authorsFromRepo = await _courseLibraryRepository
-            .GetAuthorsAsync(authorsResourceParameters);        
+            .GetAuthorsAsync(authorsResourceParameters);
 
         // pagination meta data used in the response's header
         var paginationMetadata = new
@@ -1945,10 +1945,10 @@ private string? CreateAuthorsResourceUri(
         // serialization of the metadata in the header
         Response.Headers.Add("X-Pagination",
                JsonSerializer.Serialize(paginationMetadata));
-        
+
         // create links to be used in the response roots to indicate the next possible requests to the API
         var links = CreateLinksForAuthors(authorsResourceParameters, authorsFromRepo.HasNext, authorsFromRepo.HasPrevious);
-        
+
         // The data from the layers beneath the controller to be shaped onto the response.
         var shapedAuthors = _mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo)
                     .ShapeData(authorsResourceParameters.Fields);
@@ -1978,10 +1978,10 @@ private string? CreateAuthorsResourceUri(
 </details>
 
 ### Root Document
-For this kind of document, the client can learn how to interact with the rest of the API. This document will live at the API root, so host/api. 
-It's an empty API controller, generally named RootController. 
+For this kind of document, the client can learn how to interact with the rest of the API. This document will live at the API root, so host/api.
+It's an empty API controller, generally named RootController.
 It should be executed on a GET request to /api and contains links to the document itself and links to actions that can happen on URIs at root level or that are not accessible otherwise.
-From this root document, consumers of the API can start interacting with the API. 
+From this root document, consumers of the API can start interacting with the API.
 
 <details><summary><b>Example of `Root` implementation</b></summary>
 
@@ -1997,7 +1997,7 @@ public class RootController : ControllerBase
 {
     [HttpGet(Name = "GetRoot")]
     public IActionResult GetRoot()
-    { 
+    {
         // create links for root
         var links = new List<LinkDto>();
 
@@ -2023,13 +2023,13 @@ public class RootController : ControllerBase
 
 </details>
 
-###  Other options to implement HATEOAS or attempts to standardization of API responses. 
-[HAL - Hyperlink As Language](datatracker.ietf.org/doc/html/draft-kelly-json-hal-11)  
-[Siren - Hypermedia specification for representing entities](github.com/kevinwiber/siren)    
-[NHateoas - Copilot Suggestion](github.com/JeremySkinner/NHateoas)  
-[NHateoas](github.com/yuri-sannikov/NHateoas)  
-[JSON for Linking Data](https://json-ld.org)  
-[JSON api](https://jsonapi.org)  
+###  Other options to implement HATEOAS or attempts to standardization of API responses.
+[HAL - Hyperlink As Language](datatracker.ietf.org/doc/html/draft-kelly-json-hal-11)
+[Siren - Hypermedia specification for representing entities](github.com/kevinwiber/siren)
+[NHateoas - Copilot Suggestion](github.com/JeremySkinner/NHateoas)
+[NHateoas](github.com/yuri-sannikov/NHateoas)
+[JSON for Linking Data](https://json-ld.org)
+[JSON api](https://jsonapi.org)
 [OData - OASIS](www.odata.org)
 
 ---
@@ -2039,30 +2039,30 @@ public class RootController : ControllerBase
 ### Semantic Media Types
 Media types that thell something about the semantics of the data, in other words: *what the data means*.
 
-**Vendor-specific Media Types**  
-`application/vnd.marvin.hateoas+json`  
-1. application => Top-level type  
-2. vnd => Vendor-specific  
-3. marvin => Vendor identifier  
-4. hateoas => Media type name   
+**Vendor-specific Media Types**
+`application/vnd.marvin.hateoas+json`
+1. application => Top-level type
+2. vnd => Vendor-specific
+3. marvin => Vendor identifier
+4. hateoas => Media type name
 5. json => Suffix
 
-Clip 5 - Tightening the Contract Between Client and Server with Vendor Media Types  
-Combining Semantic Media Types with HATEOAS  
-There should be only one suffix per media type, and only officially registered suffixes should be used.  
+Clip 5 - Tightening the Contract Between Client and Server with Vendor Media Types
+Combining Semantic Media Types with HATEOAS
+There should be only one suffix per media type, and only officially registered suffixes should be used.
 
-`application/vnd.marvin.author.friendly+json`   
-- Friendly representation without links   
+`application/vnd.marvin.author.friendly+json`
+- Friendly representation without links
 
-`application/vnd.marvin.author.friendly+hateoas+json`   
--Friendly representation with links  
+`application/vnd.marvin.author.friendly+hateoas+json`
+-Friendly representation with links
 
-`application/vnd.marvin.author.full+json`  
-- Full representation without links  
+`application/vnd.marvin.author.full+json`
+- Full representation without links
 
-`application/vnd.marvin.author.full+hateoas+json`  
-- Full representation with links  
- 
+`application/vnd.marvin.author.full+hateoas+json`
+- Full representation with links
+
 Friendly representation of data
 ```json
 {
@@ -2078,13 +2078,13 @@ Full representation of data
 }
 ```
 
- 
- There is a way to couple media types to specific resources. By applying the `Producers` attribute, we can restrict the media types an action will produce.  
-It's important to document the code generated on this clip "Demo: Working with Vendor-specific Media Types on Input"  
-It shows how to differentiate the input based on the media type provided by the client. Causing the use of different actions based on the payload and content-type header provided by the client.
- 
 
-Review the Clip "Demo: Improving Resource Representation Selection with an ActionConstraint" to jot down the last observations about the combinations of input and output.  
+ There is a way to couple media types to specific resources. By applying the `Producers` attribute, we can restrict the media types an action will produce.
+It's important to document the code generated on this clip "Demo: Working with Vendor-specific Media Types on Input"
+It shows how to differentiate the input based on the media type provided by the client. Causing the use of different actions based on the payload and content-type header provided by the client.
+
+
+Review the Clip "Demo: Improving Resource Representation Selection with an ActionConstraint" to jot down the last observations about the combinations of input and output.
 ### Versioning
 
 <details><summary></summary>
@@ -2101,45 +2101,45 @@ Review the Clip "Demo: Improving Resource Representation Selection with an Actio
 
 ---
 
-## Chapter 12 - Caching  
+## Chapter 12 - Caching
 
-Caching would be useless if it did not significantly improve performance. The goal of caching is to eliminate the need to send requests in many cases, and to eliminate the need to send full responses in many other cases.  
+Caching would be useless if it did not significantly improve performance. The goal of caching is to eliminate the need to send requests in many cases, and to eliminate the need to send full responses in many other cases.
 
 ### The Purpose of Caching
 
-**The cache is a separate component**   
-- Accepcts requests from consumer to the API   
-- Receives responses from the API and stores them if they are deemed cacheable    
-It's the middle-man of request-response communication  
+**The cache is a separate component**
+- Accepcts requests from consumer to the API
+- Receives responses from the API and stores them if they are deemed cacheable
+It's the middle-man of request-response communication
 
 
 **Cache Types**
-1. Client Cache or Browser Cache - Private cache, only the client has access to it. Lives on the client.  
-2. Gateway Cache - Shared across different applications. Lives on server side. Reverse proxy caches or HTTP accelerators.  
-3. Proxy Cache - Also shared cache, but does not live at the consuming-side nor at the side of the API. It lives on the network.  
+1. Client Cache or Browser Cache - Private cache, only the client has access to it. Lives on the client.
+2. Gateway Cache - Shared across different applications. Lives on server side. Reverse proxy caches or HTTP accelerators.
+3. Proxy Cache - Also shared cache, but does not live at the consuming-side nor at the side of the API. It lives on the network.
 
 Response Cache Attribute and Middleware
 
-To support caching, we essentially need two things.  
-1. The first thing we need is a way to state for each resource whether or not it's cacheable.  
-That is done via a response header. There are various headers to consider, but the one most often used is the `Cache‑Control` header. A `Cache‑Control` header with maximum age set to 120. This states that a response must only be cached for 120 seconds.  
-To achieve that, the `ResponseCache` attribute is used. 
+To support caching, we essentially need two things.
+1. The first thing we need is a way to state for each resource whether or not it's cacheable.
+That is done via a response header. There are various headers to consider, but the one most often used is the `Cache‑Control` header. A `Cache‑Control` header with maximum age set to 120. This states that a response must only be cached for 120 seconds.
+To achieve that, the `ResponseCache` attribute is used.
 
-2. 2. A cache store. either at client level, server level or proxy level. The middleware is responsible for storing cacheable responses and serving them up from its store.   
+2. 2. A cache store. either at client level, server level or proxy level. The middleware is responsible for storing cacheable responses and serving them up from its store.
 
 
-State for each resource whether or not it's cacheable  
-- Cache-Control:max-age=120  
-- [ResponseCache] attribute   
-- This does not actually cache anything  
+State for each resource whether or not it's cacheable
+- Cache-Control:max-age=120
+- [ResponseCache] attribute
+- This does not actually cache anything
 
-Cache store   
-- Response caching middleware  
+Cache store
+- Response caching middleware
 
 
 The response header will have a `Cache-Control` header with a `max-age` directive set to 120 seconds `public,max-age=120`. This indicates that the response can be cached for up to 120 seconds, and it could be stored publicly and privatelly
 
-**Adding a cache store with the `ResponseCaching` middleware**   
+**Adding a cache store with the `ResponseCaching` middleware**
 
 ```csharp
 builder.Services.AddResponseCaching();
@@ -2163,7 +2163,7 @@ builder.Services.AddControllers(options =>
         });
 });
 ```
-It's possible to apply the cache profile to an action or to a controller.  
+It's possible to apply the cache profile to an action or to a controller.
 ```csharp
     [ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
     public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(
@@ -2180,17 +2180,17 @@ It's possible to apply the cache profile to an action or to a controller.
 
 
 ### Expiration Model
-Allows the serv to state how long a response is considered fresh.  
+Allows the serv to state how long a response is considered fresh.
 
 |Expires header|Cache-Control header|
 |-|-|
 |Expires: Wed, 21 Oct 2015 07:28:00 GMT|Cache-Control: public,max-age=3600|
 |Clocks must be synchronized|Preferred header for expiration|
 |Offers little control|[Directives](https://datatracker.ietf.org/doc/html/rfc9111)|
-Review this module and jot down the topics 
+Review this module and jot down the topics
 
 ### Validation Model
-Used to validate the freshness of a cached response that's been cached.  
+Used to validate the freshness of a cached response that's been cached.
 Review this module and jot down the topics
 
 ### Exploring the Cache-control Directives
@@ -2243,13 +2243,14 @@ and then. Mind the order it must be before `app.MapControllers()`
 </details>
 
 <details><summary>
+
 ### Libraries</summary>
 
-1. AutoMapper.Extensions.Microsoft.DependencyInjection - v12.0.1  
-2. Microsoft.AspNetCore.JsonPatch - v9.0.9  
-3. Microsoft.AspNetCore.Mvc.NewtonsoftJson - v8.0.0  
-4. System.Linq.Dynamic.Core - v1.3.7  
-5. [Marvin.Cache.Headers - v7.0.0](https://github.com/KevinDockx/HttpCacheHeaders)   
+1. AutoMapper.Extensions.Microsoft.DependencyInjection - v12.0.1
+2. Microsoft.AspNetCore.JsonPatch - v9.0.9
+3. Microsoft.AspNetCore.Mvc.NewtonsoftJson - v8.0.0
+4. System.Linq.Dynamic.Core - v1.3.7
+5. [Marvin.Cache.Headers - v7.0.0](https://github.com/KevinDockx/HttpCacheHeaders)
 
 </details>
 
