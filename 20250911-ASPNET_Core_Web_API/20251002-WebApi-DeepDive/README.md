@@ -2649,6 +2649,7 @@ Simply injecting IValidator value invalidator via a constructor injection will g
 |This is not possible in REST|ETags are used as validation tokens|
 
 <details><summary><b>Example of Optimistic Concurrency</b></summary>
+
 1. Kevin gets an author, and the author is returned with an ETag value.   
 2. Sven gets that same author, and that's returned with the same ETag.   
 3. Sven updates the author, passing in the ETag in the If‑Match header.  
@@ -2664,7 +2665,7 @@ Kevin's update isn't applied because he was working on an older version of the a
 The same applies for `PATCH`.  
 This also drives the case for separating the cache store from the component that just generates the Cache‑Control and ETag headers.  
 Those ETag headers serve different purposes. We don't need a cache to handle concurrent updates.  
-So even without putting a cache server in front of the API or without using a Content Delivery Network, we can support concurrency simply by having a component that generates ETags for us by sending them from the client, as we just learned. 
+So even without putting a cache server in front of the API or without using a Content Delivery Network, we can support concurrency simply by having a component that generates ETags for us by sending them from the client, as we just learned.  
 
 ![](https://github.com/Ngofilho/Architecture/blob/images/images/20251002WebApiDeepDive/SupportingConcurrency.png)
 
