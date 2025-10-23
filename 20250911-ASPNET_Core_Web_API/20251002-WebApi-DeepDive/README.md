@@ -1,7 +1,7 @@
 ﻿# [ASP.NET Core Web Api Deep Dive](https://app.pluralsight.com/library/courses/asp-dot-net-core-6-web-api-deep-dive)
 
 
-## Chapter 3 : Designing the Outer Facing Contract
+## Chapter 3 - Designing the Outer Facing Contract
 Consists of three big concepts a consumer of an API uses to interact with that API
 
 - First, the resource identifiers. In other words, the URIs where the resources can be found.
@@ -2480,20 +2480,85 @@ Allows the server to state how long a response is considered fresh.
 |Offers little control|[Directives](https://datatracker.ietf.org/doc/html/rfc9111)|
 
 <details><summary><b>How the Expiration Model Works</b></summary>
+If the private cache hasn't expired, it will be used by the Angular Application or Mobile Application to use the resource. If has been expired it will access the Web Api. But if another application request the data from the Api and the its private cache doesn't have the resouce, it will access the Api  
+With a public cache happens the same thing but with the difference that it drastically decrease the access to the Api but not to the public shared cache. Because every application will access the public shared cache.  
 
 ![](https://github.com/Ngofilho/Architecture/blob/images/images/20251002WebApiDeepDive/ExpirationModel.png)
 </details>
 
 ### Validation Model
 Used to validate the freshness of a cached response that's been cached.
-Review this module and jot down the topics
+Validation is used to validate the freshness of a response that has been cached. When a cache has a stale entry that it would like to use as a response to a client's request, it first has to check with the origin server, or possibly an intermediate cache with a fresh response to see if its cached entry is still usable. But to be able to validate, we need something to, well, validate against, and that's a validator.
+
+|Strong Validators|Weak Validators|
+|-|-|
+|**Change if the body or headers of a response change**|**Don't always change when the response changes (eg: only on significante changes)**|
+|**ETag (Entity Tag) response header**|Last-Modified: Wed, 27 Nov 2021 18:00:00 GMT|
+|ETag:"123456789"|ETag: "w/123456789"|
+|**Can be used in any context (equality is guaranteed)**|**Equivalence, but not equality**|
+
+<details><summary><b>Validation Model</b></summary>
+
+![](https://github.com/Ngofilho/Architecture/blob/images/images/20251002WebApiDeepDive/ValidationModel.png)</details>
+
+**Expiration and Validation Combined**
+
+|Private Cache|Shared (public) cache|
+|-|-|
+|**As long as the response hasn’t expired (isn’t stale), that response can be returned from the cache**|**As long as the response hasn’t expired (isn’t stale), that response can be returned from the cache**|
+|Reduces communication with the API (including response generation), reduces bandwidth requirements|Reduces bandwidth requirements between cache and API, dramatically reduces request to the API|
+|**If it has expired, the API is hit**|**If it has expired, the API is hit**|
+|Bandwidth usage and response generation is potentially reduced even more|Bandwidth usage between cache and API and response generation is potentially reduced|
 
 ### Exploring the Cache-control Directives
-Review this module and jot down the topics
+
+**Response Directives**
+
+|Category/Header|Purpose|
+|-|-|
+|**Freshness**|Have to do with how long a response can be considered fresh. So, a response can expire differently in a private cache versus in a shared cash.|   
+|max‑age| Defines the maximum age after which a response expires in seconds.|  
+|s‑maxage| Overrides the max value for shared caches.| 
+|||
+|**Cache type**| Related to the cache type or cache location.| 
+|public |Indicates that a response may be cached by any cache|
+|private or Shared. |Private indicates that all or parts of the response message are intended for a single user and thus must not be cached by a shared cache.|
+|||
+|**Validation**| Related to validation.| 
+|no‑cache |Indicates that a response should not be used for subsequent requests without successful revalidation with the origin server.| 
+|must‑revalidate |The server can state that if a response becomes stale, then revalidation has to happen. This is to allow the server to force revalidation by the cache, even if a client has decided that stale responses are okay.|
+|proxy‑revalidate |Is exactly the same as must‑revalidate, but it doesn't apply to private user agent caches, like a browser cache.| 
+|||
+|**Other**|| 
+|no‑store| Is available at client level as well, and it states that the cache must not store any part of the message. It's mostly used for confidentiality reasons.| 
+|no‑transform| States that the cache shouldn't convert the media type of the response body.| 
+
+**Request Directives**
+
+|Category/Header|Purpose|
+|-|-|
+|**Freshness**||
+|max‑age| Indicates that the client is willing to accept a response whose age is no greater than the specified time in seconds.| 
+|min‑fresh| Indicates that the client is willing to accept a response whose freshness lifetime is no less than its current age plus the specified time in seconds. That is, the client wants a response that will still be fresh for at least the specified number of seconds.| 
+|max‑stale| Indicates that the client is willing to accept a response that has exceeded its expiration time. This is the one must‑revalidate in the response reacts against. By the way, when I say client here, I am always talking about the component that sends the request. 
+|||
+|**Validation**||
+|no‑cache| Stating that the response to this request should not be used for subsequent requests without successful revalidation with the origin server. In other words, with the API. 
+|||
+|**Other**||
+|no‑store| The same as for response headers.|
+|no‑transform|The same as for response headers.|
+|only‑if‑cached| This states that a client wants the cache to return only those responses that it currently has stored and not reload or revalidate with the origin server. This one is typically used when there's a very poor network connection.|
+
+These are already pretty advanced directives and options. In a lot of cases, we're quite okay with just using **max‑age** and **public** or **private**. 
+
 
 ---
 
-# Chapter 13 - Supporting HTTP Cache for ASP.NET Core APIs
+## Chapter 13 - Supporting HTTP Cache for ASP.NET Core APIs
+
+### Supporting ETags
+ETags are preferred over dates as they are strong validators.  
 
 ```csharp
     builder.Services.AddHttpCacheHeaders();
@@ -2505,10 +2570,27 @@ and then. Mind the order it must be before `app.MapControllers()`
 
 ### Demo: Dealing with Varying Response Representations
 
-### Cache Stores and Content Delivery Networks
-### Demo:
+### Cache Stores and Content Delivery Networks  
+### Cache Invalidation  
 
-<details><summary></summary>
+<details><summary><b></b></summary>
+
+
+```csharp
+builder.Services.AddHttpCacheHeaders();
+```
+
+```csharp
+
+```
+
+</details>
+
+---
+
+## Chapter 14 - Supporting Concurrency
+
+<details><summary><b></b></summary>
 
 
 ```csharp
@@ -2521,13 +2603,21 @@ and then. Mind the order it must be before `app.MapControllers()`
 
 </details>
 
-
 ---
 
 <details>
 <summary>
 
 ## Other</summary>
+
+<details><summary><b>
+
+### How-To</b></summary>
+
+Run the Visual Studio and use the Postman collection in this repo. Check, if applicable, the header of the request is the same as expected in the middleware or any validation on the controllers/actions.  
+Each chapter of the course has the final implementation of the code separeted in this folder by its respectivelly chapter. From one chapter to another the code may change. The last chapter code contains the final code implemented during the course by the instructor.
+
+</details>
 
 <details><summary>
 
@@ -2541,16 +2631,13 @@ and then. Mind the order it must be before `app.MapControllers()`
 
 ### Libraries</summary>
 
-1. AutoMapper.Extensions.Microsoft.DependencyInjection - v12.0.1
-2. Microsoft.AspNetCore.JsonPatch - v9.0.9
-3. Microsoft.AspNetCore.Mvc.NewtonsoftJson - v8.0.0
-4. System.Linq.Dynamic.Core - v1.3.7
-5. [Marvin.Cache.Headers - v7.0.0](https://github.com/KevinDockx/HttpCacheHeaders)
+1. .Net Core 8    
+2. AutoMapper.Extensions.Microsoft.DependencyInjection - v12.0.1  
+3. Microsoft.AspNetCore.JsonPatch - v9.0.9  
+4. Microsoft.AspNetCore.Mvc.NewtonsoftJson - v8.0.0  
+5. System.Linq.Dynamic.Core - v1.3.7  
+6. [Marvin.Cache.Headers - v7.0.0](https://github.com/KevinDockx/HttpCacheHeaders)  
 
 </details>
 
 </details>
-
-
-```csharp
-```
