@@ -2683,8 +2683,8 @@ So even without putting a cache server in front of the API or without using a Co
 
 ### How-To</b></summary>
 
-Run the Visual Studio and use the Postman collection in this repo. Check, if applicable, the header of the request is the same as expected in the middleware or any validation on the controllers/actions.  
-Each chapter of the course has the final implementation of the code separeted in this folder by its respectivelly chapter. From one chapter to another the code may change. The last chapter code contains the final code implemented during the course by the instructor.
+Run the Visual Studio and use the Postman collection (in the folder src) in this repo. Check, if applicable, the header of the request is the same as expected in the middleware or any validation on the controllers/actions.  
+Each chapter of the course has the its final implementation of the code separated in this folder (samples) by its respectivelly chapter number. From one chapter to another the code changes. The last chapter code (14) contains the final code implemented during the course by the instructor.
 
 </details>
 
