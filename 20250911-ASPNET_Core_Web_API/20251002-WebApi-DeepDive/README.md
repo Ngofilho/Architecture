@@ -2024,45 +2024,108 @@ public class RootController : ControllerBase
 </details>
 
 ###  Other options to implement HATEOAS or attempts to standardization of API responses.
-[HAL - Hyperlink As Language](datatracker.ietf.org/doc/html/draft-kelly-json-hal-11)
-[Siren - Hypermedia specification for representing entities](github.com/kevinwiber/siren)
-[NHateoas - Copilot Suggestion](github.com/JeremySkinner/NHateoas)
-[NHateoas](github.com/yuri-sannikov/NHateoas)
-[JSON for Linking Data](https://json-ld.org)
-[JSON api](https://jsonapi.org)
-[OData - OASIS](www.odata.org)
+[HAL - Hyperlink As Language](datatracker.ietf.org/doc/html/draft-kelly-json-hal-11)   
+[Siren - Hypermedia specification for representing entities](github.com/kevinwiber/siren)   
+[NHateoas - Copilot Suggestion](github.com/JeremySkinner/NHateoas)   
+[NHateoas](github.com/yuri-sannikov/NHateoas)   
+[JSON for Linking Data](https://json-ld.org)  
+[JSON api](https://jsonapi.org)  
+[OData - OASIS](www.odata.org)  
 
 ---
 
 ## Chapter 11 - Combining HATEOAS with Semantic Media Types
 
 ### Semantic Media Types
+“A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state, or in defining extended relation names and/or hypertext-enabled mark-up for existing standard media types.”
+[Roy Fielding,](https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven)
+
+*application/json* tells us something about the *format* of the data, but not about the *type*
+
 Media types that thell something about the semantics of the data, in other words: *what the data means*.
 
 **Vendor-specific Media Types**
-`application/vnd.marvin.hateoas+json`
+`application/vnd.nilo.hateoas+json`
 1. application => Top-level type
 2. vnd => Vendor-specific
-3. marvin => Vendor identifier
+3. nilo => Vendor identifier
 4. hateoas => Media type name
 5. json => Suffix
 
+<details><summary><b>Setup a specific media type to be processed</b></summary>
+
+Action with header parameter to process the header's value `Accept`. If the header doesn't pass the first check the client will receive a bad request reponse.
+At the end of the action, if the client passed the header it will receive the hateoas links otherwise it will receive only the values.
+```csharp
+    [HttpGet("{authorId}", Name = "GetAuthor")]
+    public async Task<IActionResult> GetAuthor(Guid authorId,
+        string? fields,
+        [FromHeader(Name = "Accept")] string? mediaType)
+    {
+
+        if (!MediaTypeHeaderValue.TryParse(mediaType, out var parsedMediaType))
+        {
+            return BadRequest(_problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
+                detail: $"Accept header media type is not a valid media type."));
+        }
+
+        if(parsedMediaType.MediaType == "application/vnd.nilo.hateoas+json")
+        {
+            // create links
+            var links = CreateLinksForAuthor(authorId, fields);
+
+            //add
+            var linkedResourceToReturn = _mapper.Map<AuthorDto>(authorFromRepo)
+                .ShapeData(fields) as IDictionary<string, object?>;
+
+            linkedResourceToReturn.Add("links", links);
+
+            // return 
+            return Ok(linkedResourceToReturn);
+        }
+        return Ok(_mapper.Map<AuthorDto>(authorFromRepo));
+
+    }
+```
+
+2. Set the right content negotiation type on the response. After the configuration of the controller adds the middleware configuration below
+
+```csharp
+builder.Services.Configure<MvcOptions>(config =>
+        {
+            var newtonsoftJsonOutputFormatter = config.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>()?.FirstOrDefault();
+
+            if(newtonsoftJsonOutputFormatter != null)
+            {
+                newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.nilo.hateoas+json");
+                newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.marvin.hateoas+json");
+            }
+        });
+
+```
+</details>
+
 Clip 5 - Tightening the Contract Between Client and Server with Vendor Media Types
 Combining Semantic Media Types with HATEOAS
-There should be only one suffix per media type, and only officially registered suffixes should be used.
 
-`application/vnd.marvin.author.friendly+json`
-- Friendly representation without links
+**There should be only one suffix per media type, and only officially registered suffixes should be used. Creating different content negotion options requires a default `application/json` though.** 
 
-`application/vnd.marvin.author.friendly+hateoas+json`
--Friendly representation with links
+`application/vnd.nilo.author.friendly+json`
+- Friendly representation without links. It doesn't break the principle of one suffix per media type. It's right.
 
-`application/vnd.marvin.author.full+json`
-- Full representation without links
+`application/vnd.nilo.author.friendly+hateoas+json`
+-Friendly representation with links. This does break the principle of one suffix per media type.  
+`application/vnd.nilo.author.friendly+hateoas+json`  
+Instead using the prior use the later example above. It replaced the `+hateoas` to `.hateoas`  
 
-`application/vnd.marvin.author.full+hateoas+json`
-- Full representation with links
+`application/vnd.nilo.author.full+json`
+- Full representation without links. It's right, because there is only one suffix.
 
+`application/vnd.nilo.author.full+hateoas+json`
+- Full representation with links. It's not right, because there are two suffixes. The hateoas and json. The correct way to use it should be as follow. Making `+hateoas+json` to `.hateoas+json`
+`application/vnd.nilo.author.full.hateoas+json`
+
+Example of different types of representation of data.
 Friendly representation of data
 ```json
 {
@@ -2080,32 +2143,260 @@ Full representation of data
 
 
  There is a way to couple media types to specific resources. By applying the `Producers` attribute, we can restrict the media types an action will produce.
-It's important to document the code generated on this clip "Demo: Working with Vendor-specific Media Types on Input"
-It shows how to differentiate the input based on the media type provided by the client. Causing the use of different actions based on the payload and content-type header provided by the client.
+<details><summary><b>Instruction to Handle Different Content Types for Resources Representations Responses</b></summary>
 
-
-Review the Clip "Demo: Improving Resource Representation Selection with an ActionConstraint" to jot down the last observations about the combinations of input and output.
-### Versioning
-
-<details><summary></summary>
-
-
-```csharp
-```
+The `Produces` will filter the header with respectivelly values
+- `Accept:application/vnd.marvin.hateoas+json`  
+- `Accept:application/vnd.marvin.author.full+json`  
+- `Accept:application/vnd.marvin.author.full.hateoas+json`  
+- `Accept:application/vnd.marvin.author.friendly+json`  
+- `Accept:application/vnd.marvin.author.friendly.hateoas+json`  
+and if none is passed in the request header, it will match the filter `application/json`. 
+Each of the accept above will produce different resource representation on the response. The code below is sample how to process it.  
 
 ```csharp
+    [Produces("application/json",
+        "application/vnd.marvin.hateoas+json",
+        "application/vnd.marvin.author.full+json",
+        "application/vnd.marvin.author.full.hateoas+json",
+        "application/vnd.marvin.author.friendly+json",
+        "application/vnd.marvin.author.friendly.hateoas+json")]
+    [HttpGet("{authorId}", Name = "GetAuthor")]
+    public async Task<IActionResult> GetAuthor(Guid authorId,
+        string? fields,
+        [FromHeader(Name = "Accept")] string? mediaType)
+    {
+
+        if (!MediaTypeHeaderValue.TryParse(mediaType, out var parsedMediaType))
+        {
+            return BadRequest(_problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
+                detail: $"Accept header media type is not a valid media type."));
+        }
+
+        if (!_propertyCheckerService.TypeHasProperties<AuthorDto>
+           (fields))
+        {
+            return BadRequest(
+              _problemDetailsFactory.CreateProblemDetails(HttpContext,
+                  statusCode: 400,
+                  detail: $"Not all requested data shaping fields exist on " +
+                  $"the resource: {fields}"));
+        }
+
+        // get author from repo
+        var authorFromRepo = await _courseLibraryRepository
+            .GetAuthorAsync(authorId);
+
+        if (authorFromRepo == null)
+        {
+            return NotFound();
+        }
+
+        //var includeLinks = parsedMediaType.SubTypeWithoutSuffix
+        var includeLinks = parsedMediaType.SubTypeWithoutSuffix
+            .EndsWith("hateoas", StringComparison.InvariantCultureIgnoreCase);
+        
+        IEnumerable<LinkDto> links = new List<LinkDto>();
+        
+        if (includeLinks)
+        {
+            links = CreateLinksForAuthor(authorId, fields);
+        }
+
+        var primaryMediaType = includeLinks ?
+            parsedMediaType.SubTypeWithoutSuffix
+            .Substring(0, parsedMediaType.SubTypeWithoutSuffix.Length - 8) 
+            : parsedMediaType.SubTypeWithoutSuffix;
+
+        if(primaryMediaType == "vnd.marvin.hateoas+json")
+        {
+            var fullResourceToReturn = _mapper.Map<AuthorFullDto>(authorFromRepo)
+                .ShapeData(fields) as IDictionary<string, object?>;
+
+            if (includeLinks)
+            {
+                fullResourceToReturn.Add("links", links);
+            }
+
+            return Ok(fullResourceToReturn);            
+        }
+
+        // friendly author
+        var friendlyResourceToReturn = _mapper.Map<AuthorDto>(authorFromRepo)
+            .ShapeData(fields) as IDictionary<string, object?>;
+        if (includeLinks)
+        {
+            friendlyResourceToReturn.Add("links", links);
+        }
+        
+        return Ok(friendlyResourceToReturn);
+        
+    }
+```
+</details>
+
+<details><summary><b>Handling different types of `Contenty-Type` for input requests</b></summary>
+
+1. Creates a class that inherits from `Attribute` and implements `IActionConstraint`. This class will be used on the actions as attribute to filter different type of content-type for different requests.
+```csharp
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Net.Http.Headers;
+
+namespace CourseLibrary.API.ActionConstraints;
+
+[AttributeUsage(AttributeTargets.All, Inherited = true, AllowMultiple = true)]
+public class RequestHeaderMatchesMediaTypeAttribute : Attribute, IActionConstraint
+{
+    private readonly string _requestHeaderToMatch;
+    private readonly string mediaType;
+    private readonly string[] otherMediaTypes;
+    private readonly MediaTypeCollection _mediaTypes = new();
+
+    public RequestHeaderMatchesMediaTypeAttribute(string requestHeaderToMatch,
+        string mediaType, params string[] otherMediaTypes)
+    {
+        this._requestHeaderToMatch = requestHeaderToMatch 
+            ?? throw new ArgumentNullException(nameof(requestHeaderToMatch));
+        this.mediaType = mediaType 
+            ?? throw new ArgumentNullException(nameof(requestHeaderToMatch));
+        this.otherMediaTypes = otherMediaTypes
+            ?? throw new ArgumentNullException(nameof(requestHeaderToMatch));
+
+        // check if the inputted media types are valid media types
+        // and add them to the _mediaTypes collection
+        if (MediaTypeHeaderValue.TryParse(mediaType, out var parsedMediaType))
+        {
+            _mediaTypes.Add(parsedMediaType);
+        }
+        else
+        {
+            throw new ArgumentException(nameof(mediaType));
+        }
+
+
+        foreach (var otherMediaType in otherMediaTypes)
+        {
+            if(MediaTypeHeaderValue.TryParse(otherMediaType, 
+                out var parsedOtherMediaType))
+            {
+                _mediaTypes.Add(parsedOtherMediaType);
+            }
+            else
+            {
+                throw new ArgumentException(nameof(otherMediaType));
+            }
+        }
+    }
+
+    public int Order { get; }
+
+    public bool Accept(ActionConstraintContext context)
+    {
+        var requestHeaders = context.RouteContext.HttpContext.Request.Headers;
+        if (!requestHeaders.ContainsKey(_requestHeaderToMatch))
+        {
+            return false;
+        }
+        var parsedRequestMediaTypes = new MediaType(requestHeaders[_requestHeaderToMatch]);
+        // if one of the media types matches, return true
+        foreach (var mediaType in _mediaTypes)
+        {
+            var parsedMediaType = new MediaType(mediaType);
+            if (parsedRequestMediaTypes.Equals(parsedMediaType))
+            { 
+                return true; 
+            }
+        }
+        return false;
+    }
+}
+
 ```
 
+2. Decorate each action with different parameters to filter its respectivelly `Content-type` 
+```csharp
+
+    [HttpPost(Name = "CreateAuthorWithDateOfDeath")]
+    [RequestHeaderMatchesMediaType("Content-Type",          
+        "application/vnd.marvin.authorforcreationwithdateofdeath+json")]
+    [Consumes("application/vnd.marvin.authorforcreationwithdateofdeath+json")]
+    public async Task<ActionResult<AuthorDto>> CreateAuthorWithDateOfDeath(
+        AuthorForCreationDto author)
+        {...}
+
+    [HttpPost]
+    [RequestHeaderMatchesMediaType("Content-Type",
+        "application/json",
+        "application/vnd.marvin.authorforcreation+json")]
+    [Consumes("application/vnd.marvin.authorforcreation+json")]
+    public async Task<ActionResult<AuthorDto>> CreateAuthor(
+        AuthorForCreationDto author)
+        {...}
+```
+To specify which media types or actions can consume. Just like there's a `Produces` attribute to restrict what an action can produce, there's a `Consumes` attribute to constrict what an action can consume. So this has to do with the mediaTypes for the input formatter. 
+That is different from our `RequestHeaderMatchesMediaType` constraint because that ensures routing to an action is allowed or blocked. It doesn't have anything to do with an input or output formatter. So we do need both of these attributes. 
+
+The first request we're going to send is one to create an author with application/json as Content‑Type header. So that is one without a DateOfDeath. Let's click Send, and we indeed end up in the CreateAuthor action. So far, so good. Then let's try creating an author with Content‑Type vnd.marvin.authorforcreation+json. This again is an author without a DateOfDeath, and that means we should again end up in the CreateAuthor action. And that is indeed the case. Lastly, let's try creating an author with a DateOfDeath. So the request body contains a DateOfDeath, and as Content‑Type header value, we have our custom vendor‑specific AuthorForCreationWithDateOfDeath mediaType. Let's send this, and there we go, this time, we end up in our CreateAuthorWithDateOfDeath action. The author has been created, and have a look at the age of the author. Apparently it's 60. Let's have a look at what we sent. If we take the DateOfBirth and DateOfDeath into account, this is indeed an author who reached the age of 60. So here we go. This works as expected. And now we've got an ActionConstraint, we can also improve our GetAuthor method. Let's do that next.
+
+3. Different types of request to call the actions above based on the request header
+```json
+// Example of the request to call the action for creation of author with date of death
+Content-Type:application/vnd.marvin.authorforcreationwithdateofdeath+json
+Accept:application/json
+
+// Example of the request to call the action for creation of author
+Content-Type:application/vnd.marvin.authorforcreation+json
+Accept:application/json
+```
 
 </details>
 
+
+
+
+### Versioning
+**Through the URI**  
+ - `api/v1/authors`  
+
+**Through query string parameters**  
+ - `api/authors?api-version=v1`  
+
+**Through a custom header**  
+ - `api-version=v1`  
+
+**Version Media types to handle change in representations**
+ - `application/vnd.nilo.author.friendly.v1+json` or use friendly names
 ---
 
 ## Chapter 12 - Caching
-
+Each response should define itself as cacheable or not.  
 Caching would be useless if it did not significantly improve performance. The goal of caching is to eliminate the need to send requests in many cases, and to eliminate the need to send full responses in many other cases.
 
+**Caching Specifications**
+[W3 - Obsolete](https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html)
+[Data Tracker RFC7234 - Obsolete](https://datatracker.ietf.org/doc/html/rfc7234)
+[Data Tracker RFC9111 - Actual](https://datatracker.ietf.org/doc/html/rfc9111)
+
+
+<details><summary><b></b></summary>
+
+```csharp
+```
+
+```csharp
+```
+</details>
+
 ### The Purpose of Caching
+
+**Eliminate the number of requests**  
+Reduces network-roundtrips  
+*Expiration* mechanism  
+
+**Eliminate the need to send full responses**  
+Reduces network bandwidth  
+*Validation* mechanism  
 
 **The cache is a separate component**
 - Accepcts requests from consumer to the API
@@ -2125,7 +2416,7 @@ To support caching, we essentially need two things.
 That is done via a response header. There are various headers to consider, but the one most often used is the `Cache‑Control` header. A `Cache‑Control` header with maximum age set to 120. This states that a response must only be cached for 120 seconds.
 To achieve that, the `ResponseCache` attribute is used.
 
-2. 2. A cache store. either at client level, server level or proxy level. The middleware is responsible for storing cacheable responses and serving them up from its store.
+2. A cache store. either at client level, server level or proxy level. The middleware is responsible for storing cacheable responses and serving them up from its store.
 
 
 State for each resource whether or not it's cacheable
@@ -2140,7 +2431,7 @@ Cache store
 The response header will have a `Cache-Control` header with a `max-age` directive set to 120 seconds `public,max-age=120`. This indicates that the response can be cached for up to 120 seconds, and it could be stored publicly and privatelly
 
 **Adding a cache store with the `ResponseCaching` middleware**
-
+Just adding the max-age in the response header wouldn't be enough to cache the response. It's also required to provide a store mechanism though
 ```csharp
 builder.Services.AddResponseCaching();
 ```
@@ -2180,14 +2471,18 @@ It's possible to apply the cache profile to an action or to a controller.
 
 
 ### Expiration Model
-Allows the serv to state how long a response is considered fresh.
+Allows the server to state how long a response is considered fresh.
 
 |Expires header|Cache-Control header|
 |-|-|
 |Expires: Wed, 21 Oct 2015 07:28:00 GMT|Cache-Control: public,max-age=3600|
-|Clocks must be synchronized|Preferred header for expiration|
+|Clocks must be synchronized|**Preferred header for expiration**|
 |Offers little control|[Directives](https://datatracker.ietf.org/doc/html/rfc9111)|
-Review this module and jot down the topics
+
+<details><summary><b>How the Expiration Model Works</b></summary>
+
+![](https://github.com/Ngofilho/Architecture/blob/images/images/20251002WebApiDeepDive/ExpirationModel.png)
+</details>
 
 ### Validation Model
 Used to validate the freshness of a cached response that's been cached.
