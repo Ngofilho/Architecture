@@ -2476,8 +2476,13 @@ Allows the server to state how long a response is considered fresh.
 |Expires header|Cache-Control header|
 |-|-|
 |Expires: Wed, 21 Oct 2015 07:28:00 GMT|Cache-Control: public,max-age=3600|
-|Clocks must be synchronized|Preferred header for expiration|
+|Clocks must be synchronized|**Preferred header for expiration**|
 |Offers little control|[Directives](https://datatracker.ietf.org/doc/html/rfc9111)|
+
+<details><summary><b>How the Expiration Model Works</b></summary>
+
+![](https://github.com/Ngofilho/Architecture/blob/images/images/20251002WebApiDeepDive/ExpirationModel.png)
+</details>
 
 ### Validation Model
 Used to validate the freshness of a cached response that's been cached.
