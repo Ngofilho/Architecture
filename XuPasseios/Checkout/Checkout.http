@@ -1,0 +1,6 @@
+@Checkout_HostAddress = http://localhost:5190
+
+GET {{Checkout_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

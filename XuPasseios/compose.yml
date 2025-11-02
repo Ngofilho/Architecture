@@ -1,0 +1,95 @@
+services:
+  order:
+    build: Order
+    ports:
+    - "7184:8080"
+    depends_on:
+    - rabbitmqbackoffice
+    networks:
+    - backofficenetwork
+    container_name: Order
+    restart: on-failure
+    environment:
+      RABBITMQ_HOSTNAME: rabbitmqbckoff
+
+  payment:
+    build: Payment
+    ports:
+    - "7185:8080"
+    depends_on:
+    - rabbitmqbackoffice
+    networks:
+    - backofficenetwork
+    container_name: Payment
+    restart: on-failure
+    environment:
+      RABBITMQ_HOSTNAME: rabbitmqbckoff
+
+  logistics:
+    build: Logistics
+    ports:
+    - "7186:8080"
+    depends_on:
+    - rabbitmqbackoffice
+    networks:
+    - backofficenetwork
+    container_name: Logistics
+    restart: on-failure
+    environment:
+      RABBITMQ_HOSTNAME: rabbitmqbckoff
+
+  marketing:
+    build: Marketing
+    ports:
+    - "7187:8080"
+    depends_on:
+    - rabbitmqbackoffice
+    networks:
+    - backofficenetwork
+    container_name: Marketing
+    restart: on-failure    
+    environment:
+      RABBITMQ_HOSTNAME: rabbitmqbckoff
+
+  healthcheck:
+    build: ServiceBus.HealthCheck
+    ports:
+    - "7183:8080"
+    depends_on:
+    - rabbitmqbackoffice
+    networks:    
+      - backofficenetwork
+    container_name: HealthCheck.ServiceBus
+    environment:
+      RABBITMQ_HOSTNAME: rabbitmqbckoff
+
+  rabbitmqbackoffice:
+    build: General/RabbitMQ
+    ports:
+    - "4369:4369"
+    - "5671:5671"
+    - "5672:5672"
+    - "15671:15671"
+    - "15672:15672"
+    - "15692:15692"
+    - "25672:25672"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://rabbitmqbckoff:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backofficenetwork
+    volumes:
+      - rabbitmq_volume:/var/lib/rabbitmq/
+    container_name: rabbitmqbackoffice
+    hostname: rabbitmqbckoff
+
+volumes:
+  rabbitmq_volume:
+    driver: local
+      
+
+networks:
+  backofficenetwork:
+    driver: bridge

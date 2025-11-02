@@ -1,0 +1,6 @@
+@ServiceBus.HealthCheck_HostAddress = http://localhost:5195
+
+GET {{ServiceBus.HealthCheck_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
