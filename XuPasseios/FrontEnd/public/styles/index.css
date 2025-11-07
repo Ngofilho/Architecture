@@ -1,0 +1,42 @@
+@import url(main.css);
+
+/******************************************************************HEAD******************************************************************/
+
+
+/******************************************************************BODY******************************************************************/
+
+.page__main__product {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    justify-items: center;
+}
+
+#ProductCard {
+    display: inline-block;
+    background-color: white;
+    margin: 1em;
+    width: 157px;
+    height: 157px;
+}
+
+#ProductCard > a {
+    height: 100%;    
+}
+
+#ProductCardLink {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+
+}
+
+#ProductCardLink > figure {
+    display: inline-block;
+}
+
+.main__product__h2 {
+    display: inline-block;
+    text-align: center;    
+}
+
+/******************************************************************FOOTER******************************************************************/

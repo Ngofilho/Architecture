@@ -1,3 +1,4 @@
+using Checkout.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Checkout.Controllers
@@ -12,22 +13,19 @@ namespace Checkout.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IRabbitMQService rabbitMQ;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IRabbitMQService rabbitMQ)
         {
             _logger = logger;
+            this.rabbitMQ = rabbitMQ;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        public IActionResult Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var rabbit = this.rabbitMQ.ReceiveAsync(new RabbitMQService.Mensagem { Date = DateTime.UtcNow, OrderId = new Random().Next(1, 1000) });
+            return Created();
         }
     }
 }

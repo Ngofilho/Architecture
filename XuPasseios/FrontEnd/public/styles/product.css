@@ -1,0 +1,59 @@
+@import url(main.css);
+
+/******************************************************************HEAD******************************************************************/
+
+
+/******************************************************************BODY******************************************************************/
+.page__main__productdetails {
+    width: 100%;
+}
+
+.ProductDetails__Container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.main__product__h2 {
+    display: inline-block;
+    font-size: 5rem;
+    margin-top: 0;
+}
+
+.main__product__description {
+    font-size: 2.5rem;
+}
+
+
+.ProducDetails__Description {
+    width: 50%;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.ProducDetails__Button__Return {
+    font-size: 1.5rem;
+}
+
+.ProductDetails__Actions__Caracteristics {
+    font-size: 1.5rem;
+}
+
+.ProductDetails__Actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.ProductDetails__Actions__Price, .ProductDetails__Actions__CEP{
+    font-size: 1.5rem;   
+}
+
+.ProductDetails__Actions__CEP > input {
+    width: 75px;
+}
+
+.ProductDetails__Actions__AddCart input {
+    font-size: 1.5rem;
+}
