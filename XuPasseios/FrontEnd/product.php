@@ -1,4 +1,5 @@
 <?php
+session_start();
 $ch = curl_init();
 $item = 0;
 
@@ -41,7 +42,7 @@ if(!$data)
 <body>
     <header class="page__header">
         <div class="header__logo">
-            <a>
+            <a href="index.php">
                 <figure>
                     <img height="80px" width="80px" src="https://placehold.co/80x80" alt="E-Commerce Logo">
                 </figure>
@@ -94,20 +95,20 @@ if(!$data)
                                 </div>
                             </div>
                             <div class="ProductDetails__Actions">
-                                <div class="ProductDetails__Actions__Price">
-                                    <p>Preço: R$&nbsp;'.$data['price'].'</p>
-                                </div>
-                                <div class="ProductDetails__Actions__CEP">
-                                    <span>CEP:</span>
-                                    <input type="text" maxlength="9"></input>
-                                </div>
-                                <div class="ProductDetails__Actions__AddCart">
-                                    <form action="cart.php" method="GET">
-                                        <input type="submit" value="Comprar"></input>
+                                    <div class="ProductDetails__Actions__Price">
+                                        <p>Preço: R$&nbsp;'.$data['price'].'</p>
+                                    </div>
+                                    <div class="ProductDetails__Actions__CEP">
+                                        <span>CEP:</span>
+                                        <input type="text" maxlength="9"></input>
+                                    </div>
+                                    <form action="cart.php" method="POST">
+                                        <input type="hidden" name="productId" value="'. $productId .'"/>
+                                        <div class="ProductDetails__Actions__AddCart">
+                                            <input type="submit" value="Comprar"></input>
+                                        </div>
                                     </form>
-                                </div>
                             </div>
-                        
                     </div>';
             ?>
         </div>

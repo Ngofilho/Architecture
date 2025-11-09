@@ -1,4 +1,5 @@
 <?php
+session_start();
 $ch = curl_init();
 $item = 0;
 
@@ -39,7 +40,7 @@ if(!$data)
 <body>
     <header class="page__header">
         <div class="header__logo">
-            <a>
+            <a href="#">
                 <figure>
                     <img height="80px" width="80px" src="https://placehold.co/80x80" alt="E-Commerce Logo">
                 </figure>
