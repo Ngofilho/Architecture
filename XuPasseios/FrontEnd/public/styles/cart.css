@@ -12,3 +12,35 @@
 .cart__main__table {
     width: 100vw;
 }
+
+thead .cart__main__tableHeader:first-child th {
+    width: 346.453px;
+}
+
+.cart__main__tableHeader {
+    background-color: red;
+    font-size: 2.5rem;
+}
+
+.cart__cartitem__quantity,
+.cart__cartitem__removes,
+.cart__cartitem__checkout {
+    font-size: 1.5rem;
+}
+
+tbody > tr {
+    font-size: 2rem;
+}
+
+tfoot > tr {
+    text-align: center;
+    font-size: 2rem;
+}
+
+.cart__cartitem__checkout{
+    text-align: center;
+}
+
+.cart__cartitem__tablerow {
+    text-align: center;
+}

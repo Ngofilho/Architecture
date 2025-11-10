@@ -2,8 +2,37 @@
 session_start();
 
 $addsItemsToCard = $_SERVER["REQUEST_METHOD"] == "POST";
+$justListItemFromCart = $_SERVER["REQUEST_METHOD"] == "GET";
 
-if ($addsItemsToCard)
+$pageRefreshed = false;
+
+// Check if a previous request exists in the session
+if (isset($_SESSION['LAST_REQUEST'])
+    // Compare the current request URI with the last one
+    && $_SERVER['REQUEST_URI'] === $_SESSION['LAST_REQUEST']['REQUEST_URI'])
+    {
+        // Further check the HTTP_REFERER if available
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $pageRefreshed = ($_SERVER['HTTP_REFERER'] === $_SESSION['LAST_REQUEST']['HTTP_REFERER']);
+        } else {
+            // If no referrer on both, assume refresh
+            $pageRefreshed = ($_SESSION['LAST_REQUEST']['HTTP_REFERER'] === null);
+        }
+    }
+
+// Update the session with the current request details
+$_SESSION['LAST_REQUEST'] = [
+    'REQUEST_URI' => $_SERVER['REQUEST_URI'],
+    'HTTP_REFERER' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null,
+];
+
+/*if ($pageRefreshed) {
+    echo "Page was refreshed!";
+} else {
+    echo "Page was loaded for the first time or navigated to.";
+}*/
+
+if ($addsItemsToCard && !$pageRefreshed)
 {
     $productId = $_POST['productId'];
 
@@ -38,7 +67,6 @@ if ($addsItemsToCard)
     {
         $_SESSION["cart_items"] = array();
     }
-
     $_SESSION["cart_items"][] = $data;
 }
 
@@ -88,47 +116,76 @@ if(isset($_SESSION["cart_items"]))
     <main class="page__main">
         <div class="cart__main__content">
             <?php
-                print_r($cartItems);
+            echo
+                '<table class="cart__main__table">
+                <thead>
+                    <tr class="cart__main__tableHeader">
+                        <th></th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Quantidade</th>
+                        <th>Remover</th>
+                    </tr>
+                </thead>';
+                
+
                 if (!empty($cartItems))
                 {
-                    echo
-                    '<table class="cart__main__table">
-                        <tr class="cart__main__tableHeader">
-                            <th></th>
-                            <th>Nome</th>
-                            <th>Preço</th>
-                            <th>Quantidade</th>
-                            <th>Remover</th>
-                        </tr>';
-                        
-                        foreach ($cartItems as $val)
-                        {
-                            echo
-                                '<tr>
+                    foreach ($cartItems as $val)
+                    {
+                        echo
+                            '<tbody>
+                                <tr class="cart__cartitem__tablerow">
                                     <td><img heigth="40px" width="40px" src="https://placehold.co/40x40" alt="'.$val["productName"].'"></td>
-                                    <td style="font-size:2.5rem;">'.$val["productName"].'</td>
-                                    <td style="font-size:2.5rem;"><span>R$</span> '.$val["price"].'</td>
-                                    <td><input type="number" minValue="0"></input></td>
-                                    <td><button onclick="RemovesItem("' . trim($val["productId"]," \n\r\t\v\x00") . '");" value="Remover">Remover</button></td>
-                                </tr>';
-                        }
-                        echo '</table>';
+                                    <td>'.$val["productName"].'</td>
+                                    <td><span>R$</span> '.$val["price"].'</td>
+                                    <td><input type="number" minValue="0" class="cart__cartitem__quantity"></input></td>
+                                    <td><button class="cart__cartitem__removes" onclick="RemovesItem(\'' . trim($val["productId"]," \n\r\t\v\x00") .'\');" >Remover</button></td>
+                                </tr>
+                            </tbody>';
+                    }
+                    echo '<tfoot>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>Total:</td>
+                                <td>R$</td>
+                                <td class="cart__cartitem__checkout">
+                                    <form action="checkout.php" method="POST">
+                                        <input type="submit" value="Checkout"></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tfoot>';
+                            
                 }
+                    echo '</table>';
             ?>
         </div>
 
     </main>
-    
     <footer>
-         <?php
-         if ($addsItemsToCard)
-         {
-            print_r($data);
-         }
-         else {
-            print_r('There aren\'t items to show');
-         }
-         ?>
     </footer>
 </body>
+<script >
+
+    function RemovesItem(productId){
+        let product = JSON.parse(`<?php echo json_encode($_SESSION["cart_items"]); ?>`).filter(item => item.productId === productId);
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "removeItemFromCart.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        
+        xhr.onload = function(){
+            if(xhr.status === 200){
+                console.log(`${xhr.responseText}`);
+                window.location.href= "http://localhost:3000/redirectToCart.php";
+            }
+            else{
+                console.warn("Error during the removal of the product");
+            }
+        };
+        console.log()
+        xhr.send(JSON.stringify(product));
+    }
+</script>
 </html>

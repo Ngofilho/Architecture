@@ -112,11 +112,9 @@ if(!$data)
                     </div>';
             ?>
         </div>
-
     </main>
     
     <footer>
-         <?php print_r($data); ?>
     </footer>
 </body>
 </html>
