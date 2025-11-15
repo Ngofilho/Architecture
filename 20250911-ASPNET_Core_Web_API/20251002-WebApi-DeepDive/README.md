@@ -1,5 +1,17 @@
 ﻿# [ASP.NET Core Web Api Deep Dive](https://app.pluralsight.com/library/courses/asp-dot-net-core-6-web-api-deep-dive)
 
+* [Chapter 3 - Desiging The Outer Facing Contract]([#chapter-3---designing-the-outer-facing-contract)   
+* [Chapter 4 - Manipulating Resources](#chapter-4---manipulating-resources)     
+* [Chapter 5 - Validating Data and Reporting Validation Errors](#chapter-5---validating-data-and-reporting-validation-errors)   
+* [Chapter 6 - Supporting Filtering and Searching](#chapter-6---supporting-filtering-and-searching)   
+* [Chapter 7 - Paging](#chapter-7---paging)   
+* [Chapter 8 - Supporting Sorting](#chapter-8---supporting-sorting)   
+* [Chapter 9 - Supporting Data Shaping](chapter-9---supporting-data-shaping)     
+* [Chapter 10 - Learning and Implenting HATEOAS](#chapter-10---learning-and-implementing-hateoas)   
+* [Chapter 11 - Combining HATEOAS with Semantic Media Types](#chapter-11---combining-hateoas-with-semantic-media-types)   
+* [Chapter 12 - Caching](#chapter-12---caching)
+* [Chapter 13 - Supporting Http Cache for AspNet Core APIs](#chapter-13---supporting-http-cache-for-aspnet-core-apis)
+* [Chapter 14 - Supporting Concurrency](#chapter-14---supporting-concurrency)  
 
 ## Chapter 3 - Designing the Outer Facing Contract
 Consists of three big concepts a consumer of an API uses to interact with that API
@@ -1083,7 +1095,7 @@ Before returning the authors, it adds the pagination metadata to the response he
 
 ---
 
-## Chapter 8 - Suporting Sorting
+## Chapter 8 - Supporting Sorting
 The sorting in the this algorythm is happens in the repository layer but it is checked in the service layer though.
 In the service layer happens the mapping between the *DTO* and the *Entity*. The clients requires a sorting by name for example, the entity doesn't know anything about *name*, the entity knows about *first* and *last* name.
 
