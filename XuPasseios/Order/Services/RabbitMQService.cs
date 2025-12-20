@@ -26,7 +26,8 @@ namespace Order.Services
             this._factory.UserName = configuration.GetSection("rabbit:user").Value!;
             this._factory.Password = configuration.GetSection("rabbit:password").Value!;
             this._factory.VirtualHost = configuration.GetSection("rabbit:vhost").Value!;
-            this._factory.HostName = "rabbitmqbackoffice";//Environment.GetEnvironmentVariable("RABBITMQ_HOSTNAME") ?? configuration.GetSection("rabbit:hostName").Value!;
+            this._factory.HostName = configuration.GetSection("rabbit:hostName").Value!; //Environment.GetEnvironmentVariable("RABBITMQ_HOSTNAME") ?? configuration.GetSection("rabbit:hostName").Value!;
+            //this._factory.HostName = "rabbitmqbackoffice";//Environment.GetEnvironmentVariable("RABBITMQ_HOSTNAME") ?? configuration.GetSection("rabbit:hostName").Value!;
             this._queueName = configuration.GetSection("rabbit:queueName").Value!;
             this._queueNameDestination = configuration.GetSection("rabbit:queueNameDestination").Value!;
             this._factory.ClientProvidedName = nameof(RabbitMQService);

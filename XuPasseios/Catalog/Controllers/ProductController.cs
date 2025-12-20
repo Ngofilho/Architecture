@@ -37,6 +37,7 @@ namespace Catalog.Controllers
         [ProducesResponseType(typeof(IEnumerable<ProductEntity>), 200)]
         public IActionResult GetAll()
         {
+            this._logger.LogInformation("Getting all products");
             var productsEntity = this._productService.GetAllProducts();
             return Ok(
                 this._mapper.Map<IEnumerable<ProductDto>>(productsEntity));

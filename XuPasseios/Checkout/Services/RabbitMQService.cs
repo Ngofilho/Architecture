@@ -1,6 +1,7 @@
 ﻿using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
+using Common;
 
 namespace Checkout.Services
 {
@@ -49,7 +50,7 @@ namespace Checkout.Services
 
         }
 
-        public async Task ReceiveAsync(Mensagem mensagem)
+        public async Task ReceiveAsync(OrderMessage mensagem)
         {
             try
             {
@@ -57,7 +58,7 @@ namespace Checkout.Services
                 var bp = new BasicProperties();
                 bp.DeliveryMode = DeliveryModes.Persistent;
                 bp.Type = "VanillaMessage";
-                var ea = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<Mensagem>(mensagem,
+                var ea = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<OrderMessage>(mensagem,
                     new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
@@ -67,6 +68,20 @@ namespace Checkout.Services
             catch (Exception ex)
             {
                 this._logger.LogCritical(ex, "Error during publishing the message to Order");
+                throw;
+            }
+        }
+
+        public async Task SendAsync(OrderMessage mensagem)
+        {
+            try
+            {
+                await this._channel.BasicPublishAsync("backoffice", this._queueNameDestination, false,  UTF8Encoding.UTF8.GetBytes(JsonSerializer.Serialize(mensagem)));
+            }
+            catch (Exception ex)
+            {
+
+                this._logger.LogCritical(ex, "Error during sending the message to Order");
                 throw;
             }
         }

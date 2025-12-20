@@ -2,7 +2,14 @@
 session_start();
 
 
+if(isset($_SESSION["cart_items"]))
+{
+    $cartItems = $_SESSION["cart_items"];
+    $quantity = $_POST['quantidade'];
 
+    $_SESSION["checkoutMessage"] = $cartItems;
+}
+/******************************** */
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,35 +21,24 @@ session_start();
     <base href="http://localhost:3000"/>
 </head>
 <body>
-    <header class="page__header">
-        <div class="header__logo">
-            <a href="index.php">
-                <figure>
-                    <img height="80px" width="80px" src="https://placehold.co/80x80" alt="E-Commerce Logo">
-                </figure>
-            </a>
-        </div>
-        <div class="page__header__search">
-            <input type="text" class="page__header__text" name="search" id="searchBox">
-        </div>
-        <div>
-            <a href="cart.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Cart">
-                </figure>
-            </a>
-        </div>
-        <div>
-            <a href="register.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Register">
-                </figure>
-            </a>
-        </div>
-    </header>
+    <?php require_once 'header.php'; ?>
     <main class="page__main">
+        <form action="processCheckout.php" method="POST">
+            <div class="checkout__main__body">
+                <span>Total: R$</span>
+                    <?php
+                $total = 0;
+                foreach ($cartItems as $key => $value) {
+                    $total += $value["quantity"] * $value["price"];
+                }
+                echo '<span>' . $total . '</span>';
+                ?>
+            </div>
+            <div>
+                <button class="checkout__main__button" type="submit">Finalizar Compra</button>
+            </div>
+        </form>
     </main>
-    <footer>
-    </footer>
+    <?php require_once 'footer.php'; ?>
 </body>
 </html>

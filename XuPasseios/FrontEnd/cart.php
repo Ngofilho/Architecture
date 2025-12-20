@@ -39,7 +39,7 @@ if ($addsItemsToCard && !$pageRefreshed)
     $ch = curl_init();
     $item = 0;
 
-    $api_url = "https://localhost:7140/api/products/" . $productId;
+    $api_url = "https://localhost:7000/api/products/" . $productId;
 
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST , false);
@@ -57,7 +57,6 @@ if ($addsItemsToCard && !$pageRefreshed)
 
     $data = json_decode($response, true);
 
-
     if(!$data)
     {
         echo 'Failed to decode JSON response.';
@@ -67,7 +66,34 @@ if ($addsItemsToCard && !$pageRefreshed)
     {
         $_SESSION["cart_items"] = array();
     }
+
     $_SESSION["cart_items"][] = $data;
+
+    foreach ($_SESSION["cart_items"] as $key => &$value)
+    {
+        if ($value["productId"] === $productId)
+        {
+            if(!array_key_exists("quantity", $value))
+            {
+                $value["quantity"] = 1;
+            }
+            else
+            {
+                $value["quantity"]++;
+            }
+            break;
+        }
+    }
+
+    $results = array_filter($_SESSION["cart_items"], function ($item) use ($productId) {
+        return $item["productId"] === $productId;
+    });
+
+    if (count($results) > 1)
+    {
+        $duplicatedKeys = array_keys($results);
+        unset($_SESSION["cart_items"][$duplicatedKeys[1]]);
+    }
 }
 
 if(isset($_SESSION["cart_items"]))
@@ -86,32 +112,7 @@ if(isset($_SESSION["cart_items"]))
     <base href="http://localhost:3000"/>
 </head>
 <body>
-    <header class="page__header">
-        <div class="header__logo">
-            <a href="index.php">
-                <figure>
-                    <img height="80px" width="80px" src="https://placehold.co/80x80" alt="E-Commerce Logo">
-                </figure>
-            </a>
-        </div>
-        <div class="page__header__search">
-            <input type="text" class="page__header__text" name="search" id="searchBox">
-        </div>
-        <div>
-            <a href="cart.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Cart">
-                </figure>
-            </a>
-        </div>
-        <div>
-            <a href="register.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Register">
-                </figure>
-            </a>
-        </div>
-    </header>
+    <?php require_once 'header.php'; ?>
 
     <main class="page__main">
         <div class="cart__main__content">
@@ -131,15 +132,17 @@ if(isset($_SESSION["cart_items"]))
 
                 if (!empty($cartItems))
                 {
+                    echo '<form action="checkout.php" method="POST">';
                     foreach ($cartItems as $val)
                     {
                         echo
                             '<tbody>
                                 <tr class="cart__cartitem__tablerow">
-                                    <td><img heigth="40px" width="40px" src="https://placehold.co/40x40" alt="'.$val["productName"].'"></td>
+                                    <td><a href="product.php/'.$val["productId"].'"><img heigth="40px" width="40px" src="https://placehold.co/40x40" alt="'.
+                                    $val["productName"].'"></a></td>
                                     <td>'.$val["productName"].'</td>
                                     <td><span>R$</span> '.$val["price"].'</td>
-                                    <td><input type="number" minValue="0" class="cart__cartitem__quantity"></input></td>
+                                    <td><input type="number" minValue="0" class="cart__cartitem__quantity" name="quantidade" value="'.$val["quantity"].'"></input></td>
                                     <td><button class="cart__cartitem__removes" onclick="RemovesItem(\'' . trim($val["productId"]," \n\r\t\v\x00") .'\');" >Remover</button></td>
                                 </tr>
                             </tbody>';
@@ -150,12 +153,12 @@ if(isset($_SESSION["cart_items"]))
                                 <td>Total:</td>
                                 <td>R$</td>
                                 <td class="cart__cartitem__checkout">
-                                    <form action="checkout.php" method="POST">
+                                    <!--<form action="checkout.php" method="POST">-->
                                         <input type="submit" value="Checkout"></button>
-                                    </form>
+                                    <!--</form>-->
                                 </td>
                             </tr>
-                        </tfoot>';
+                        </tfoot></form>';
                             
                 }
                     echo '</table>';
@@ -163,8 +166,7 @@ if(isset($_SESSION["cart_items"]))
         </div>
 
     </main>
-    <footer>
-    </footer>
+    <?php require_once 'footer.php'; ?>
 </body>
 <script >
 
