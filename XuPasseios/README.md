@@ -56,4 +56,14 @@ architecture-beta
 
 </details>
 
+<details>
+
+<summary>Reference(s)</summary>
+
+[How to use certificates with Docker Container](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-10.0)   
+[How to use certificates with Docker Compose](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-10.0)   
+[Set up Docker with TLS](https://www.labkey.org/Documentation/wiki-page.view?name=dockerTLS)  
+
+</details>
+
 </details>
