@@ -125,7 +125,7 @@ if(isset($_SESSION["cart_items"]))
                         <th>Nome</th>
                         <th>Preço</th>
                         <th>Quantidade</th>
-                        <th>Remover</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>';
                 
@@ -133,21 +133,30 @@ if(isset($_SESSION["cart_items"]))
                 if (!empty($cartItems))
                 {
                     echo '<form action="checkout.php" method="POST">';
+                    echo '<tbody>
+                                <tr class="cart__cartitem__tablerow">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="cart__cartitem__checkout"><input type="submit" value="Checkout"></input></td>
+                                </tr>';
                     foreach ($cartItems as $val)
                     {
                         echo
-                            '<tbody>
-                                <tr class="cart__cartitem__tablerow">
+                            
+                                '<tr class="cart__cartitem__tablerow">
                                     <td><a href="product.php/'.$val["productId"].'"><img heigth="40px" width="40px" src="https://placehold.co/40x40" alt="'.
                                     $val["productName"].'"></a></td>
                                     <td>'.$val["productName"].'</td>
                                     <td><span>R$</span> '.$val["price"].'</td>
                                     <td><input type="number" minValue="0" class="cart__cartitem__quantity" name="quantidade" value="'.$val["quantity"].'"></input></td>
                                     <td><button class="cart__cartitem__removes" onclick="RemovesItem(\'' . trim($val["productId"]," \n\r\t\v\x00") .'\');" >Remover</button></td>
-                                </tr>
-                            </tbody>';
+                                </tr>';
+                            
                     }
-                    echo '<tfoot>
+
+                    echo '</tbody><tfoot>
                             <tr>
                                 <td colspan="2"></td>
                                 <td>Total:</td>

@@ -155,11 +155,49 @@ services:
     container_name: rabbitmqbackoffice
     hostname: rabbitmqbckoff
 
+  telemetria:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    container_name: ElasticSearch_Node01
+    environment:
+      - node.name=ElasticSearch01  
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+
+  Kibana01:
+    image: docker.elastic.co/kibana/kibana:7.9.1
+    container_name: Kibana01
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://ElasticSearch_Node01:9200  
+      ELASTICSEARCH_HOSTS: http://ElasticSearch_Node01:9200
+    networks:
+      - elastic
+    
+
+ 
+    
 volumes:
   rabbitmq_volume:
+    driver: local
+  esdata01:
     driver: local
       
 
 networks:
   backofficenetwork:
+    driver: bridge
+  elastic:
     driver: bridge
