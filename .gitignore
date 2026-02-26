@@ -236,10 +236,7 @@ ClientBin/
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
-*.pfx
-!XuPasseios/Catalog/aspnetapp.pfx
-!XuPasseios/Catalog/*.pfx
-!*.pfx
+
 *.publishsettings
 orleans.codegen.cs
 
