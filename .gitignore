@@ -238,6 +238,7 @@ ClientBin/
 *.jfm
 *.pfx
 !.\XuPasseios\Catalog\aspnetapp.pfx
+!*.pfx
 *.publishsettings
 orleans.codegen.cs
 
