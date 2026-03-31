@@ -3,7 +3,7 @@ session_start();
 $ch = curl_init();
 $item = 0;
 
-$api_url = "https://localhost:7140/api/products";
+$api_url = "https://localhost:7000/api/products";
 
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST , false);
@@ -38,32 +38,7 @@ if(!$data)
     <base href="http://localhost:3000"/>
 </head>
 <body>
-    <header class="page__header">
-        <div class="header__logo">
-            <a href="#">
-                <figure>
-                    <img height="80px" width="80px" src="https://placehold.co/80x80" alt="E-Commerce Logo">
-                </figure>
-            </a>
-        </div>
-        <div class="page__header__search">
-            <input type="text" class="page__header__text" name="search" id="searchBox">
-        </div>
-        <div>
-            <a href="cart.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Cart">
-                </figure>
-            </a>
-        </div>
-        <div>
-            <a href="register.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Register">
-                </figure>
-            </a>
-        </div>
-    </header>
+    <?php require_once 'header.php'; ?>
 
     <main class="page__main">
         <div class="page__main__product">
@@ -84,8 +59,6 @@ if(!$data)
 
     </main>
     
-    <footer>
-         <!-- <?php print_r($data); ?> -->
-    </footer>
+    <?php require_once 'footer.php'; ?>
 </body>
 </html>

@@ -1,8 +1,12 @@
 ﻿
+using Common;
+using static Checkout.Services.RabbitMQService;
+
 namespace Checkout.Services
 {
     public interface IRabbitMQService
     {
-        Task ReceiveAsync(RabbitMQService.Mensagem mensagem);
+        Task ReceiveAsync(OrderMessage mensagem);
+        Task SendAsync(OrderMessage mensagem);
     }
 }

@@ -51,6 +51,27 @@ services:
     environment:
       RABBITMQ_HOSTNAME: rabbitmqbckoff
 
+  catalog:
+    build: Catalog
+    ports:
+    # - "8080"
+    - "7000:443"
+    depends_on:
+    - rabbitmqbackoffice
+    networks:
+    - backofficenetwork
+    container_name: Catalog
+    restart: on-failure
+    environment:
+      - RABBITMQ_HOSTNAME=rabbitmqbckoff
+      # - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTPS_PORTS=443
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=-\0pw-
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
   healthcheck:
     build: ServiceBus.HealthCheck
     ports:

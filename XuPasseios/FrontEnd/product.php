@@ -6,7 +6,7 @@ $item = 0;
 $temp = explode("/",$_SERVER['REQUEST_URI']);
 $productId = (end($temp));
 
-$api_url = "https://localhost:7140/api/products/" . $productId;
+$api_url = "https://localhost:7000/api/products/" . $productId;
 
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST , false);
@@ -40,37 +40,13 @@ if(!$data)
     <base href="http://localhost:3000"/>
 </head>
 <body>
-    <header class="page__header">
-        <div class="header__logo">
-            <a href="index.php">
-                <figure>
-                    <img height="80px" width="80px" src="https://placehold.co/80x80" alt="E-Commerce Logo">
-                </figure>
-            </a>
-        </div>
-        <div class="page__header__search">
-            <input type="text" class="page__header__text" name="search" id="searchBox">
-        </div>
-        <div>
-            <a href="cart.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Cart">
-                </figure>
-            </a>
-        </div>
-        <div>
-            <a href="register.php">
-                <figure>
-                    <img heigth="80px" width="80px" src="https://placehold.co/80x80" alt="Register">
-                </figure>
-            </a>
-        </div>
-    </header>
+    <?php require_once 'header.php'; ?>
 
     <main class="page__main">
         <div class="page__main__productdetails">
             <?php
-                echo '<div class="ProductDetails__Container">
+                echo '<form action="cart.php" method="POST">
+                        <div class="ProductDetails__Container">
                             <div class="ProductDetails__Image">
                                 <figure>
                                     <img height="320px" width="320px" src="https://placehold.co/320x320" alt="Product Figure">
@@ -102,19 +78,19 @@ if(!$data)
                                         <span>CEP:</span>
                                         <input type="text" maxlength="9"></input>
                                     </div>
-                                    <form action="cart.php" method="POST">
+                                    <!--<form action="cart.php" method="POST">-->
                                         <input type="hidden" name="productId" value="'. $productId .'"/>
+                                        <input type="hidden" name="quantidade" value="1"/>
                                         <div class="ProductDetails__Actions__AddCart">
                                             <input type="submit" value="Comprar"></input>
                                         </div>
-                                    </form>
+                                    <!--</form>-->
                             </div>
-                    </div>';
+                        </div>
+                    </form>';
             ?>
         </div>
     </main>
-    
-    <footer>
-    </footer>
+    <?php require_once 'footer.php'; ?>
 </body>
 </html>

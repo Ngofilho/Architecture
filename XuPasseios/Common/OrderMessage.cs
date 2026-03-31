@@ -3,11 +3,12 @@
 public class OrderMessage : Message
 {
     public IEnumerable<OrderDetails>? OrderDetails { get; set; }
-    public IEnumerable<PersonMessage>? Customers { get; set; }
+    public IEnumerable<Person>? Customers { get; set; }
 }
 public class OrderDetails
 {
-    public int ItemId { get; set; }
+    public Guid ItemId { get; set; }
     public decimal Quantity { get; set; }
-    public int ClientId { get; set; }
+    public Guid ClientId { get; set; }
+    public decimal Price { get; set; }
 }
