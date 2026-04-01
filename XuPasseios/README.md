@@ -7,8 +7,8 @@ architecture-beta
 	group messagequeue[Message Queue]
 	group backoffice(server)[Back Office]
 	group common[General]
-	group frontend[Portal PHP]
-	group catalog[Catalog]
+	group frontend[Portal Porta 3000]
+	group catalog(server)[Catalog]
 	group checkout[Checkout]
 	
 	service messagequeueService[Queue] in messagequeue
@@ -19,23 +19,26 @@ architecture-beta
 	service logistics(server)[Logistics] in backoffice
 	service marketing(server)[Marketing] in backoffice
 	service checkout2(server)[Checkout] in checkout
+	service products(database)[Product] in catalog
 	
-	service message[Message] in common	
+	service message[Message] in common		
+
+	frontend2{group}:T --> B:checkout2{group}
+
+	message{group}:R -- L:order{group}
+	message{group}:R -- L:logistics{group}
+	message{group}:R -- L:marketing{group}
+    message{group}:R -- L:payment{group}
+	message{group}:R -- L:checkout2{group}
+	messagequeueService{group}:B -- T:payment{group}
+	messagequeueService{group}:B -- T:order{group}
+	messagequeueService{group}:B -- T:logistics{group}
+	messagequeueService{group}:B -- T:marketing{group}
+
 	
-	message{group}:R -- L:frontend2{group}	
-	
-	messagequeueService{group}:T -- B:payment{group}
-	messagequeueService{group}:T -- B:order{group}
-	messagequeueService{group}:T -- B:logistics{group}
-	messagequeueService{group}:T -- B:marketing{group}
 
-	frontend2{group}:L --> R:checkout2{group}
-
-	message{group}:L -- B:payment{group}
-	message{group}:L -- B:order{group}
-	message{group}:L -- B:logistics{group}
-	message{group}:L -- B:marketing{group}
-
+	checkout2{group}:T --> B:messagequeueService{group}
+	products{group}:R --> L:frontend2{group}
 
 ```
 
