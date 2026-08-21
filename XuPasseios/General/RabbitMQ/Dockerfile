@@ -23,8 +23,8 @@ ENV RABBITMQ_DEFAULT_PASS=guest
 # For example, to enable additional plugins:
 # COPY enabled_plugins /etc/rabbitmq/enabled_plugins
 
-ADD BackUp/rabbitmq.config /etc/rabbitmq/
-ADD BackUp/definitions.json /etc/rabbitmq/
+ADD RabbitMQ_BackUp/rabbitmq.config /etc/rabbitmq/
+ADD RabbitMQ_BackUp/definitions.json /etc/rabbitmq/
 
 RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.config /etc/rabbitmq/definitions.json
 
