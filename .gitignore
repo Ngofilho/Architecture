@@ -236,7 +236,7 @@ ClientBin/
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
-*.pfx
+!*.pfx
 !/XuPasseios/Catalog/aspnetapp.pfx
 !/XuPasseios/Catalog/*.pfx
 !*.pfx
