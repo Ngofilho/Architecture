@@ -1,9 +1,12 @@
 ﻿
+using RabbitMQ.Client;
+
 namespace Logistics.Services
 {
     public interface IRabbitMQService
     {
-        Task ReceiveAsync();
+        IChannel Receive();
+        void PublishMessage(Common.MarketingMessage message);
         Task StopAsync(CancellationToken cancellationToken);
         void Dispose();
     }

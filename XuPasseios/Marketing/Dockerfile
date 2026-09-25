@@ -1,16 +1,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+
+COPY ["Marketing/Marketing.csproj", "Marketing/Marketing.csproj"]
+COPY ["Common/Common.csproj", "Common/Common.csproj"]
+
 COPY . .
 
-RUN dotnet restore "Marketing.csproj"
+RUN dotnet restore "Marketing/Marketing.csproj"
 
 
-RUN dotnet build "Marketing.csproj" -c Release -o /app/build
+RUN dotnet build "Marketing/Marketing.csproj" -c Release -o /app/build
 
 FROM build AS publish
 
-RUN dotnet publish "Marketing.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Marketing/Marketing.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app

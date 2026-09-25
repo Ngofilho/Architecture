@@ -26,7 +26,9 @@ services:
       RABBITMQ_HOSTNAME: rabbitmqbckoff
 
   logistics:
-    build: Logistics
+    build:
+      context: .
+      dockerfile: ./Logistics/Dockerfile
     ports:
     - "7186:8080"
     depends_on:
@@ -39,7 +41,9 @@ services:
       RABBITMQ_HOSTNAME: rabbitmqbckoff
 
   marketing:
-    build: Marketing
+    build:
+      context: .
+      dockerfile: ./Marketing/Dockerfile
     ports:
     - "7187:8080"
     depends_on:
