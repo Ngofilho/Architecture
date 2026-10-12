@@ -20,10 +20,9 @@ namespace Checkout.Controllers
         [HttpPost]
         public IActionResult Index([FromBody] OrderMessage order)
         {
+            this._logger.LogInformation($"Order received: {order}");
             var rabbitMQPublish = this.rabbitMQ.SendAsync(order);
-            //var rabbitMQPublish = this.rabbitMQ.SendAsync(new RabbitMQService.Mensagem { Date = DateTime.UtcNow, OrderId = new Random().Next() });
             return Created();
-            //return View();
         }
     }
 }
