@@ -8,10 +8,10 @@ namespace Checkout.Controllers
     [Route("api/[controller]")]
     public class CheckoutController : Controller
     {
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<CheckoutController> _logger;
         private readonly IRabbitMQService rabbitMQ;
 
-        public CheckoutController(ILogger<WeatherForecastController> logger, IRabbitMQService rabbitMQ)
+        public CheckoutController(ILogger<CheckoutController> logger, IRabbitMQService rabbitMQ)
         {
             _logger = logger;
             this.rabbitMQ = rabbitMQ;

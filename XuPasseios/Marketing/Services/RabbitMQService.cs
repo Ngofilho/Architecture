@@ -1,4 +1,4 @@
-﻿#define SENDTOORDER
+﻿#undef SENDTOORDER
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -45,19 +45,26 @@ namespace Marketing.Services
             this._channel = channel.Result;
         }
 
-        public async Task ReceiveAsync()
+        public IChannel ReceiveAsync()
         {
-            Mensagem body = null;// new();
+           // Mensagem body = null;
             try
             {
                 var consumer = new AsyncEventingBasicConsumer(this._channel);
-                consumer.ReceivedAsync += async (ch, ea) =>
+                return consumer.Channel;
+            
+/*                consumer.ReceivedAsync += async (ch, ea) =>
                 {
                     this._logger.LogInformation($"Receiving message");
                     Mensagem? message = JsonSerializer.Deserialize<Mensagem>(Encoding.UTF8.GetString(ea.Body.ToArray()),
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                    body = message!;
+                    while(!stoppingToken.IsCancellationRequested)
+                    {
+                        body = message!;
+                        await this._channel.BasicConsumeAsync(this._queueName,
+                                false, typeof(RabbitMQService).FullName! + Guid.NewGuid().ToString(), consumer);
+                    }
 #if SENDTOORDER
                     this._logger.LogInformation($"Acknowledging the received message");
                     await this._channel.BasicAckAsync(ea.DeliveryTag, false);
@@ -68,13 +75,16 @@ namespace Marketing.Services
                     await this._channel.BasicPublishAsync("backoffice", this._queueNameDestination, ea.Body);
 #endif
                 };
-                await this._channel.BasicConsumeAsync(this._queueName,
-                    false, typeof(RabbitMQService).FullName! + Guid.NewGuid().ToString(), consumer);
 
-            }
+                //                await this._channel.BasicConsumeAsync(this._queueName,
+                //                    false, typeof(RabbitMQService).FullName! + Guid.NewGuid().ToString(), consumer);
+                //return JsonSerializer.Serialize(body);
+//                return Task.CompletedTask;
+            */
+}
             catch (Exception ex)
             {
-                _logger.LogCritical(exception: ex, message: $"Error during the processing of the message", args: body);
+                _logger.LogCritical(exception: ex, message: $"Error during the Receive of the message");
                 throw;
             }
         }
@@ -99,10 +109,10 @@ namespace Marketing.Services
             _connection?.Dispose();
         }
 
-        private class Mensagem
-        {
-            public int OrderId { get; set; }
-            public DateTime Date { get; set; }
-        }
+        //private class Mensagem
+        //{
+        //    public int OrderId { get; set; }
+        //    public DateTime Date { get; set; }
+        //}
     }
 }

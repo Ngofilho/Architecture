@@ -1,6 +1,8 @@
 ﻿using Catalog.Domain.Entities;
+using Catalog.Helpers;
 using Catalog.Infra.DbContexts;
 using Catalog.Models;
+using Catalog.ResourceParameters;
 
 namespace Catalog.Service
 {
@@ -18,9 +20,11 @@ namespace Catalog.Service
                 ?? throw new ArgumentNullException(nameof(catalogContext));
         }
 
-        public IEnumerable<ProductEntity> GetAllProducts()
+        public async Task<PagedList<ProductEntity>> GetAllProducts(ProductResourceParameters resourceParameters)
         {
-            return this._catalogContext.Products.ToList();
+            var products = this._catalogContext.Products.ToList();
+            return await PagedList<ProductEntity>.CreateAsync(products, 
+                resourceParameters.PageNumber, resourceParameters.PageSize);
         }
 
         public ProductEntity GetProduct(Guid productId)

@@ -7,10 +7,10 @@ public class AuthorsProfile : Profile
     public AuthorsProfile()
     {
         CreateMap<Entities.Author, Models.AuthorDto>()
-            .ForMember(dest => dest.Name, opt => 
+            .ForMember(dest => dest.Name, opt =>
                 opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
-            .ForMember(dest => dest.Age, opt => 
-                opt.MapFrom(src => src.DateOfBirth.GetCurrentAge(src.DateOfDeath)));
+            .ForMember(dest => dest.Age, opt =>
+                opt.MapFrom(src => src.DateOfBirth.GetCurrentAge(src.DateOfBirth)));
 
         CreateMap<Models.AuthorForCreationDto, Entities.Author>();
 

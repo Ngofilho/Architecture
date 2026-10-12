@@ -1,0 +1,9 @@
+footer {
+    background-color: black;
+    max-height: 100%;
+}
+
+
+footer > div > div {
+    background-color: yellow;
+}

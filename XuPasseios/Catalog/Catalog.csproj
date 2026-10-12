@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\NewFolder\**" />
+    <Content Remove="Helpers\NewFolder\**" />
+    <EmbeddedResource Remove="Helpers\NewFolder\**" />
+    <None Remove="Helpers\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Catalog.db" />
   </ItemGroup>
 
@@ -29,7 +36,6 @@
 
   <ItemGroup>
     <Folder Include="Infra\Migrations\" />
-    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

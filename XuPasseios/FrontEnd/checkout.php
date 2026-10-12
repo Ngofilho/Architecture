@@ -23,19 +23,25 @@ if(isset($_SESSION["cart_items"]))
 <body>
     <?php require_once 'header.php'; ?>
     <main class="page__main">
+        <h2 style="font-size:5rem; margin-top:0;text-align:center;">Resumo Pedido</h2>
         <form action="processCheckout.php" method="POST">
-            <div class="checkout__main__body">
-                <span>Total: R$</span>
-                    <?php
-                $total = 0;
-                foreach ($cartItems as $key => $value) {
-                    $total += $value["quantity"] * $value["price"];
-                }
-                echo '<span>' . $total . '</span>';
-                ?>
-            </div>
-            <div>
-                <button class="checkout__main__button" type="submit">Finalizar Compra</button>
+            <div style="display:grid; grid-template-columns: auto auto auto; align-items:stretch;align-content:space-around;justify-content:space-around;" >
+                <div class="checkout__main__body">
+                    <span>Total: R$</span>
+                        <?php
+                    $total = 0;
+                    foreach ($cartItems as $key => $value) {
+                        $total += $value["quantity"] * $value["price"];
+                    }
+                    echo '<span>' . $total . '</span>';
+                    ?>
+                </div>
+                <div>
+                    <button class="checkout__main__button" onclick="">Voltar</button>
+                </div>
+                <div>
+                    <button class="checkout__main__button" type="submit">Finalizar Compra</button>
+                </div>
             </div>
         </form>
     </main>

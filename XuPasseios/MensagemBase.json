@@ -1,0 +1,35 @@
+{
+"Order" : {
+            "OrderDetails": [
+                             {"ItemId":"F178C64C-1746-429A-A639-DCDDE7EF98F1", 
+                              "Quantity": 2, 
+                              "ClientId": "10557F65-EB18-452D-98C5-E53CE1D06AD3", 
+                              "Price": 3}
+                            ],
+            "Customers":[
+                          {"ClientId":"DA0DDC3F-4269-4C37-BB56-491D2A0B51F5"}
+                        ]
+          }
+}
+
+
+
+
+{
+"Origin":"Payment",
+"Destiny": "Logistics",
+"MessageVersion":"1.0",
+"DateOfSending":"1994-06-18T10:00:30",
+"MessageId":"9029E1A1-A6E9-401F-8499-2F78D4A9C982",
+"Order" : {
+            "OrderDetails": [
+                             {"ItemId":"F178C64C-1746-429A-A639-DCDDE7EF98F1", 
+                              "Quantity": 2, 
+                              "ClientId": "10557F65-EB18-452D-98C5-E53CE1D06AD3", 
+                              "Price": 3}
+                            ],
+            "Customers":[
+                          {"ClientId":"DA0DDC3F-4269-4C37-BB56-491D2A0B51F5"}
+                        ]
+          }
+}

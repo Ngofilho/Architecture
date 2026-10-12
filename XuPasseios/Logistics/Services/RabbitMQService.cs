@@ -2,6 +2,7 @@
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace Logistics.Services
 {
@@ -44,12 +45,15 @@ namespace Logistics.Services
             this._channel = channel.Result;
         }
 
-        public async Task ReceiveAsync()
+        public IChannel Receive()
         {
             Mensagem body = null;// new();
             try
             {
+
                 var consumer = new AsyncEventingBasicConsumer(this._channel);
+                return consumer.Channel;
+                /*
                 consumer.ReceivedAsync += async (ch, ea) =>
                 {
                     this._logger.LogInformation($"Receiving message");
@@ -69,6 +73,8 @@ namespace Logistics.Services
                 await this._channel.BasicConsumeAsync(this._queueName,
                     false, typeof(RabbitMQService).FullName! + Guid.NewGuid().ToString(), consumer);
 
+                */
+
             }
             catch (Exception ex)
             {
@@ -77,6 +83,25 @@ namespace Logistics.Services
             }
         }
 
+
+        public void PublishMessage(Common.MarketingMessage message)
+        {
+            try
+            {
+                var task = Task.Run(async () =>
+                {
+                    await this._channel.BasicPublishAsync("backoffice", this._queueNameDestination,
+                                Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
+                });
+                Task.WhenAll(task);
+                this._logger.LogWarning($"Message published to RabbitMQ on {this._queueNameDestination} queue.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(exception: ex, message: $"Error during the processing of the message {this._queueNameDestination}", 
+                                args: JsonSerializer.Serialize(message));
+            }
+        }
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("RabbitMQ Consumer Service stopping.");

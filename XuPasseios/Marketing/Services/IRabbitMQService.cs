@@ -1,9 +1,12 @@
 ﻿
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+
 namespace Marketing.Services
 {
     public interface IRabbitMQService
     {
-        Task ReceiveAsync();
+        IChannel ReceiveAsync();
         Task StopAsync(CancellationToken cancellationToken);
         void Dispose();
     }
