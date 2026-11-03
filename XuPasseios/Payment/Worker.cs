@@ -18,11 +18,18 @@ namespace Payment
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
             this._logger.LogInformation("Initializing the RabbitMQ receive method");
-            await this.rabbitMQService.ReceiveAsync();
+            //await this.rabbitMQService.ReceiveAsync();
             this._logger.LogInformation("Initialized RabbitMQ receive method");
+            base.StartAsync(cancellationToken);
         }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {}
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var payment = await this.rabbitMQService.ReceiveAsync(stoppingToken);
+            }
+        }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {

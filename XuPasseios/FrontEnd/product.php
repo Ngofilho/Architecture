@@ -35,7 +35,7 @@ if(!$data)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce</title>
+    <title>Agencia Xu Passeios</title>
     <link rel="stylesheet" href="/public/styles/product.css">
     <base href="http://localhost:3000"/>
 </head>
@@ -67,7 +67,7 @@ if(!$data)
                                     </p>
                                 </div>
                                 <div>
-                                    <a href="index.php"><button class="ProducDetails__Button__Return">Voltar</button></a>
+                                    <a href="index.php"><button class="ProducDetails__Button__Return" value="index" formaction="index.php">Voltar</button></a>
                                 </div>
                             </div>
                             <div class="ProductDetails__Actions">

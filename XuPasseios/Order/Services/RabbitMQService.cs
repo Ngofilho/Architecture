@@ -1,4 +1,6 @@
-﻿using RabbitMQ.Client;
+﻿using Common;
+using Order.DTOs;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
@@ -45,19 +47,19 @@ namespace Order.Services
             this._channel = channel.Result;
         }
 
-        public async Task ReceiveAsync()
+        public async Task<OrderDTO> ReceiveAsync()
         {
-            Mensagem body = null;// new();
+            OrderDTO body = null;// new();
             try
             {
                 var consumer = new AsyncEventingBasicConsumer(this._channel);
                 consumer.ReceivedAsync += async (ch, ea) =>
                 {
                     this._logger.LogInformation($"Receiving message");
-                    Mensagem? message = JsonSerializer.Deserialize<Mensagem>(Encoding.UTF8.GetString(ea.Body.ToArray()),
+                    Message? message = JsonSerializer.Deserialize<Message>(Encoding.UTF8.GetString(ea.Body.ToArray()),
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                    body = message!;
+                    body = (OrderDTO)message!;
 
                     this._logger.LogInformation($"Acknowledging the received message");
                     await this._channel.BasicAckAsync(ea.DeliveryTag, false);
@@ -69,7 +71,7 @@ namespace Order.Services
                 };
                 await this._channel.BasicConsumeAsync(this._queueName,
                     false, typeof(RabbitMQService).FullName! + Guid.NewGuid().ToString(), consumer);
-
+                return body;
             }
             catch (Exception ex)
             {
@@ -90,18 +92,33 @@ namespace Order.Services
             return Task.CompletedTask;
         }
 
+        public async Task SendAsync(CancellationToken cancellationToken, OrderDTO mensagem)
+        {
+            try
+            {
+                var bp = new BasicProperties();
+                bp.DeliveryMode = DeliveryModes.Persistent;
+                bp.Type = "VanillaMessage";
+                var ea = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<OrderDTO>(mensagem,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }));
+                await this._channel.BasicPublishAsync("backoffice", this._queueNameDestination, true, bp, ea);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogCritical(ex, "Error during publishing the message to Order");
+                throw;
+            }
+        }
+
         public void Dispose()
         {
             _logger.LogInformation("Service disposing RabbitMQ channel");
             _channel?.Dispose();
             _logger.LogInformation("Service disposing RabbitMQ connection");
             _connection?.Dispose();
-        }
-
-        private class Mensagem
-        {
-            public int OrderId { get; set; }
-            public DateTime Date { get; set; }
         }
     }
 }

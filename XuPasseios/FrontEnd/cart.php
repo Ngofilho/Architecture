@@ -107,7 +107,7 @@ if(isset($_SESSION["cart_items"]))
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce</title>
+    <title>Agencia Xu Passeios</title>
     <link rel="stylesheet" href="/public/styles/cart.css">
     <base href="http://localhost:3000"/>
 </head>
