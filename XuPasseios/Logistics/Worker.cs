@@ -48,9 +48,9 @@ namespace Logistics
                         {
                             OrderDetails = messageBody?.Order?.OrderDetails,
 
-                            MessageId = Guid.NewGuid(),
-                            DateOfSending = DateTime.UtcNow,
-                            MessageVersion = "1.0",
+                            Id = Guid.NewGuid(),
+                            Date = DateTime.UtcNow,
+                            Version = "1.0",
                             Origin = "Logistics",
                             Destiny = "Marketing",
                             Customers = messageBody?.Order?.Customers                            
@@ -63,9 +63,9 @@ namespace Logistics
                             CampaignStart = DateTime.UtcNow,
                             CampaignEnd = DateTime.UtcNow.AddDays(30)
                         },
-                        MessageId = messageBody.MessageId,
-                        DateOfSending = messageBody.DateOfSending,
-                        MessageVersion = messageBody.MessageVersion,
+                        Id = messageBody.Id,
+                        Date = messageBody.Date,
+                        Version = messageBody.Version,
                         Origin = messageBody.Origin,
                         Destiny = "Marketing"
                     };

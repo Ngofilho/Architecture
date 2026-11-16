@@ -20,9 +20,23 @@ namespace Order
             this._logger.LogInformation("Initializing the RabbitMQ receive method");
             await this.rabbitMQService.ReceiveAsync();
             this._logger.LogInformation("Initialized RabbitMQ receive method");
+            //await this.ExecuteAsync(cancellationToken);
+            await base.StartAsync(cancellationToken);
         }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {}
+        {
+            bool continua = !stoppingToken.IsCancellationRequested;
+            while (continua)
+            {
+                var order = await this.rabbitMQService.ReceiveAsync();
+
+                await this.rabbitMQService.SendAsync(stoppingToken, order);
+
+                if (stoppingToken.IsCancellationRequested)
+                    continua = false;
+            }
+        }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {

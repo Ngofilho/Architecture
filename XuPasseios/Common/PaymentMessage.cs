@@ -9,4 +9,8 @@ namespace Common
     public class PaymentMessage : Message
     {
     }
+
+    public class PaymentDetails
+    {
+    }
 }

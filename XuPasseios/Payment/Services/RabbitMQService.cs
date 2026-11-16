@@ -1,7 +1,9 @@
-﻿using RabbitMQ.Client;
+﻿using Payment.DTOs;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
+using Common;
 
 namespace Payment.Services
 {
@@ -44,35 +46,57 @@ namespace Payment.Services
             this._channel = channel.Result;
         }
 
-        public async Task ReceiveAsync()
+        public async Task<PaymentDTO> ReceiveAsync(CancellationToken cancellation)
         {
-            Mensagem body = null;// new();
+            PaymentDTO body = null;// new();
+
             try
             {
                 var consumer = new AsyncEventingBasicConsumer(this._channel);
                 consumer.ReceivedAsync += async (ch, ea) =>
                 {
                     this._logger.LogInformation($"Receiving message");
-                    Mensagem? message = JsonSerializer.Deserialize<Mensagem>(Encoding.UTF8.GetString(ea.Body.ToArray()),
+                    Message? message = JsonSerializer.Deserialize<Message>(Encoding.UTF8.GetString(ea.Body.ToArray()),
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                    body = message!;
+                    body = (PaymentDTO)message!;
 
                     this._logger.LogInformation($"Acknowledging the received message");
                     await this._channel.BasicAckAsync(ea.DeliveryTag, false);
-
-                    string messageLog = $"Sending message to {_queueNameDestination}";
-                    this._logger.LogInformation(messageLog);
-
-                    await this._channel.BasicPublishAsync("backoffice", this._queueNameDestination, ea.Body);
                 };
-                await this._channel.BasicConsumeAsync(this._queueName,
-                    false, typeof(RabbitMQService).FullName! + Guid.NewGuid().ToString(), consumer);
-
+                /*   await this._channel.BasicConsumeAsync(this._queueName,
+                       false, typeof(RabbitMQService).FullName! + Guid.NewGuid().ToString(), consumer);
+                */
+                return body;
             }
             catch (Exception ex)
             {
                 _logger.LogCritical(exception: ex, message: $"Error during the processing of the message", args: body);
+                throw;
+            }
+        }
+
+        public async Task Send(PaymentDTO payment, CancellationToken cancellation)
+        {
+            //await this._channel.BasicPublishAsync("backoffice", this._queueNameDestination, ea.Body);
+
+            try
+            {
+                var bp = new BasicProperties();
+                bp.DeliveryMode = DeliveryModes.Persistent;
+                bp.Type = "VanillaMessage";
+                var ea = Encoding.UTF8.GetBytes(JsonSerializer.Serialize<PaymentDTO>(payment,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }));
+                await this._channel.BasicPublishAsync("backoffice", this._queueNameDestination, true, bp, ea);
+                string messageLog = $"Sending message to {_queueNameDestination}";
+                this._logger.LogInformation(messageLog);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogCritical(ex, "Error during publishing the message to Order");
                 throw;
             }
         }
@@ -95,12 +119,6 @@ namespace Payment.Services
             _channel?.Dispose();
             _logger.LogInformation("Service disposing RabbitMQ connection");
             _connection?.Dispose();
-        }
-
-        private class Mensagem
-        {
-            public int OrderId { get; set; }
-            public DateTime Date { get; set; }
         }
     }
 }

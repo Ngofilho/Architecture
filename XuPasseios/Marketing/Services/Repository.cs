@@ -24,7 +24,6 @@ namespace Marketing.Services
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }
